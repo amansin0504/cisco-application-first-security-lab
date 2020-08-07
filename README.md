@@ -38,13 +38,13 @@ These quick steps will get you up and running. You'll need to reserve a DevNet s
 
 1. Log in to the [AWS Management Console](https://console.aws.amazon.com/) and select the region where you'd like to run this lab.
 
-2. [Create](https://console.aws.amazon.com/cloudformation/home#/stacks/create/template) a CloudFormation stack by uploading the [template](./aws/cf-template-setup.json) provided in this repo. Take a minute to review the contents of the template to understand what resources you'll be creating.
+2. [Create](https://console.aws.amazon.com/cloudformation/home#/stacks/create/template) a CloudFormation stack by uploading the provided [template](https://raw.githubusercontent.com/CiscoDevNet/cisco-application-first-security-lab/master/aws/cf-template-setup.json) provided in this repo. Take a minute to review the contents of the template to understand what resources you'll be creating.
 
 3. When prompted for a _Stack name_ and _Parameters_, use the values provided in the email from the previous step.
 
-		> **NOTE**
-		>
-		> A strong password string is provided to you for the _PodPassword_ parameter. If you want to use your own, that's fine. We recommend that whatever value you set is used across all products when you're setting credentials as instructed in the lab guide to make things easy for you.
+	> **NOTE**
+	>
+	> A strong password string is provided to you for the _PodPassword_ parameter. If you want to use your own, that's fine. We recommend that whatever value you set is used across all products when you're setting credentials as instructed in the lab guide to make things easy for you.
 
 4. You don't need to adjust any other stack settings, so you can click _Next_ through the rest of the prompts. You will need to acknowledge that the template is creating an IAM User right before clicking _Create stack_. You'll use that IAM User to run the lab in a AWS Cloud9 environment.
 
@@ -103,7 +103,7 @@ These quick steps will get you up and running. You'll need to reserve a DevNet s
 
 6. Use the file explorer in the Cloud9 environment to navigate to _app-first-sec-lab > docs_. Right-click on _lab-guide.html_ and select _Preview_.
 
-	Nice job. You're well on your way to becoming one with Cisco Application-First Security.
+	Nice job 🎉 You're well on your way to becoming one with Cisco Application-First Security.
 
 ## Lab Cleanup
 
