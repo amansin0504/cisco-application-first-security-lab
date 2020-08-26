@@ -1,0 +1,23 @@
+{
+  "labId": "app-first-sec-lab",
+  "title": "App-First Security lab",
+  "slug": "app-first-sec-lab",
+  "time": 15,
+  "byod": true,
+  "files": [
+    {"title": "Step 0: Getting Started and Setup of AWS and Sandbox",
+     "file":"1.md"},
+    {"title": "Step 99: Lab Cleanup and Next Steps",
+     "file": "2.md"}
+  ],
+  "tags": [
+	{"title": "Cisco-SecureX"}
+  ],
+  "related": [
+  ],
+  "authors": [
+      {"name": "Randy Birdsall", "email": "rbirdsal@cisco.com"},
+      {"name": "Christopher van der Made", "email": "chrivand@cisco.com"}
+  ],
+  "active": true
+}
