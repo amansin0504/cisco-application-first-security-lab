@@ -1,0 +1,425 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description" : "Setup for Cisco App-First Sec Lab Creates: VPC,Pub Subnet, IGW, Nat GW, 2 Private Subnets, Necessary Routes, Cloud9 env, ECR repo, Flow logs in S3",
+  "Parameters": {
+    "PodName": {
+        "Description": "Name of Pod. *Must* use value provided in DevNet Sandbox email.",
+        "Type": "String"
+    },
+    "PodPassword": {
+      "Description": "Password for Pod. User defined or use value provided in DevNet Sandbox email.",
+      "Type": "String"
+    },
+    "DuoSecret": {
+      "Description": "Secret used to configure Duo. *Must* use value provided in DevNet Sandbox email.",
+      "Type": "String"
+    },
+    "SwcSecret": {
+      "Description": "Secret used for Stealthwatch Cloud Kubernetes agents. *Must* use value provided in DevNet Sandbox email.",
+      "Type": "String"
+    },
+    "DevNetEmail": {
+      "Description": "Email used with your DevNet account. *Must* use value provided in DevNet Sandbox email.",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "ciscoAppFirstSecEcr": {
+      "Type" : "AWS::ECR::Repository",
+      "Properties" : {
+        "RepositoryName" : "sock-shop/front-end"
+      }
+    },
+    "ciscoAppFirstSecUser": {
+      "Type" : "AWS::IAM::User",
+      "Properties" : {
+        "LoginProfile" : {
+          "Password": {
+            "Ref": "PodPassword"
+          },
+          "PasswordResetRequired": false
+        },
+        "ManagedPolicyArns" : [ "arn:aws:iam::aws:policy/AdministratorAccess" ],
+        "UserName" : {
+          "Ref": "PodName"
+        }
+      }
+    },
+    "ciscoAppFirstSecCloud9": {
+      "Type" : "AWS::Cloud9::EnvironmentEC2",
+      "Properties" : {
+        "AutomaticStopTimeMinutes" : 30,
+        "InstanceType" : "t2.micro",
+        "Name" : "cisco-app-first-sec",
+        "OwnerArn" : {
+          "Fn::GetAtt": ["ciscoAppFirstSecUser", "Arn"]
+        },
+        "SubnetId" : {
+          "Ref": "ciscoAppFirstSecPublicSubnetAz1"
+        }
+      }
+    },
+    "ciscoAppFirstSecVpc": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.50.0.0/16",
+        "EnableDnsSupport": "true",
+        "EnableDnsHostnames": "true",
+        "Tags": [{
+          "Key": "cf",
+          "Value": "app-first-sec"
+        },
+        {
+          "Key": "Name",
+          "Value": "app-first-sec-vpc"
+        }]
+      }
+    },
+    "ciscoAppFirstSecTetAgentBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties" : {
+        "PublicAccessBlockConfiguration" : {
+          "BlockPublicAcls" : true,
+          "BlockPublicPolicy" : true,
+          "IgnorePublicAcls" : true,
+          "RestrictPublicBuckets" : true
+        }
+      }
+    },
+    "ciscoAppFirstSecTetAgentBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Id": "MyPolicy",
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action":["s3:GetObject"],
+              "Effect":"Allow",
+              "Resource": { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ciscoAppFirstSecTetAgentBucket" } , "/*" ]]},
+              "Principal":"*",
+              "Condition":{
+                "IpAddress":{
+                  "aws:SourceIp": { "Ref": "ciscoAppFirstSecEip" }
+                }
+              }
+            }
+          ]
+        },
+        "Bucket": {
+          "Ref": "ciscoAppFirstSecTetAgentBucket"
+        }
+      }
+    },
+    "ciscoAppFirstSecFlowLogBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties" : {
+        "PublicAccessBlockConfiguration" : {
+          "BlockPublicAcls" : true,
+          "BlockPublicPolicy" : true,
+          "IgnorePublicAcls" : true,
+          "RestrictPublicBuckets" : true
+        }
+      }
+    },
+    "ciscoAppFirstSecVpcFlowLog" : {
+      "Type" : "AWS::EC2::FlowLog",
+      "Properties" : {
+        "LogDestinationType" : "s3",
+        "LogDestination" : { "Fn::GetAtt" : ["ciscoAppFirstSecFlowLogBucket", "Arn"] },
+        "ResourceId" : { "Ref": "ciscoAppFirstSecVpc" },
+        "ResourceType" : "VPC",
+        "TrafficType" : "ALL"
+      }
+    },
+    "ciscoAppFirstSecPublicSubnetAz1": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "ciscoAppFirstSecVpc"
+        },
+        "CidrBlock": "10.50.10.0/24",
+        "AvailabilityZone": {
+          "Fn::Select" : [
+            "0",
+            { "Fn::GetAZs" : "" }
+          ]
+        },
+        "Tags": [{
+          "Key": "cf",
+          "Value": "app-first-sec"
+        },
+        {
+          "Key": "Name",
+          "Value": "app-first-sec-public-subnet"
+        }]
+      }
+    },
+    "ciscoAppFirstSecPrivateSubnetAz1": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "ciscoAppFirstSecVpc"
+        },
+        "CidrBlock": "10.50.110.0/24",
+        "AvailabilityZone": {
+          "Fn::Select" : [
+            "0",
+            { "Fn::GetAZs" : "" }
+          ]
+        },
+        "Tags": [{
+          "Key": "cf",
+          "Value": "app-first-sec"
+        },
+        {
+          "Key": "Name",
+          "Value": "app-first-sec-private-subnet-1"
+        }]
+      }
+    },
+    "ciscoAppFirstSecPrivateSubnetAz2": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "ciscoAppFirstSecVpc"
+        },
+        "CidrBlock": "10.50.120.0/24",
+        "AvailabilityZone": {
+          "Fn::Select" : [
+            "1",
+            { "Fn::GetAZs" : "" }
+          ]
+        },
+        "Tags": [{
+          "Key": "cf",
+          "Value": "app-first-sec"
+        },
+        {
+          "Key": "Name",
+          "Value": "app-first-sec-private-subnet-2"
+        },
+        {
+          "Key": "kubernetes.io/cluster/app-first-sec",
+          "Value": "shared"
+        },
+        {
+          "Key": "kubernetes.io/role/internal-elb",
+          "Value": "1"
+        }]
+      }
+    },
+    "ciscoAppFirstSecIgw": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [{
+          "Key": "cf",
+          "Value": "app-first-sec"
+        }]
+      }
+    },
+    "ciscoAppFirstSecEip": {
+       "Type": "AWS::EC2::EIP",
+       "Properties": {
+          "Domain": "vpc"
+       }
+    },
+    "ciscoAppFirstSecNat" : {
+      "Type" : "AWS::EC2::NatGateway",
+      "Properties" : {
+        "AllocationId" : { "Fn::GetAtt" : ["ciscoAppFirstSecEip", "AllocationId"] },
+        "SubnetId" : { "Ref" : "ciscoAppFirstSecPublicSubnetAz1"},
+        "Tags" : [{
+          "Key" : "cf",
+          "Value" : "app-first-sec"
+        }]
+      }
+    },
+    "ciscoAppFirstSecPubicRt": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "ciscoAppFirstSecVpc"
+        },
+        "Tags": [{
+          "Key": "cf",
+          "Value": "app-first-sec"
+        },
+        {
+          "Key": "Name",
+          "Value": "Cisco App-First Sec Public Subnet RT"
+        }]
+      }
+    },
+    "ciscoAppFirstSecPrivateRt": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "ciscoAppFirstSecVpc"
+        },
+        "Tags": [{
+          "Key": "cf",
+          "Value": "app-first-sec"
+        },
+        {
+          "Key": "Name",
+          "Value": "Cisco App-First Sec Private Subnet RT"
+        }]
+      }
+    },
+    "ciscoAppFirstSecDefaultRoute": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "ciscoAppFirstSecPubicRt"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "ciscoAppFirstSecIgw"
+        }
+      }
+    },
+    "ciscoAppFirstSecNatRoute" : {
+      "Type" : "AWS::EC2::Route",
+      "Properties" : {
+        "RouteTableId" : { "Ref" : "ciscoAppFirstSecPrivateRt" },
+        "DestinationCidrBlock" : "0.0.0.0/0",
+        "NatGatewayId" : { "Ref" : "ciscoAppFirstSecNat" }
+      }
+    },
+    "ciscoAppFirstSecRtAssocAz1": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "ciscoAppFirstSecPubicRt"
+        },
+        "SubnetId": {
+          "Ref": "ciscoAppFirstSecPublicSubnetAz1"
+        }
+      }
+    },
+    "ciscoAppFirstSecRtAssocPrivateAz1": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "ciscoAppFirstSecPrivateRt"
+        },
+        "SubnetId": {
+          "Ref": "ciscoAppFirstSecPrivateSubnetAz1"
+        }
+      }
+    },
+    "ciscoAppFirstSecRtAssocPrivateAz2": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "ciscoAppFirstSecPrivateRt"
+        },
+        "SubnetId": {
+          "Ref": "ciscoAppFirstSecPrivateSubnetAz2"
+        }
+      }
+    },
+    "ciscoAppFirstSecAttachIgw": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "InternetGatewayId": {
+          "Ref": "ciscoAppFirstSecIgw"
+        },
+        "VpcId": {
+          "Ref": "ciscoAppFirstSecVpc"
+        }
+      }
+    },
+    "ciscoAppFirstSecSecGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "VpcId": {
+          "Ref": "ciscoAppFirstSecVpc"
+        },
+        "GroupName": "app-first-sec",
+        "GroupDescription": "Default sec group for EKS"
+      }
+    }
+  },
+  "Outputs": {
+    "VpcId": {
+      "Description": "Cisco App-First Sec VPC ID",
+      "Value": {
+        "Fn::GetAtt": ["ciscoAppFirstSecPublicSubnetAz1", "VpcId"]
+      }
+    },
+    "PublicSubnetAz": {
+      "Description": "Cisco App-First Sec Public Subnet AZ",
+      "Value": {
+        "Fn::GetAtt": ["ciscoAppFirstSecPublicSubnetAz1", "AvailabilityZone"]
+      }
+    },
+    "PrivateSubnetAz1": {
+      "Description": "Cisco App-First Sec Private Subnet 1 AZ",
+      "Value": {
+        "Fn::GetAtt": ["ciscoAppFirstSecPrivateSubnetAz1", "AvailabilityZone"]
+      }
+    },
+    "PrivateSubnetAz2": {
+      "Description": "Cisco App-First Sec Private Subnet 2 AZ",
+      "Value": {
+        "Fn::GetAtt": ["ciscoAppFirstSecPrivateSubnetAz2", "AvailabilityZone"]
+      }
+    },
+    "FlowLogBucket": {
+      "Description": "Cisco App-First Sec S3 Bucket Name for Flow Logs",
+      "Value": {
+        "Ref": "ciscoAppFirstSecFlowLogBucket"
+      }
+    },
+    "PodName": {
+      "Description": "Cisco App-First Sec name of pod",
+      "Value": {
+        "Ref": "PodName"
+      }
+    },
+    "DevNetEmail": {
+      "Description": "Email Address used with your DevNet account",
+      "Value": {
+        "Ref": "DevNetEmail"
+      }
+    },
+    "IamUserName": {
+      "Description": "Cisco App-First Sec IAM user name for pod",
+      "Value": {
+        "Ref": "PodName"
+      }
+    },
+    "AwsAccountId": {
+      "Description": "AWS account ID of the account in which this stack is being created",
+      "Value": {
+        "Ref": "AWS::AccountId"
+      }
+    },
+    "PodPassword": {
+      "Description": "Cisco App-First Sec password for pod",
+      "Value": {
+        "Ref": "PodPassword"
+      }
+    },
+    "DuoSecret": {
+      "Description": "Cisco App-First Sec secret to configure Duo",
+      "Value": {
+        "Ref": "DuoSecret"
+      }
+    },
+    "TetAgentBucket": {
+      "Description": "Cisco App-First Sec S3 Bucket for Tetration agent",
+      "Value": {
+        "Ref": "ciscoAppFirstSecTetAgentBucket"
+      }
+    },
+    "SwcSecret": {
+      "Description": "Cisco App-First Sec SWC secret for Kubernetes agents",
+      "Value": {
+        "Ref": "SwcSecret"
+      }
+    }
+  }
+}

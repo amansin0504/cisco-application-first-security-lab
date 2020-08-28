@@ -1,0 +1,15 @@
+---
+# URL for the Tetration Dashboard
+tetration_url: "https://tet-pov-rtp1.cpoc.co"
+
+# API Details - Create new token from Tetration Dashboard!
+api_key: "${TET_API_KEY}"
+api_secret: "${TET_API_SECRET}"
+
+# Set to true for production setups that use trusted certificates!
+validate_certs: true
+
+# specific details for the tetration app env
+app_scope_name: "${POD_NAME}"
+external_orchestrator_name_k8s: "app-first-sec-k8s"
+k8s_namespace: "sock-shop"

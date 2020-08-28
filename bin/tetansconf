@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Copyright (c) 2020 Cisco and/or its affiliates.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+BASHRC_LAB="$HOME/.bashrc_lab"
+ANS_TET_HOST_CONF="$HOME/environment/lab/tetration/ansible/host_vars/tetration.yaml"
+
+echo "Tetration API Key:"
+read TET_API_KEY
+echo "export TET_API_KEY=${TET_API_KEY} " >> $BASHRC_LAB
+echo
+
+echo "Tetration API Secret:"
+read TET_API_SECRET
+echo "export TET_API_SECRET=${TET_API_SECRET} " >> $BASHRC_LAB
+echo
+
+ELB_NAME=`aws elb describe-load-balancers | jq -r '.LoadBalancerDescriptions[0].LoadBalancerName'`
+ELB_HEALTH_MONITOR_IP_ADDRESSES=`aws ec2 describe-network-interfaces --filters Name=description,Values="ELB ${ELB_NAME}" --query 'NetworkInterfaces[*].PrivateIpAddresses[*].PrivateIpAddress' --output text | sed 's/^\(.*\)$/          - field: ip\n            type: subnet\n            value: "\1\/32"/'`
+echo "export ELB_HEALTH_MONITOR_IP_ADDRESSES='${ELB_HEALTH_MONITOR_IP_ADDRESSES}'" >> $BASHRC_LAB
+
+setk8senv
+
+source $BASHRC_LAB
+
+cd $HOME/environment/lab/tetration/ansible
+
+find . -type f \( -iname \*.yaml \) | xargs -I % sh -c 'envsubst <% > %.tmp ; mv %.tmp %'
+
+echo "Ansible Host Configuration for Tetration:"
+cat $ANS_TET_HOST_CONF
+echo

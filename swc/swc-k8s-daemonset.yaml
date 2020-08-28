@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: swc-ona
+spec:
+  selector:
+    matchLabels:
+      name: swc-ona
+  template:
+    metadata:
+      labels:
+        name: swc-ona
+    spec:
+      serviceAccountName: swc
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
+      hostNetwork: true
+      containers:
+        - name: swc
+          image: obsrvbl/ona:4.2
+          env:
+            - name: OBSRVBL_HOST
+              value: "https://sensor.ext.obsrvbl.com"
+            - name: OBSRVBL_SERVICE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: swc
+                  key: service_key
+            - name: OBSRVBL_KUBERNETES_WATCHER
+              value: "true"
+            - name: OBSRVBL_HOSTNAME_RESOLVER
+              value: "false"
+            - name: OBSRVBL_NOTIFICATION_PUBLISHER
+              value: "false"
+            - name: OBSRVBL_SENSOR_EXT_ONLY
+              value: "true"
+            - name: OBSRVBL_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name

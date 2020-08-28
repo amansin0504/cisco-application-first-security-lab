@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Copyright (c) 2020 Cisco and/or its affiliates.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+echo "This script will remove all of the AWS objects created as part of this lab. This action can not be undone."
+
+if [ ! -f $HOME/environment/lab/.setup ]; then
+    echo "ERROR: You haven't run 'labsetup'"
+    exit 1
+fi
+
+source $HOME/.bashrc_lab
+
+echo ""
+echo "AWS CloudFormation Stack: ${AWS_CF_STACK_NAME}"
+echo "AWS S3 Bucket for Flow Logs: ${AWS_FLOW_LOG_BUCKET}"
+echo "AWS S3 Bucket for Tetration agent installer: ${AWS_TET_AGENT_BUCKET}"
+echo "AWS EC2 Key Pair: cisco-app-first-sec-cloud9"
+echo ""
+
+read -p "Type 'delete' if you're sure you want to permanently delete these AWS resources: " -r
+if [[ ! $REPLY =~ ^delete$ ]]
+then
+    echo "Exiting without deleting any resources"
+    exit 0
+fi
+
+aws s3 rb s3://${AWS_TET_AGENT_BUCKET} --force
+aws s3 rb s3://${AWS_FLOW_LOG_BUCKET} --force
+aws ec2 delete-key-pair --key-name cisco-app-first-sec-cloud9
+aws cloudformation delete-stack --stack-name ${AWS_CF_STACK_NAME}
+
+echo "Lab cleanup will continue in the background. This Cloud9 environment will stop working very shortly."

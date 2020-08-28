@@ -1,6 +1,6 @@
 # Cisco Application-First Security Lab
 
-You're about to start on a doozy of lab that covers a lot of ground in a short time. Buckle in and get ready to secure a cloud-native application and public cloud infrastructure using Cisco Products: Tetration, Stealthwatch Cloud, and Duo. You'll stage the infrastructure, modify and deploy the application, instrument the security products into the environment and get your hands dirty with products and technologies including git, Kubernetes, GitHub, Docker, AWS and others.
+You're about to start on a doozy of lab that covers a lot of ground in a short time. Buckle in and get ready to secure a cloud-native application and public cloud infrastructure using Cisco Products: Tetration, Stealthwatch Cloud, and Duo. You'll stage the infrastructure, modify and deploy the application, instrument the security products into the environment. In the process, you'll get your hands dirty with products and technologies including git, Kubernetes, GitHub, Docker, AWS and others.
 
 ## Pre-requisites
 
@@ -36,64 +36,102 @@ These quick steps will get you up and running. You'll need to reserve a DevNet s
 
 ### Create AWS CloudFormation Stack
 
-1. Log in to the [AWS Management Console](https://console.aws.amazon.com/) and select the region where you'd like to run this lab.
+1. Log in to the AWS Management Console and select the region where you'd like to run this lab.
 
-2. [Create](https://console.aws.amazon.com/cloudformation/home#/stacks/create/template) a CloudFormation stack by uploading the provided [template](https://raw.githubusercontent.com/CiscoDevNet/cisco-application-first-security-lab/master/aws/cf-template-setup.json) provided in this repo. Take a minute to review the contents of the template to understand what resources you'll be creating.
+	> https://console.aws.amazon.com/
 
-3. When prompted for a _Stack name_ and _Parameters_, use the values provided in the email from the previous step.
+2. Download the AWS CloudFormation template cf-template-setup.json within this repo. Take a minute to review the contents of the template to understand what resources you'll be creating.
+
+	> https://raw.githubusercontent.com/CiscoDevNet/cisco-application-first-security-lab/master/aws/cf-template-setup.json
+
+3. Create an AWS CloudFormation stack by uploading the template you downloaded.
+
+	> https://console.aws.amazon.com/cloudformation/home#/stacks/create/template
+
+	<p align="center"><img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200818095442.png" alt="image-20200818095442" width="50%" /></p>
+
+4. When prompted for a _Stack name_ use _cisco-app-first-sec_.
+
+	<p align="center"><img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200818091812.png" alt="image-20200818091812" width="50%" /></p>
+
+5. Use the _PodName_, _PodPassword_, _SwcSecret_, _DuoSecret_, and _DevNetEmail_ values provided in the Sandbox reservation email for the _Parameters_ fields.
 
 	> **NOTE**
 	>
-	> A strong password string is provided to you for the _PodPassword_ parameter. If you want to use your own, that's fine. We recommend that whatever value you set is used across all products when you're setting credentials as instructed in the lab guide to make things easy for you.
+	> A strong password string is provided to you for the _PodPassword_ parameter. If you want to use your own, that's fine. You might need to use your own if the provided password doesn't meet your AWS Password Policy requirements like character length.
+	>
+	> We recommend that whatever value you set is used across all products when you're setting credentials as instructed in the lab guide to make things easier.
 
-4. You don't need to adjust any other stack settings, so you can click _Next_ through the rest of the prompts. You will need to acknowledge that the template is creating an IAM User right before clicking _Create stack_. You'll use that IAM User to run the lab in a AWS Cloud9 environment.
+6. You don't need to adjust any other stack settings, so you can click _Next_ through the rest of the prompts. You will need to acknowledge that the template is creating an IAM User right before clicking _Create stack_. You'll use that IAM User in an upcoming step to run the lab in a AWS Cloud9 environment.
 
-5. Now monitor for the stack _Status_ to be _CREATE\_COMPLETE_. If you're interested in watching each part of the stack progress, take a look at the stack _Events_.
+7. Now monitor the _Status_ for the stack you just created to be _CREATE\_COMPLETE_. If you're interested in watching each part of the stack progress, take a look at the stack _Events_.
 
-6. Once the stack is created, you'll need to sign out from your current AWS account and log in to the [AWS Management Console](https://console.aws.amazon.com/) using the newly created IAM User.
+	> **NOTE**
+	>
+	> The stack you created will automatically create another stack for the Cloud9 environment. While you can view the events from both stacks, you'll need to ensure that the stack you created (i.e., the non-Cloud9 stack) has completed before moving on.
+
+8. Once the _cisco-app-first-sec_ stack is created, copy and paste the _Key_ and _Value_ content from the CloudFormation stack _Output_ for use in the next step.
+
+	<p align="center"><img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200818110152.png" alt="image-20200818110152" width="30%" /></p>
+
+9. Sign out from your current AWS account and log in to the AWS Management Console again using the newly created IAM User.
+
+	> https://console.aws.amazon.com
+
+	This table maps the _Key_ name to the login input fields in the AWS Management Console.
+
+	| AWS Account ID | IAM user name | Password |
+	| -------------- | ------------- | -------- |
+	| _AwsAccountId_ value | _IamUserName_ value | _PodPassword_ value |
 
 ### Stage Cloud9 IDE
 
-1. As the newly created IAM User, navigate to [AWS Cloud9](https://console.aws.amazon.com/cloud9/home) and open the _cisco-app-first-sec_ environment.
+1. As the newly created IAM User and within the same AWS region that you created the CloudFormation stack, navigate to [AWS Cloud9](https://console.aws.amazon.com/cloud9/home) and open the _cisco-app-first-sec_ environment.
 
 2. Open the Cloud9 IDE and access a terminal tab in the bottom right pane.
 
-  <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+  <p align="center"><img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" width="50%" /></p>
 
 3. Clone the lab repo into the Cloud9 environment.
 
 	###### Command
 
 	```
-	git clone https://github.com/CiscoDevNet/cisco-application-first-security-lab.git
+	git clone https://github.com/CiscoDevNet/cisco-application-first-security-lab.git lab
 	```
 
 	###### Output
 
 	```
-	Cloning into 'cisco-application-first-security-lab'...
+	Cloning into 'lab'...
 	remote: Enumerating objects: 123, done.
 	remote: Counting objects: 100% (123/123), done.
 	remote: Total 123 (delta 0), reused 0 (delta 0), pack-reused 0
 	Unpacking objects: 100% (123/123), done.
 	```
 
-4. Run the provided _labsetup_ script to stage the Cloud9 environment. This will install all the needed software packages and customize all templates including the lab guide with parameters you provided when creating the CloudFormation stack.
+4. Run the provided _labsetup_ script to stage the Cloud9 environment and provide the name of your CloudFormation stack, which should be _cisco-app-first-sec_. This will install all the needed software packages and customize all templates including the lab guide with parameters you provided when creating the CloudFormation stack.
 
 	###### Command
 
 	```
-	~/cisco-application-first-security-lab/bin/labsetup
+	lab/bin/labsetup
 	```
 
 	###### Output
 
 	```
-	What is the name of your CloudFormation stack for this lab? [default: cisco-app-first-sec] cisco-app-first-sec
+	In order to setup this lab environment, you need to
+	provide the CloudFormation stack name used to setup
+	the AWS infrastructure to support this lab.
+	...
+	What is the name of your CloudFormation stack for this lab? [Press enter for default: cisco-app-first-sec]
 	...
 	```
 
-5. Set the necessary environment variables by sourcing your _.bashrc_
+
+
+5. Set the necessary environment variables by sourcing your _.bashrc_. There won't be any output.
 
 	###### Command
 
@@ -101,7 +139,7 @@ These quick steps will get you up and running. You'll need to reserve a DevNet s
 	source ~/.bashrc
 	```
 
-6. Use the file explorer in the Cloud9 environment to navigate to _app-first-sec-lab > docs_. Right-click on _lab-guide.html_ and select _Preview_.
+6. Use the file explorer in the Cloud9 environment to navigate to _lab/docs_. Right-click on _lab-guide.html_ and select _Preview_.
 
 	Nice job 🎉 You're well on your way to becoming one with Cisco Application-First Security.
 
@@ -115,7 +153,7 @@ We've provided a lab cleanup script that you can execute within your Cloud9 envi
 
 1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
 
-  <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+  <p align="center"><img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" width="50%" /></p>
 
 2. Run the provided _labcleanup_ script to remove all AWS resources.
 
