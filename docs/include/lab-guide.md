@@ -1490,9 +1490,9 @@ In order to ensure that the application is being excerised during the remainder 
     sock-shop-test-deployment-77755c6ccf-8rml5   1/1     Running   0          39s
     ```
 
-		> **TIP**
-		>
-		> It can take a minute or two for a pod to download the container image and start them, so if it's not in a running state, try the command _watch kubectl get pods --namespace=sock-shop-test_ instead of up/enter-ing over and over. It will execute the _kubectl_ command over and over until you _ctrl-c_ to stop it.
+    > **TIP**
+    >
+    > It can take a minute or two for a pod to download the container image and start them, so if it's not in a running state, try the command _watch kubectl get pods --namespace=sock-shop-test_ instead of up/enter-ing over and over. It will execute the _kubectl_ command over and over until you _ctrl-c_ to stop it.
 
 
 ##### Get into running container to check its running
