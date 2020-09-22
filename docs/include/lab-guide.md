@@ -1757,6 +1757,13 @@ Create AWS IAM policy and user for Tetration with restictive permissions using t
 
     > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co/)
 
+    Login using the following values.
+
+    | Field                 | Value                                        |
+    | --------------------- | -------------------------------------------- |
+    | Email                 | ${DEVNET_EMAIL_ADDRESS}                      |
+    | Password              | ${POD_PASSWORD} (or password you set)        |
+
 6. Navigate to the _External Orchestrators_ page under _VISIBILITY_ in the left menu pane.
 
     <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018083122803.png" alt="image-20191018083122803" style="zoom:50%;" />
@@ -1819,26 +1826,19 @@ Software agents are configured by creating _Agent Config Intents_ that associate
 
     > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co)
 
-2. Login using the following values.
-
-    | Field                 | Value                                        |
-    | --------------------- | -------------------------------------------- |
-    | Email                 | ${DEVNET_EMAIL_ADDRESS}                      |
-    | Password              | ${POD_PASSWORD} (or password you set)        |
-
-3. Navigate to _Software Agent Configure_ via the top right navigation menu by clicking on the gear image.
+2. Navigate to _Software Agent Configure_ via the top right navigation menu by clicking on the gear image.
 
     <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200721073551.png" alt="image-20200721073551" style="zoom:50%;" />
 
-4. Note that the _Agent Config Intent_ that was created for this lab is named _app-first-sec_ and uses the entire scope as its filter for selecting which agents will use this agent configuration.
+3. Note that the _Agent Config Intent_ that was created for this lab is named _app-first-sec_ and uses the entire scope as its filter for selecting which agents will use this agent configuration.
 
     <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191213135412989.png" alt="image-20191213135412989" style="zoom:50%;" />
 
-5. View the _Agent List_ to see all agents that have ever registered including inactive agents.
+4. View the _Agent List_ to see all agents that have ever registered including inactive agents.
 
     > [https://tet-pov-rtp1.cpoc.co/#/software-agents/list](https://tet-pov-rtp1.cpoc.co/#/software-agents/list)
 
-6. Confirm the total number of agents is equal to the number of worker nodes in your EKS Kubernetes cluster. Also confirm that the _Hostname_ and _IP Addresses_ fields correlate to the worker nodes.
+5. Confirm the total number of agents is equal to the number of worker nodes in your EKS Kubernetes cluster. Also confirm that the _Hostname_ and _IP Addresses_ fields correlate to the worker nodes.
 
     ![image-20191018111656851](https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018111656851.png)
 
