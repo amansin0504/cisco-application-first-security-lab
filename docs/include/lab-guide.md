@@ -751,9 +751,9 @@ The Tetration can be downloaded via the administrative interface, as described b
 
     <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200716014426.png" alt="image-20200716014426" style="zoom:50%;" />
 
-		> **NOTE**
-		>
-		> If your web browser throws an error stating that downloading the installer shell script could do harm to your computer, you can safely ignore it and keep the file.
+    > **NOTE**
+    >
+    > If your web browser throws an error stating that downloading the installer shell script could do harm to your computer, you can safely ignore it and keep the file.
 
 ###### Upload Tetration agent to S3 bucket
 
