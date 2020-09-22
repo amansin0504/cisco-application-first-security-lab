@@ -2044,10 +2044,6 @@ You'll build filters and policy manually to understand the management interface 
 
     In this simulation, we don't actual provide any unique identifiers to associated the authorization with a user's account or credit card, but the implications in the real-world could be crediting an account with some funds from another accounts payment details.
 
-    > **TIP**
-    >
-    > Although obvious, it's worth noting that it is not recommend to leave _netcat_ installed in a container image. In addition, it's recommended to run containers as immutable so that software can't be installed or built locally should an attacker gain access. As we all know, best practices are not always followed so this scenario is 100% valid and witnessed in production application deployments..
-
     ###### Command
 
     ```
@@ -2084,7 +2080,9 @@ You'll build filters and policy manually to understand the management interface 
     /usr/src/app $
     ```
 
-
+    > **TIP**
+    >
+    > Although obvious, it's worth noting that it is not recommend to leave _netcat_ installed in a container image. In addition, it's recommended to run containers as immutable so that software can't be installed or built locally should an attacker gain access. As we all know, best practices are not always followed so this scenario is 100% valid and witnessed in production application deployments.
 
 
 ###### Perform a flow search
