@@ -4,4 +4,4 @@ You're about to start on a doozy of lab that covers a lot of ground in a short t
 
 ## Getting Started
 
-Visit Cisco DevNet to access the [Application-First Security Learning Lab Module](https://testing-developer.cisco.com/learning/modules/cisco-app-first-security-lab) to get started.
+Visit Cisco DevNet to access the [Application-First Security Learning Lab Module](https://developer.cisco.com/learning/modules/cisco-app-first-security-lab) to get started.
