@@ -203,12 +203,7 @@ Self-managing production large-scale Kubernetes is really challenging and many o
 #### Steps
 
 * [Enable discovery of VPC resources by Kubernetes](#enable-discovery-of-vpc-resources-by-kubernetes)
-* [Give an IAM user EKS administrative permissions](#give-an-iam-user-eks-administrative-permissions)
-  * [Create an IAM policy](#create-an-iam-policy)
-  * [Create an IAM group](#create-an-iam-group)
-  * [Add an IAM user to a group](#add-an-iam-user-to-a-group)
-  * [Enable programmatic access](#enable-programmatic-access)
-  * [Create AWS CLI profile](#create-aws-cli-profile)
+* [Review IAM user permissions](#give-an-iam-user-eks-administrative-permissions)
 * [Create an EKS Kubernetes cluster](#create-an-eks-kubernetes-cluster)
 * [Explore Kubernetes using kubectl](#explore-kubernetes-using-kubectl)
 
@@ -272,161 +267,13 @@ AWS allows customers to assign metadata to their AWS resources in the form of ta
     | kubernetes.io/role/internal-elb     | 1      |
 
 
-##### Give an IAM user EKS administrative permissions
+##### Verify IAM user EKS administrative permissions
 
 It's important to understand how authentication of IAM users to EKS managed Kubernetes differs from self-managed deployments. EKS uses IAM to provide authentication to your Kubernetes cluster (through the _aws eks get-token_ command, available in version 1.16.232 or greater of the AWS CLI, or the AWS IAM Authenticator for Kubernetes), but it still relies on native Kubernetes Role Based Access Control (RBAC) for authorization. This means that IAM is only used for authentication of valid IAM entities. All permissions for interacting with your Amazon EKS cluster’s Kubernetes API is managed through the native Kubernetes RBAC system.
 
 We'll use the IAM console for these steps to get you familiar with how it works. In future steps, we'll use the command line to manage accounts as this is an important step to achieve automation.
 
-
-
-###### Create an IAM policy
-
-The first step is to create a policy that can be used to provide permissions to an IAM group, role, or user.
-
-1. Copy the content of the EKS admin policy from _${DOLLAR_SIGN}LAB/aws/eks-admin-policy.json_.
-
-    You can copy the contents of this file from the command line of a Cloud9 terminal.
-
-    ###### Command
-
-    ```
-    cat ${DOLLAR_SIGN}LAB/aws/eks-admin-policy.json
-    ```
-
-    You can also double-click on the file from the file tree in the left pane and copy the contents from the top left editor pane.
-
-    > **TIP**
-    >
-    > It's worth reviewing the contents of this policy that will be attached to a user to control the _Effect_ of an _Action_ they take against a _Resource_. [Policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html) are a critical part of access control within AWS.
-
-2. Open the IAM console to create a new policy that is tailored to administering EKS Kubernetes clusters
-
-    > [https://console.aws.amazon.com/iam/home?region=${AWS_REGION}#/policies](https://console.aws.amazon.com/iam/home?region=${AWS_REGION}#/policies)
-
-3. Click the _Create policy_ button
-
-4. Select the _JSON_ tab
-
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191016230353595.png" alt="image-20191016230353595" style="zoom:50%;" />
-
-5. Replace the all of the contents in the editor pane with the policy that you copied into your clipboard from _${DOLLAR_SIGN}LAB/aws/eks-admin-policy.json_
-
-6. Click the _Review policy_ button
-
-7. Enter _eks-admin-policy_ in the _Name_ field
-
-8. Click the _Create policy_ button
-
-
-
-###### Create an IAM group
-
-Now we'll create the group for all EKS administrative accounts. Multiple users that will be managing EKS and Kubernetes can be added to this group.
-
-1. Select _Groups_ from the menu in the left pane of the AWS management console
-
-    > https://console.aws.amazon.com/iam/home?region=$AWS_REGION#/groups
-
-2. Click the _Create New Group_ button
-
-3. Enter _eks-admin-group_ in the _Group Name_ field
-
-4. Click the _Next Step_ button
-
-5. Enter _eks-admin-policy_ in the _Search_ field
-
-6. Check the box for the _eks-admin-policy_ row
-
-7. Click the _Next Step_ button
-
-8. Click the _Create Group_ button
-
-
-###### Add an IAM user to a group
-
-Now you'll put your AWS user into the group used to create and manage EKS and the Kubernetes cluster.
-
-1. Select _Users_ from the menu in the left pane of the AWS management console and search for _${POD_NAME}_ or use the following link.
-
-    > https://console.aws.amazon.com/iam/home?region=$AWS_REGION#/users/${POD_NAME}
-
-2. Select the _Groups_ tab
-
-3. Click _Add user to groups_
-
-4. Enter _eks-admin-group_ in the _Search_ field
-
-5. Check the box for the _eks-admin-group_ row
-
-6. Click the _Add to Groups_ button
-
-
-###### Enable programmatic access
-
-Now you'll enable programmatic access for your user that will be used to create and manage EKS and the Kubernetes cluster.
-
-1. Stay in the same management console view of the _${POD_NAME}_ user or use the following link.
-
-    > https://console.aws.amazon.com/iam/home?region=$AWS_REGION#/users/${POD_NAME}
-
-2. Select the _Security credentials_ tab
-
-3. Click the _Create access key_ button
-
-4. Leave the _Success_ pop-up open so that you can return to copy the _Access key ID_ and _Secret access key_ for the following steps
-
-    > **NOTE**
-    >
-    > This is the only time that the secret access keys can be viewed or downloaded. You cannot recover them later. However, you can create new access keys at any time.
-
-
-###### Create AWS CLI profile
-
-In order to use this user for managing the EKS Kubernetes cluster, you need to create a profile for AWS CLI, eksctl and kubectl to leverage.
-
-1. Return to the Cloud9 environment and on the menu bar choose _AWS Cloud9_ symbol, _Preferences_.
-
-2. In the _Preferences_ tab, in the navigation pane, choose _AWS Settings_, _Credentials_.
-
-3. Turn off _AWS managed temporary credentials_.
-
-    > **NOTE**
-    >
-    > If you turn off AWS managed temporary credentials, by default the environment cannot access any AWS services, regardless of the AWS entity who makes the request.
-
-4. Configure an AWS CLI profile
-
-    ###### Command
-
-    ```
-    aws configure
-    ```
-
-    ###### Output
-
-    ```
-    AWS Access Key ID [None]:
-    ```
-
-5. When prompted for the _AWS Access key ID_, return to the IAM console you just left open
-
-6. Copy the  _Access key ID_ value and paste it into the Cloud9 terminal prompt and press _Enter_
-
-7. When prompted for the _AWS Secret Access Key_, return to the IAM console again
-
-8. Click _Show_ in the _Secret access key_ field and copy the value; Paste that value into the Cloud9 terminal prompt and press _Enter_
-
-9. For the remaining two prompts provide the values as seen below.
-
-    ```
-    ...
-    Default region name [None]: ${AWS_REGION}
-    Default output format [None]: json
-    ...
-    ```
-
-10. Verify that the profile is configured correctly by ensuring that the _Arn_ key's value ends with _user/${POD_NAME}_.
+1. Verify that the profile is configured correctly by ensuring that the _Arn_ key's value ends with _user/${POD_NAME}_.
 
     ###### Command
 
