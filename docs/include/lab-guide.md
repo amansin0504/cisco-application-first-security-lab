@@ -139,7 +139,6 @@ The lab is intended to be driven from the Cloud9 environment that will already s
 
 
 
-
 ##### Explore the lab IDE
 
 Most of the lab will be driven from this AWS Cloud9 environment. Let's get familiar with this interface.
@@ -180,11 +179,9 @@ Most of the lab will be driven from this AWS Cloud9 environment. Let's get famil
 This section will help you do the following:
 
 1. Understand tagging of VPC resources in AWS
-3. Define EKS IAM policies
-4. Create IAM user accounts
-5. Create profiles for AWS CLI
-6. Create an EKS Kubernetes cluster using eksctl
-7. Basics of kubectl
+2. Understand AWS IAM, User policies and AWS CLI profile
+3. Create an EKS Kubernetes cluster using eksctl
+4. Basics of kubectl
 
 #### Overview
 
@@ -271,9 +268,11 @@ AWS allows customers to assign metadata to their AWS resources in the form of ta
 
 It's important to understand how authentication of IAM users to EKS managed Kubernetes differs from self-managed deployments. EKS uses IAM to provide authentication to your Kubernetes cluster (through the _aws eks get-token_ command, available in version 1.16.232 or greater of the AWS CLI, or the AWS IAM Authenticator for Kubernetes), but it still relies on native Kubernetes Role Based Access Control (RBAC) for authorization. This means that IAM is only used for authentication of valid IAM entities. All permissions for interacting with your Amazon EKS cluster’s Kubernetes API is managed through the native Kubernetes RBAC system.
 
-We'll use the IAM console for these steps to get you familiar with how it works. In future steps, we'll use the command line to manage accounts as this is an important step to achieve automation.
+We have already associated the required permissions to your IAM user. Follow the steps below to review the permissions.
 
-1. Verify that the profile is configured correctly by ensuring that the _Arn_ key's value ends with _user/${POD_NAME}_.
+1. Navigate AWS UI to review the policy attached to your IAM user
+
+2. Verify that the AWS CLI profile is configured correctly by ensuring that the _Arn_ key's value ends with _user/${POD_NAME}_.
 
     ###### Command
 
