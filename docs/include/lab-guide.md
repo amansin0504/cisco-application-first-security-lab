@@ -181,8 +181,7 @@ Most of the lab will be driven from this AWS Cloud9 environment. Let's get famil
 
 This section will help you do the following:
 
-1. Prepare a VPC for EKS
-2. Understand tagging resources in AWS
+1. Understand tagging of VPC resources in AWS
 3. Define EKS IAM policies
 4. Create IAM user accounts
 5. Create profiles for AWS CLI
@@ -205,7 +204,6 @@ Self-managing production large-scale Kubernetes is really challenging and many o
 
 #### Steps
 
-* [Prepare for Cloud9 EC2 instance to access other EC2 instances](#prepare-for-cloud9-ec2-instance-to-access-other-ec2-instances)
 * [Enable discovery of VPC resources by Kubernetes](#enable-discovery-of-vpc-resources-by-kubernetes)
 * [Give an IAM user EKS administrative permissions](#give-an-iam-user-eks-administrative-permissions)
   * [Create an IAM policy](#create-an-iam-policy)
@@ -213,94 +211,17 @@ Self-managing production large-scale Kubernetes is really challenging and many o
   * [Add an IAM user to a group](#add-an-iam-user-to-a-group)
   * [Enable programmatic access](#enable-programmatic-access)
   * [Create AWS CLI profile](#create-aws-cli-profile)
-  * [Verify access to EKS](#verify-access-to-eks)
-* [Make Tetration agent available to EKS nodes](#make-tetration-agent-available-to-eks-nodes)
 * [Create an EKS Kubernetes cluster](#create-an-eks-kubernetes-cluster)
 * [Explore Kubernetes using kubectl](#explore-kubernetes-using-kubectl)
-* [Confirm admin access to Kubernetes worker nodes](#confirm-admin-access-to-kubernetes-worker-nodes)
-
-
-
-##### Prepare for Cloud9 EC2 instance to access other EC2 instances
-
-SSH public key authentication offers security and usability benefits - it allows users to implement single sign-on across the SSH servers they connect to. Public key authentication also allows automated, passwordless login that is a key enabler for the countless secure automation processes that execute within enterprise networks globally.
-
-When you launch an EC2 instance, you specify an SSH key pair to encrypt and decrypt login information. You can specify an existing key pair or a new key pair that you create at launch. At boot time, the public key content is placed on the instance in an entry within ~/.ssh/authorized_keys.
-
-These steps will create a public key for your account on the Cloud9 EC2 instance and store them as an EC2 key pair to be installed on Kubernetes worker nodes in a later part of the lab.
-
-1. Check to see if you already have an SSH public key. They private key should be stored in _~/.ssh/id_rsa_ and the public key should be stored in _~/.ssh/id_rsa.pub_.
-
-    ###### Command
-
-    ```
-    ls ~/.ssh/id_rsa*
-    ```
-
-    ###### Output
-
-    ```
-    ls: /home/ec2-user/.ssh/id_rsa*: No such file or directory
-    ```
-
-    If those files are not found, you need to generate an SSH RSA public key without a passphrase. Accept the default location to save the key.
-
-    ###### Command
-
-    ```
-    ssh-keygen -t rsa -N ''
-    ```
-
-    ###### Output
-
-    ```
-    Generating public/private rsa key pair.
-    Enter file in which to save the key (/home/ec2-user/.ssh/id_rsa):
-    Your identification has been saved in /home/ec2-user/.ssh/id_rsa.
-    Your public key has been saved in /home/ec2-user/.ssh/id_rsa.pub.
-    The key fingerprint is:
-    SHA256:5BPN2JkC0mO6z9YrrAK98FWwBe10eHXTx8S+ifBIVyU ec2-user@ip-123-123-123-123
-    The key's randomart image is:
-    +---[RSA 2048]----+
-    |   o0o+ ... . +*+|
-    |    .  + =.+ + .*|
-    |      . B.=.. o o|
-    |       =  +. .  .|
-    |      . S.o.. o .|
-    |       +F oo . o |
-    |      . ++.   o  |
-    |     o ooo   o   |
-    |    ..+o  .      |
-    +----[SHA256]-----+
-    ```
-
-2. Add the public key as an EC2 key pair using the aws command. The key name specified here must remain _cloud9_ as the EKS configuration yaml references this key name.
-
-    ###### Command
-
-    ```
-    aws ec2 import-key-pair --key-name "cisco-app-first-sec-cloud9" --public-key-material file://~/.ssh/id_rsa.pub
-    ```
-
-    ###### Output
-
-    ```
-    {
-       "KeyFingerprint": "d3:03:38:55:ce:ee:70:93:be:9c:fc:de:0b:a8:89:01",
-       "KeyName": "cisco-app-first-sec-cloud9",
-       "KeyPairId": "key-abcde12345"
-    }
-    ```
-
 
 
 ##### Enable discovery of VPC resources by Kubernetes
 
-When you create your Amazon EKS cluster, it has [requirements](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html) for the VPC networking to function properly. For this lab, we've already setup some of the requirements for the public and private subnets, NAT gateway, and route tables. However, EKS requires _tags_ to be applied to the VPC and subnets to enable Kubernetes to discover them, which you'll do below.
+When you create your Amazon EKS cluster, it has [requirements](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html) for the VPC networking to function properly. For this lab, we've already setup the requirements for the public and private subnets, NAT gateway, and route tables. EKS requires _tags_ to be applied to the VPC and subnets to enable Kubernetes to discover them.
 
 AWS allows customers to assign metadata to their AWS resources in the form of tags. Each tag is a simple label consisting of a customer-defined key and an optional value that can make it easier to manage, search for, and filter resources. Although there are no inherent types of tags, they enable customers to categorize resources by purpose, owner, environment, or other criteria.
 
-1. Open the VPC console to set a tag on the _app-first-sec_ VPC.
+1. Open the VPC console to review the tag on the _app-first-sec_ VPC.
 
     > [https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}#vpcs:tag:Name=app-first-sec-vpc;sort=tag:Name](https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}#vpcs:tag:Name=app-first-sec-vpc;sort=tag:Name)
 
@@ -310,9 +231,7 @@ AWS allows customers to assign metadata to their AWS resources in the form of ta
 
 3. Click on the _Add/Edit Tags_ button
 
-4. Click on the _Create Tag_ button
-
-5. Enter the following tag keys and values. _app-first-sec_ is going to be the name of the Kubernetes cluster that you'll setup in later steps. Ignore any tags that are already present.
+4. Review the following tag keys and values. _app-first-sec_ is going to be the name of the Kubernetes cluster that you'll setup in later steps. Ignore any tags that are already present.
 
     | Key                                 | Value  |
     | ----------------------------------- | ------ |
@@ -320,28 +239,22 @@ AWS allows customers to assign metadata to their AWS resources in the form of ta
 
     <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191016223509479.png" alt="image-20191016223509479" style="zoom:50%;" />
 
-6. Click the _Save_ button
-
-7. Open _Subnets_ from the menu in the left pane and select the subnet with the _Name_ set to _Cisco App-First Sec Public Subnet_ or use the provided link.
+5. Open _Subnets_ from the menu in the left pane and select the subnet with the _Name_ set to _Cisco App-First Sec Public Subnet_ or use the provided link.
 
     > [https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}#subnets:tag:Name=app-first-sec-public-subnet;sort=desc:tag:Name](https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}#subnets:tag:Name=app-first-sec-public-subnet;sort=desc:tag:Name)
 
-8. Click on the _Tags_ tab in the lower left pane
+6. Click on the _Tags_ tab in the lower left pane
 
-9. Click on the _Add/Edit Tags_ button
+7. Click on the _Add/Edit Tags_ button
 
-10. Click on the _Create Tag_ button
-
-11. Add the the following tag keys and values. Ignore any tags that are already present. Setting the _kubernetes.io/role/elb_ tag tells Kubernetes that it can use this subnet to create external load balancers, which you will do in a later step.
+8. Review the the following tag keys and values. Ignore any tags that are already present. Setting the _kubernetes.io/role/elb_ tag tells Kubernetes that it can use this subnet to create external load balancers, which you will do in a later step.
 
     | Key                                 | Value  |
     | ----------------------------------- | ------ |
     | kubernetes.io/cluster/app-first-sec | shared |
     | kubernetes.io/role/elb              | 1      |
 
-12. Click the _Save_ button
-
-13. Select the subnet with the _Name_ set to _app-first-sec-private-subnet-1_ or use the provided link.
+9. Select the subnet with the _Name_ set to _app-first-sec-private-subnet-1_ or use the provided link.
 
     > [https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}#subnets:tag:Name=app-first-sec-private-subnet-1;sort=desc:tag:Name](https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}#subnets:tag:Name=app-first-sec-private-subnet-1;sort=desc:tag:Name)
 
@@ -349,21 +262,16 @@ AWS allows customers to assign metadata to their AWS resources in the form of ta
     >
     > There are two private subnets that have been created in this VPC. You only need to tag the subnet named _app-first-sec-private-subnet-1_ because the other subnets have already been tagged for you to expedite the lab.
 
-14. Click on the _Tags_ tab in the lower left pane
+10. Click on the _Tags_ tab in the lower left pane
 
-15. Click on the _Add/Edit Tags_ button
+11. Click on the _Add/Edit Tags_ button
 
-16. Click on the _Create Tag_ button
-
-17. Add the the following tag keys and values. Ignore any tags that are already present. Setting the _kubernetes.io/role/internal-elb_ tag tells Kubernetes that it can use this subnet to create internal load balancers.
+12. Review the the following tag keys and values. Ignore any tags that are already present. Setting the _kubernetes.io/role/internal-elb_ tag tells Kubernetes that it can use this subnet to create internal load balancers.
 
     | Key                                 | Value  |
     | ----------------------------------- | ------ |
     | kubernetes.io/cluster/app-first-sec | shared |
     | kubernetes.io/role/internal-elb     | 1      |
-
-18. Click the _Save_ button
-
 
 
 ##### Give an IAM user EKS administrative permissions
@@ -560,112 +468,15 @@ In order to manage the EKS Kubernetes cluster, you need to validate that the AWS
     ```
 
 
-##### Make Tetration agent available to EKS nodes
-
-The Tetration software agent is a piece of software running within a host operation system (such as Linux or Windows). Its core functionality is to monitor and collect network flow information. It also collects other host information such as network interfaces and active processes running in the system. The information collected by the agent is exported to a set of collectors running within Tetration cluster for further analytical processing. In addition, software agents also have capability to set firewall rules on the installed hosts.
-
-Even though you haven't made it to the section where you'll implement Tetration within your environment, you need to do some preparation now to ensure that when EC2 instances are brought up to act as Kubernetes nodes, the Tetration software agent is automatically installed. This requires that the Tetration agent installer be located somewhere the EC2 instance can download it before you create your cluster.
-
-###### Set Tetration Credentials
-
-Since this is the first time you'll be accessing Tetration, you'll need to set your credentials. We're using your own email _${DEVNET_EMAIL_ADDRESS}_ to give access to Tetration, but you'll need set the password for this account.
-
-1. Visit the Tetration management interface to set a password for your newly created Tetration account
-
-    > [https://tet-pov-rtp1.cpoc.co/h4_users/password/new](https://tet-pov-rtp1.cpoc.co/h4_users/password/new)
-
-2. Enter _${DEVNET_EMAIL_ADDRESS}_, which is the email address associated with your DevNet account when you reserved the sandbox for this lab. Click the _Send password reset link_ button.
-
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200715054416.png" alt="image-20200715054416" style="zoom:50%;" />
-
-4. Check your for the password reset email and follow the steps in the email to set a new password for your account
-
-    > **NOTE**
-    >
-    > It's recommended to use the password _${POD_PASSWORD}_ to simplify access for yourself across all interfaces in the lab.
-
-5. Confirm you can log into the Tetration management interface using _${DEVNET_EMAIL_ADDRESS}_ and the password you just set
-
-    > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co)
-
-
-###### Download Tetration agent installer
-
-The Tetration can be downloaded via the administrative interface, as described below, or via API. In either case, you'll need to specify some host details to ensure you get the correct version of the installer.
-
-1. Visit the Tetration Software Agents Installer administrative page in your browser. Log in with the credentials that you set in the previous step.
-
-    > https://tet-pov-rtp1.cpoc.co/#/software-agents/installer
-
-2. Select _Auto-Install using Installers_ and click the _Next_ button.
-
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200716014019.png" alt="image-20200716014019" style="zoom:50%;" />
-
-3. Select the _Enforcement_ agent type and click the _Next_ button. Enforcement agents will allow Tetration to manage the host firewall to ensure network communications adhere to the defined policy.
-
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200716014147.png" alt="image-20200716014147" style="zoom:50%;" />
-
-4. Ensure the following fields match the platform values and click the _Download Installer_ button. This will download an agent installation script specific to your Tetration tenant. The file name should look like _tetration_installer_${POD_NAME}_enforcer_linux_tet-pov-rtp1.sh_.
-
-    | Field                 | Value                                                        |
-    | --------------------- | ------------------------------------------------------------ |
-    | Which tenant is your agent going to be installed under? | ${POD_NAME} |
-    | Which platform is your agent going to be installed on?  | Linux |
-    | Does your network require HTTP Proxy to reach internet? | No |
-
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200716014426.png" alt="image-20200716014426" style="zoom:50%;" />
-
-    > **NOTE**
-    >
-    > If your web browser throws an error stating that downloading the installer shell script could do harm to your computer, you can safely ignore it and keep the file.
-
-###### Upload Tetration agent to S3 bucket
-
-When you ran the CloudFormation template it created an S3 bucket with a policy that allows EC2 instnaces to access objects in the bucket. You'll put the Tetration agent in that bucket so when Kubernetes nodes come online, they can download it one first boot.
-
-1. Access the S3 management console where you'll upload the Tetration agent installer.
-
-    > https://s3.console.aws.amazon.com/s3/buckets/${AWS_TET_AGENT_BUCKET}/?region=${AWS_REGION}
-
-2. Click the _Upload_ button.
-
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200717103827.png" alt="image-20200717103827" style="zoom:50%;" />
-
-3. Click the _Add files_ button. Select the Tetration agent installer you downloaded in a previous step. It will be named similar to _tetration_installer_${POD_NAME}_enforcer_linux_tet-pov-rtp1.sh_.
-
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200717104019.png" alt="image-20200717104019" style="zoom:50%;" />
-
-3. Click the _Upload_ button.
-
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200717104557.png" alt="image-20200717104557" style="zoom:50%;" />
-
-    > **NOTE**
-    >
-    > By selecting _Upload_ it will use the default settings for the file. The most important of those settings are the _Permissions_ settings. AWS sets the default permissions so that a file is not publicly accessible. This is extremely important to monitor with cloud-hosted files as a large number of well-publicized breaches were the result of incorrect bucket or object permissions.
-    >
-    > The bucklet policy that was applied in the CloudFormation template you used at the start of this lab set access controls for all objects in this bucket to permit requests from your VPC's NAT gateway to download the objects.
-
-4. Select the row with the newly uploaded file and you'll be presented with details of the file including the _Object URL_, which is how the EKS nodes will access the installer script. If you renamed the Tetration agent installer file, you'll need this value in a future step.
-
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200719082804.png" alt="image-20200719082804" style="zoom:50%;" />
-
-
 ##### Create an EKS Kubernetes cluster
 
 There are three ways to create an EKS-managed Kubernetes cluster: eksctl CLI, management console and AWS CLI. The recommended method is eksctl as it provides the most streamlined method to manage EKS clusters and implement automation. It is written in Go, uses CloudFormation, was created by Weaveworks and is open source.
 
 1. Return to the Cloud9 environment.
 
-2. Review the content of the EKS cluster yaml _${DOLLAR_SIGN}LAB/aws/eks-cluster.yaml_ by double-clicking on it in the file tree to understand some of the parameters that eksctl will use to setup the cluster. Especially review the _preBootstrapCommands_, which installs packages and the Tetration agent when the Kubernetes worker node boots up the first time.
+2. Review the content of the EKS cluster yaml _${DOLLAR_SIGN}LAB/aws/eks-cluster.yaml_ by double-clicking on it in the file tree to understand some of the parameters that eksctl will use to setup the cluster.
 
-    ```
-    preBootstrapCommands:
-    - "apt -y update"
-    - "apt -y install lsof unzip dmidecode ipset rpm"
-    - "curl -sSL https://${AWS_TET_AGENT_BUCKET}.s3.${AWS_REGION}.amazonaws.com/tetration_installer_${POD_NAME}_enforcer_linux_tet-pov-rtp1.sh | bash"
-    ```
-
-    You'll also see the _ssh_ portion references the EC2 _key pair_ name used in a previous step that contains the SSH public key for your Cloud9 EC2 instance.
+    You'll also see the _ssh_ portion references the EC2 _key pair_ name used in a previous step that contains the SSH public key for EC2 instances.
 
     ```
     ssh:
@@ -676,12 +487,6 @@ There are three ways to create an EKS-managed Kubernetes cluster: eksctl CLI, ma
     >  **TIP**
     >
     > It's also worth noting that the EC2 instance type specified as _t2.medium_. Compute types smaller than that will quickly pose problems for even for non-production deployments of Kubernetes and small applications.
-
-3. If you didn't rename the Tetration agent installer file after downloading it, then you can skip this step. If you did rename it, you'll want to edit the following line to reflect the _Object URL_ you viewed in the S3 management console in an earlier step. Make sure to save the file once you've made your changes.
-
-    ```
-    - "curl -sSL https://${AWS_TET_AGENT_BUCKET}.s3.${AWS_REGION}.amazonaws.com/tetration_installer_${POD_NAME}_enforcer_linux_tet-pov-rtp1.sh | bash"
-    ```
 
 4. Start the process of creating the EKS Kubernertes cluster from the Cloud9 bottom right pane within a terminal. It's important to create the cluster using an AWS profile that has restricted permissions within your AWS org, which in this case is done setting a temporary env variable that was setup in previous steps at the beginning of the command.
 
@@ -730,18 +535,7 @@ There are three ways to create an EKS-managed Kubernetes cluster: eksctl CLI, ma
     ```
 
     > **NOTE**
-    >
-    > Given how long this process takes, it's recommended to move forward to instrumenting the AWS organization with Stealthwatch Cloud and Tetration before we proceed to exploring the Kubernetes cluster or deploying the demo application.
-    >
-    > If you prefer to wait the approxiamtely 15 minutes for eksctl to complete, proceed to the next section below once the cluster is ready based on the output of _eksctl_.
-
-    Either go to the [Implement Tetration](#implement-tetration) or [Implement Stealthwatch Cloud](#implement-stealthwatch-cloud) section of the lab guide.
-
-    > **WARNING**
-    >
-    > If you proceed to the next steps before _eksctl_ has completed, you will receive errors and have difficulty completing the lab successfully.
-
-
+    > Wait the approximately 15 minutes for eksctl to complete, proceed to the next section below once the cluster is ready based on the output of _eksctl_.
 
 ##### Explore Kubernetes using kubectl
 
@@ -842,33 +636,6 @@ Once you have created a cluster using _eksctl_, you will find that cluster crede
 > **TIP**
 >
 > Typing _kubectl_ over and over can get very tiring. An alias has been created in your _~/.bashrc_ so using just _k_ is aliased to _kubectl_. Try it out with _k get nodes_.
-
-
-
-##### Confirm admin access to Kubernetes worker nodes
-
-During the creation of the cluster, eksctl set the key pair for the nodegroup to your Cloud9 instance SSH public key. This will allow for passwordless access from the Cloud9 instance to the worker nodes.
-
-1. Confirm SSH access from the Cloud9 instance to at least one of the worker nodes. Use the _kubectl get nodes -o wide_ command to retrieve an IP address of a worker node to use for the command below. When you're asked if you want to continue connecting answer _yes_.
-
-    ###### Command
-
-    ```
-    ssh ubuntu@10.50.110.147
-    ```
-
-    ###### Output
-
-    ```
-    The authenticity of host '10.50.110.147 (10.50.110.147)' can't be established.
-    ECDSA key fingerprint is SHA256:dkKX/COoWxEY4c6geRr+aeh1mp+eQrvBjhgH4P9GCoU.
-    Are you sure you want to continue connecting (yes/no)? yes
-    Warning: Permanently added '10.50.110.147' (ECDSA) to the list of known hosts.
-    Welcome to Ubuntu 18.04.3 LTS (GNU/Linux 4.15.0-1045-aws x86_64)
-
-    ubuntu@ip-10-50-110-147:~$
-    ```
-
 
 
 ### Deploy applications on Kubernetes
@@ -978,26 +745,7 @@ Deployments define how a replicaset of pods are to be deployed. Services define 
     ...
     ```
 
-2. View the replicasets for each deployment.
-
-    ###### Command
-
-    ```
-    kubectl get replicasets
-    ```
-
-    ###### Output
-
-    ```
-    NAME                      DESIRED   CURRENT   READY   AGE
-    carts-6bfcf84f4           1         1         1       3d2h
-    carts-db-6bfc588c5f       1         1         1       3d2h
-    ...
-    ```
-
-    The first part of the replicaset name is the name of the deployment that spawned the replicaset. The second part of the replicaset name is a random string that is unique to that deployment's replicasets.
-
-3. View the pods that the replicaset scheduled.
+3. View the scheduled pods.
 
     ###### Command
 
@@ -1013,8 +761,6 @@ Deployments define how a replicaset of pods are to be deployed. Services define 
     carts-db-6bfc588c5f-gzgw6       1/1     Running   0          3d
     ...
     ```
-
-    The pod name consists of the replicaset name plus a unique random string.
 
     > **TIP**
     >
@@ -1126,10 +872,6 @@ Deployments define how a replicaset of pods are to be deployed. Services define 
     NAME        TYPE           CLUSTER-IP       EXTERNAL-IP
     front-end   LoadBalancer   172.20.229.246   acdeb.${AWS_REGION}.elb.amazonaws.com
     ```
-
-4. Use the AWS management console to review the EC2 Load Balancer configuration.
-
-    > [https://console.aws.amazon.com/ec2/home?region=${AWS_REGION}#LoadBalancers:sort=loadBalancerName](https://console.aws.amazon.com/ec2/home?region=${AWS_REGION}#LoadBalancers:sort=loadBalancerName)
 
 5. You've just launched your very own Sock Shop. Visit the DNS A record in the _EXTERNAL-IP_ field from kubectl or the _DNS name_ field from the AWS management console in a web browser. Congrats on starting your new business!
 
@@ -1529,6 +1271,27 @@ Tetration provides these core benefits:
 >
 > Firefox is not a supported browser for the Tetration management interface.
 
+###### Set Tetration Credentials
+
+Since this is the first time you'll be accessing Tetration, you'll need to set your credentials. We're using your own email _${DEVNET_EMAIL_ADDRESS}_ to give access to Tetration, but you'll need set the password for this account.
+
+1. Visit the Tetration management interface to set a password for your newly created Tetration account
+
+    > [https://tet-pov-rtp1.cpoc.co/h4_users/password/new](https://tet-pov-rtp1.cpoc.co/h4_users/password/new)
+
+2. Enter _${DEVNET_EMAIL_ADDRESS}_, which is the email address associated with your DevNet account when you reserved the sandbox for this lab. Click the _Send password reset link_ button.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200715054416.png" alt="image-20200715054416" style="zoom:50%;" />
+
+4. Check your for the password reset email and follow the steps in the email to set a new password for your account
+
+    > **NOTE**
+    >
+    > It's recommended to use the password _${POD_PASSWORD}_ to simplify access for yourself across all interfaces in the lab.
+
+5. Confirm you can log into the Tetration management interface using _${DEVNET_EMAIL_ADDRESS}_ and the password you just set
+
+    > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co)
 
 ##### Tetration integration with AWS
 
