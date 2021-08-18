@@ -1,0 +1,684 @@
+Description:  This template deploys a peered Hub and Spoke VPC, with public and private subnets spread across Availability Zones.
+  Hub VPC contains a Cloud9 Instance, Gitlab CE on EC2 instance. VPC flow logs are also enabled and stored in an S3 bucket.
+  The template also creates an ECR repository.
+
+Mappings:
+  RegionMap:
+    us-east-1:
+      "HVM": "ami-03d5c68bab01f3496"
+    us-west-1:
+      "HVM": "ami-03d5c68bab01f3496"
+    us-east-2:
+      "HVM": "ami-03d5c68bab01f3496"
+    us-west-2:
+      "HVM": "ami-03d5c68bab01f3496"
+
+Parameters:
+  PodName:
+    Description: "Name of Pod. *Must* use value provided in DevNet Sandbox email."
+    Type: String
+    Default: safe
+  PodPassword:
+    Description: "Password for Pod. User defined or use value provided in DevNet Sandbox email."
+    Type: String
+    Default: safe
+  DuoSecret:
+    Description: "Secret used to configure Duo. *Must* use value provided in DevNet Sandbox email."
+    Type: String
+    Default: safe
+  SwcSecret:
+    Description: "Secret used for Stealthwatch Cloud Kubernetes agents. *Must* use value provided in DevNet Sandbox email."
+    Type: String
+    Default: safe
+  DevNetEmail:
+    Description: "Email used with your DevNet account. *Must* use value provided in DevNet Sandbox email."
+    Type: String
+    Default: safe
+
+  EnvironmentName:
+    Description: An environment name that is prefixed to resource names
+    Type: String
+    Default: Safe-CloudNative
+  AwsRegion:
+    Description: aws region
+    Type: String
+    Default: us-west-2
+  keyPairName:
+    Description: Key pair name (Create a new key pair prior to deploying this template)
+    Type: String
+    Default: oregon
+
+  HubVpcCIDR:
+    Description: Please enter the IP range (CIDR notation) for hub VPC
+    Type: String
+    Default: 10.10.0.0/16
+  HubPublicSubnetCIDR:
+    Description: Please enter the public subnet in the first Availability Zone in hub VPC
+    Type: String
+    Default: 10.10.10.0/24
+  HubPrivateSubnetCIDR:
+    Description: Please enter the private subnet in the first Availability Zone in hub VPC
+    Type: String
+    Default: 10.10.20.0/24
+
+  SpokeVpcCIDR:
+    Description: Please enter the IP range (CIDR notation) for spoke VPC
+    Type: String
+    Default: 10.20.0.0/16
+  SpokePublicSubnet1CIDR:
+    Description: Please enter the public subnet in the first Availability Zone in Spoke VPC
+    Type: String
+    Default: 10.20.10.0/24
+  SpokePublicSubnet2CIDR:
+    Description: Please enter the public subnet in the second Availability Zone in Spoke VPC
+    Type: String
+    Default: 10.20.11.0/24
+  SpokePublicSubnet3CIDR:
+    Description: Please enter the public subnet in the third Availability Zone in Spoke VPC
+    Type: String
+    Default: 10.20.12.0/24
+  SpokePrivateSubnet1CIDR:
+    Description: Please enter the private subnet in the first Availability Zone in Spoke VPC
+    Type: String
+    Default: 10.20.20.0/24
+  SpokePrivateSubnet2CIDR:
+    Description: Please enter the private subnet in the second Availability Zone in Spoke VPC
+    Type: String
+    Default: 10.20.21.0/24
+  SpokePrivateSubnet3CIDR:
+    Description: Please enter the the private subnet in the third Availability Zone in Spoke VPC
+    Type: String
+    Default: 10.20.22.0/24
+
+Resources:
+#################################################
+# Hub VPC Resources
+#################################################
+  HubVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref HubVpcCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Join [ "-", [ !Ref EnvironmentName, Hub-VPC] ]
+
+  HubInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Ref EnvironmentName
+  HubInternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref HubInternetGateway
+      VpcId: !Ref HubVPC
+
+  HubPublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref HubVPC
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: !Ref HubPublicSubnetCIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Hub Public Subnet
+  HubPrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref HubVPC
+      AvailabilityZone: !Select [ 0, !GetAZs  '' ]
+      CidrBlock: !Ref HubPrivateSubnetCIDR
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Hub Private Subnet
+
+  HubNatGatewayEIP:
+    Type: AWS::EC2::EIP
+    DependsOn: HubInternetGatewayAttachment
+    Properties:
+      Domain: vpc
+  HubNatGateway:
+    Type: AWS::EC2::NatGateway
+    DependsOn: HubInternetGatewayAttachment
+    Properties:
+      AllocationId: !GetAtt HubNatGatewayEIP.AllocationId
+      SubnetId: !Ref HubPublicSubnet
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Hub NAT Gateway
+
+  HubPublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref HubVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Hub Public Routes
+  HubDefaultPublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: HubInternetGatewayAttachment
+    Properties:
+      RouteTableId: !Ref HubPublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref HubInternetGateway
+  HubPublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref HubPublicRouteTable
+      SubnetId: !Ref HubPublicSubnet
+
+  HubPrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref HubVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Hub Private Routes
+  HubDefaultPrivateRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref HubPrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref HubNatGateway
+  HubPrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref HubPrivateRouteTable
+      SubnetId: !Ref HubPrivateSubnet
+
+  ciscoAppFirstSecUser:
+    Type: AWS::IAM::User
+      Properties:
+        LoginProfile:
+          Password: !Ref: PodPassword
+          PasswordResetRequired: false
+          ManagedPolicyArns: [ "arn:aws:iam::aws:policy/AdministratorAccess" ]
+          UserName: !Ref: PodName
+  HubSafeCloud9IDE:
+    Type: AWS::Cloud9::EnvironmentEC2
+    Properties:
+      AutomaticStopTimeMinutes: 30
+      InstanceType: t2.micro
+      Name: safe-cloud9-ide
+      OwnerArn: !GetAtt ciscoAppFirstSecUser.Arn
+      SubnetId: !Ref HubPublicSubnet
+
+  HubciscoAppFirstSecFlowLogBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+  HubciscoAppFirstSecVpcFlowLog:
+    Type: AWS::EC2::FlowLog
+    DependsOn: [HubVPC]
+    Properties:
+      LogDestinationType: s3
+      LogDestination: !GetAtt HubciscoAppFirstSecFlowLogBucket.Arn
+      ResourceId: !Ref HubVPC
+      ResourceType: VPC
+      TrafficType: ALL
+
+#################################################
+# Spoke VPC Resources
+#################################################
+  SpokeVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref SpokeVpcCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Join [ "-", [ !Ref EnvironmentName, Spoke-VPC] ]
+
+  SpokeInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Ref EnvironmentName
+  SpokeInternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref SpokeInternetGateway
+      VpcId: !Ref SpokeVPC
+
+  SpokePublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref SpokeVPC
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: !Ref SpokePublicSubnet1CIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Spoke Public Subnet AZ1
+        - Key: kubernetes.io/cluster/app-first-sec
+          Value: shared
+        - Key: kubernetes.io/role/elb
+          Value: 1
+  SpokePublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref SpokeVPC
+      AvailabilityZone: !Select [ 1, !GetAZs  '' ]
+      CidrBlock: !Ref SpokePublicSubnet2CIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Spoke Public Subnet AZ2
+        - Key: kubernetes.io/cluster/app-first-sec
+          Value: shared
+        - Key: kubernetes.io/role/elb
+          Value: 1
+  SpokePublicSubnet3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref SpokeVPC
+      AvailabilityZone: !Select [ 2, !GetAZs  '' ]
+      CidrBlock: !Ref SpokePublicSubnet3CIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Spoke Public Subnet AZ3
+        - Key: kubernetes.io/cluster/app-first-sec
+          Value: shared
+        - Key: kubernetes.io/role/elb
+          Value: 1
+  SpokePrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref SpokeVPC
+      AvailabilityZone: !Select [ 0, !GetAZs  '' ]
+      CidrBlock: !Ref SpokePrivateSubnet1CIDR
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Spoke Private Subnet AZ1
+        - Key: kubernetes.io/cluster/app-first-sec
+          Value: shared
+        - Key: kubernetes.io/role/internal-elb
+          Value: 1
+  SpokePrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref SpokeVPC
+      AvailabilityZone: !Select [ 1, !GetAZs  '' ]
+      CidrBlock: !Ref SpokePrivateSubnet2CIDR
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Spoke Private Subnet AZ2
+        - Key: kubernetes.io/cluster/app-first-sec
+          Value: shared
+        - Key: kubernetes.io/role/internal-elb
+          Value: 1
+  SpokePrivateSubnet3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref SpokeVPC
+      AvailabilityZone: !Select [ 2, !GetAZs  '' ]
+      CidrBlock: !Ref SpokePrivateSubnet3CIDR
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Spoke Private Subnet AZ3
+        - Key: kubernetes.io/cluster/production-eks
+          Value: shared
+        - Key: kubernetes.io/role/internal-elb
+          Value: 1
+
+  SpokeNatGateway1EIP:
+    Type: AWS::EC2::EIP
+    DependsOn: SpokeInternetGatewayAttachment
+    Properties:
+      Domain: vpc
+  SpokeNatGateway2EIP:
+    Type: AWS::EC2::EIP
+    DependsOn: SpokeInternetGatewayAttachment
+    Properties:
+      Domain: vpc
+  SpokeNatGateway3EIP:
+    Type: AWS::EC2::EIP
+    DependsOn: SpokeInternetGatewayAttachment
+    Properties:
+      Domain: vpc
+  SpokeNatGateway1:
+    Type: AWS::EC2::NatGateway
+    DependsOn: SpokeInternetGatewayAttachment
+    Properties:
+      AllocationId: !GetAtt SpokeNatGateway1EIP.AllocationId
+      SubnetId: !Ref SpokePublicSubnet1
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Spoke NAT Gateway (AZ1)
+  SpokeNatGateway2:
+    Type: AWS::EC2::NatGateway
+    DependsOn: SpokeInternetGatewayAttachment
+    Properties:
+      AllocationId: !GetAtt SpokeNatGateway2EIP.AllocationId
+      SubnetId: !Ref SpokePublicSubnet2
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Spoke NAT Gateway (AZ2)
+  SpokeNatGateway3:
+    Type: AWS::EC2::NatGateway
+    DependsOn: SpokeInternetGatewayAttachment
+    Properties:
+      AllocationId: !GetAtt SpokeNatGateway3EIP.AllocationId
+      SubnetId: !Ref SpokePublicSubnet3
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Spoke NAT Gateway (AZ3)
+
+  SpokePublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref SpokeVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Spoke Public Routes
+  SpokeDefaultPublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: SpokeInternetGatewayAttachment
+    Properties:
+      RouteTableId: !Ref SpokePublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref SpokeInternetGateway
+  SpokePublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref SpokePublicRouteTable
+      SubnetId: !Ref SpokePublicSubnet1
+  SpokePublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref SpokePublicRouteTable
+      SubnetId: !Ref SpokePublicSubnet2
+  SpokePublicSubnet3RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref SpokePublicRouteTable
+      SubnetId: !Ref SpokePublicSubnet3
+
+  SpokePrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref SpokeVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Spoke Private Routes (AZ1)
+  SpokeDefaultPrivateRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref SpokePrivateRouteTable1
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref SpokeNatGateway1
+  SpokePrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref SpokePrivateRouteTable1
+      SubnetId: !Ref SpokePrivateSubnet1
+
+  SpokePrivateRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref SpokeVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Spoke Private Routes (AZ2)
+  SpokeDefaultPrivateRoute2:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref SpokePrivateRouteTable2
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref SpokeNatGateway2
+  SpokePrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref SpokePrivateRouteTable2
+      SubnetId: !Ref SpokePrivateSubnet2
+
+  SpokePrivateRouteTable3:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref SpokeVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Spoke Private Routes (AZ3)
+  SpokeDefaultPrivateRoute3:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref SpokePrivateRouteTable3
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref SpokeNatGateway3
+  SpokePrivateSubnet3RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref SpokePrivateRouteTable3
+      SubnetId: !Ref SpokePrivateSubnet3
+
+#################################################
+# Gitlab Instance
+#################################################
+  BastionSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    DependsOn: [HubVPC]
+    Properties:
+        GroupDescription: Allow access to Gitlab host
+        GroupName: GitlabhostSG
+        VpcId: !Ref HubVPC
+        SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+  GitLabInstance:
+    Type: AWS::EC2::Instance
+    DependsOn: [BastionSecurityGroup]
+    Properties:
+      InstanceType: t2.medium
+      ImageId:
+        Fn::FindInMap:
+          - "RegionMap"
+          - Ref: "AWS::Region"
+          - "HVM"
+      KeyName: !Ref keyPairName
+      Tags:
+        - Key: Name
+          Value: GitlabHost
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: 100
+            VolumeType: gp2
+            DeleteOnTermination: false
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          #Install Docker CE
+          sudo apt-get -y update
+          sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+          echo \
+          "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+          $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+          sudo apt-get -y update
+          sudo apt-get -y install docker-ce docker-ce-cli containerd.io
+          #Install Gitlab CE
+          sudo apt-get install -y curl openssh-server ca-certificates tzdata perl
+          sudo curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | sudo bash
+          sudo apt-get install -y gitlab-ce
+          #Install Gitlab Runner
+          curl -LJO "https://gitlab-runner-downloads.s3.amazonaws.com/latest/deb/gitlab-runner_amd64.deb"
+          sudo dpkg -i gitlab-runner_amd64.deb
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet: [!Ref BastionSecurityGroup]
+          SubnetId: !Ref HubPublicSubnet
+
+#################################################
+# Elastic Container Registry
+#################################################
+  ciscoAppFirstSecEcr:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: sock-shop/front-end
+
+#################################################
+# Peering Hub and Spoke VPC
+#################################################
+  peeringHubSpokeVPC:
+      Type: AWS::EC2::VPCPeeringConnection
+      DependsOn: [HubVPC, SpokeVPC]
+      Properties:
+        VpcId: !Ref HubVPC
+        PeerVpcId: !Ref SpokeVPC
+
+  peerRoute1HubVPC:
+    Type: AWS::EC2::Route
+    DependsOn: [peeringHubSpokeVPC]
+    Properties:
+      RouteTableId: !Ref HubPrivateRouteTable
+      DestinationCidrBlock: 10.20.0.0/16
+      VpcPeeringConnectionId: !Ref peeringHubSpokeVPC
+  peerRoute2HubVPC:
+    Type: AWS::EC2::Route
+    DependsOn: [peeringHubSpokeVPC]
+    Properties:
+      RouteTableId: !Ref HubPublicRouteTable
+      DestinationCidrBlock: 10.20.0.0/16
+      VpcPeeringConnectionId: !Ref peeringHubSpokeVPC
+
+  peerRoute1SpokeVPC:
+    Type: AWS::EC2::Route
+    DependsOn: [peeringHubSpokeVPC]
+    Properties:
+      RouteTableId: !Ref SpokePrivateRouteTable1
+      DestinationCidrBlock: 10.10.0.0/16
+      VpcPeeringConnectionId: !Ref peeringHubSpokeVPC
+  peerRoute2SpokeVPC:
+    Type: AWS::EC2::Route
+    DependsOn: [peeringHubSpokeVPC]
+    Properties:
+      RouteTableId: !Ref SpokePrivateRouteTable2
+      DestinationCidrBlock: 10.10.0.0/16
+      VpcPeeringConnectionId: !Ref peeringHubSpokeVPC
+  peerRoute3SpokeVPC:
+    Type: AWS::EC2::Route
+    DependsOn: [peeringHubSpokeVPC]
+    Properties:
+      RouteTableId: !Ref SpokePrivateRouteTable3
+      DestinationCidrBlock: 10.10.0.0/16
+      VpcPeeringConnectionId: !Ref peeringHubSpokeVPC
+  peerRoute4SpokeVPC:
+    Type: AWS::EC2::Route
+    DependsOn: [peeringHubSpokeVPC]
+    Properties:
+      RouteTableId: !Ref SpokePublicRouteTable
+      DestinationCidrBlock: 10.10.0.0/16
+      VpcPeeringConnectionId: !Ref peeringHubSpokeVPC
+
+Outputs:
+  FlowLogBucket:
+    Description: Cisco App-First Sec S3 Bucket Name for Flow Logs
+    Value: !Ref HubciscoAppFirstSecFlowLogBucket
+  PodName:
+    Description: Cisco App-First Sec name of pod
+    Value: !Ref PodName
+  DevNetEmail:
+    Description: Email Address used with your DevNet account
+    Value: !Ref DevNetEmail
+  PodPassword:
+    Description: Cisco App-First Sec password for pod
+    Value: !Ref PodPassword
+  DuoSecret:
+    Description: Cisco App-First Sec secret to configure Duo
+    Value: !Ref DuoSecret
+  SwcSecret:
+    Description: Cisco App-First Sec SWC secret for Kubernetes agents
+    Value: !Ref SwcSecret
+
+  HubVPC:
+    Description: Hub VPC
+    Value: !Ref HubVPC
+  HubPublicSubnet:
+    Description: Hub - Public subnet
+    Value: !Ref HubPublicSubnet
+  HubPrivateSubnet:
+    Description: Hub - Public subnet
+    Value: !Ref HubPrivateSubnet
+  HubPrivateRouteTable:
+    Description: Private Route Table 1
+    Value: !Ref HubPrivateRouteTable
+  HubPublicRouteTable:
+    Description: Public Route Table
+    Value: !Ref HubPublicRouteTable
+
+  SpokeVPC:
+    Description: A reference to the Spoke VPC
+    Value: !Ref SpokeVPC
+  SpokePublicSubnets:
+    Description: A list of the public subnets
+    Value: !Join [ ",", [ !Ref SpokePublicSubnet1, !Ref SpokePublicSubnet2, !Ref SpokePublicSubnet2 ]]
+  SpokePrivateSubnetSpokes:
+    Description: A list of the private subnets
+    Value: !Join [ ",", [ !Ref SpokePrivateSubnet1, !Ref SpokePrivateSubnet2,  !Ref SpokePrivateSubnet2 ]]
+  SpokePublicSubnetSpoke1:
+    Description: A reference to the public subnet in the 1st Availability Zone
+    Value: !Ref SpokePublicSubnet1
+  SpokePublicSubnetSpoke2:
+    Description: A reference to the public subnet in the 2nd Availability Zone
+    Value: !Ref SpokePublicSubnet2
+  SpokePublicSubnetSpoke3:
+    Description: A reference to the public subnet in the 2nd Availability Zone
+    Value: !Ref SpokePublicSubnet3
+  SpokePrivateSubnetSpoke1:
+    Description: A reference to the private subnet in the 1st Availability Zone
+    Value: !Ref SpokePrivateSubnet1
+  SpokePrivateSubnetSpoke2:
+    Description: A reference to the private subnet in the 2nd Availability Zone
+    Value: !Ref SpokePrivateSubnet2
+  SpokePrivateSubnetSpoke3:
+    Description: A reference to the private subnet in the 2nd Availability Zone
+    Value: !Ref SpokePrivateSubnet3
+  SpokePrivateRouteTable1:
+    Description: Private Route Table 1
+    Value: !Ref SpokePrivateRouteTable1
+  SpokePrivateRouteTable2:
+    Description: Private Route Table 2
+    Value: !Ref SpokePrivateRouteTable2
+  SpokePrivateRouteTable3:
+    Description: Private Route Table 2
+    Value: !Ref SpokePrivateRouteTable3
+  SpokePublicRouteTableSpoke:
+    Description: Public Route Table
+    Value: !Ref SpokePublicRouteTable
+
+  GitLabInstancePublicFQDN:
+    Description: Gitlab Instance FQDN
+    Value: !GetAtt GitLabInstance.PublicDnsName
+  GitLabInstanceInternalIP:
+    Description: Gitlab Instance Internal IP
+    Value: !GetAtt GitLabInstance.PrivateIp
+  GitLabRunnerIP:
+    Description: Gitlab Runner IP
+    Value: !GetAtt GitLabInstance.PrivateIp
