@@ -47,7 +47,11 @@ echo "INFO: Installing prerequisite packages"
 sudo yum -y install epel-release
 sudo yum -y update
 sudo yum -y install gettext httping
-sudo pip install ansible tetpyclient phonenumbers
+
+curl -O https://bootstrap.pypa.io/get-pip.py
+python3 get-pip.py --user > /dev/null
+export PATH=~/.local/bin:$PATH
+pip install ansible tetpyclient phonenumbers
 
 # change dir to where we expect files to live
 cd ~/environment
@@ -65,14 +69,20 @@ BASHRC="$HOME/.bashrc"
 if ! grep -q "source $BASHRC_LAB" $BASHRC; then
     echo "source $BASHRC_LAB" >> $BASHRC
 fi
+export AWS_ENV_NAME=`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Parameters[] | select(.ParameterKey=="EnvironmentName").ParameterValue'` #UPDATE
 echo -n "" > $BASHRC_LAB
 echo "export AWS_CF_STACK_NAME='${AWS_CF_STACK_NAME}'" >> $BASHRC_LAB
-echo "export VPC_PRIV_SUBNET_1_ID=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values=app-first-sec-private-subnet-1' | jq -r '.Subnets[0].SubnetId'`" >> $BASHRC_LAB
-echo "export VPC_PRIV_SUBNET_1_AZ=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values=app-first-sec-private-subnet-1' | jq -r '.Subnets[0].AvailabilityZone'`" >> $BASHRC_LAB
-echo "export VPC_PRIV_SUBNET_2_ID=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values=app-first-sec-private-subnet-2' | jq -r '.Subnets[0].SubnetId'`" >> $BASHRC_LAB
-echo "export VPC_PRIV_SUBNET_2_AZ=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values=app-first-sec-private-subnet-2' | jq -r '.Subnets[0].AvailabilityZone'`" >> $BASHRC_LAB
+echo "export AWS_KEYPAIR_NAME='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Parameters[] | select(.ParameterKey=="keyPairName").ParameterValue'`'" >> $BASHRC_LAB #UPDATE
+echo "export AWS_GITLAB_IP='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="GitLabRunnerIP").OutputValue'`'" >> $BASHRC_LAB #UPDATE
+echo "export AWS_GITLAB_FQDN='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="GitLabInstancePublicFQDN").OutputValue'`'" >> $BASHRC_LAB #UPDATE
+echo "export DOCKER_REGISTRY=`aws ecr describe-repositories --repository-names sock-shop/front-end | jq -r '.repositories[0].repositoryUri'`" >> $BASHRC_LAB #UPDATE
+echo "export VPC_PRIV_SUBNET_1_ID=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values='${AWS_ENV_NAME}' Spoke Private Subnet AZ1' | jq -r '.Subnets[0].SubnetId'`" >> $BASHRC_LAB #UPDATE
+echo "export VPC_PRIV_SUBNET_2_ID=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values='${AWS_ENV_NAME}' Spoke Private Subnet AZ2' | jq -r '.Subnets[0].SubnetId'`" >> $BASHRC_LAB #UPDATE
+echo "export VPC_PRIV_SUBNET_3_ID=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values='${AWS_ENV_NAME}' Spoke Private Subnet AZ3' | jq -r '.Subnets[0].SubnetId'`" >> $BASHRC_LAB #UPDATE
+echo "export VPC_PRIV_SUBNET_1_AZ=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values='${AWS_ENV_NAME}' Spoke Private Subnet AZ1' | jq -r '.Subnets[0].AvailabilityZone'`" >> $BASHRC_LAB #UPDATE
+echo "export VPC_PRIV_SUBNET_2_AZ=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values='${AWS_ENV_NAME}' Spoke Private Subnet AZ2' | jq -r '.Subnets[0].AvailabilityZone'`" >> $BASHRC_LAB #UPDATE
+echo "export VPC_PRIV_SUBNET_3_AZ=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values='${AWS_ENV_NAME}' Spoke Private Subnet AZ3' | jq -r '.Subnets[0].AvailabilityZone'`" >> $BASHRC_LAB #UPDATE
 echo "export AWS_ACCT_ID=`aws sts get-caller-identity | jq -r '.Account'`" >> $BASHRC_LAB
-echo "export AWS_TET_AGENT_BUCKET='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="TetAgentBucket").OutputValue'`'" >> $BASHRC_LAB
 echo "export AWS_FLOW_LOG_BUCKET='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="FlowLogBucket").OutputValue'`'" >> $BASHRC_LAB
 echo "export CLOUD9_IP_ADDRESS='`hostname -i`'" >> $BASHRC_LAB
 echo "export AWS_REGION='`aws configure get region`'" >> $BASHRC_LAB
@@ -93,17 +103,18 @@ source $BASHRC_LAB
 # create swc k8s secret file
 echo -n ${SWC_K8S_SA_SECRET} > ${HOME}/environment/lab/swc/swc-service-key.txt
 
-# update all config files using env vars
+# update all config files using env vars #UPDATE
 find . -type f \( -iname \*.json -o -iname \*.yaml -o -iname \*.md -o -iname config -o -iname \*.txt \) | \
-  xargs -I % sh -c 'envsubst \$DUO_SECRET,\$AWS_FLOW_LOG_BUCKET,\$AWS_CF_STACK_NAME,\$DEVNET_EMAIL_ADDRESS,\$CLOUD9_IP_ADDRESS,\$AWS_TET_AGENT_BUCKET,\$DOLLAR_SIGN,\$POD_NAME,\$POD_PASSWORD,\$VPC_PRIV_SUBNET_1_ID,\$VPC_PRIV_SUBNET_1_AZ,\$VPC_PRIV_SUBNET_2_ID,\$VPC_PRIV_SUBNET_2_AZ,\$AWS_ACCT_ID,\$AWS_REGION,\$SWC_K8S_SA_SECRET <% > %.tmp ; mv %.tmp %'
+  xargs -I % sh -c 'envsubst \$DUO_SECRET,\$AWS_KEYPAIR_NAME,\$AWS_FLOW_LOG_BUCKET,\$AWS_CF_STACK_NAME,\$DEVNET_EMAIL_ADDRESS,\$CLOUD9_IP_ADDRESS,\$AWS_TET_AGENT_BUCKET,\$DOLLAR_SIGN,\$POD_NAME,\$POD_PASSWORD,\$VPC_PRIV_SUBNET_1_ID,\$VPC_PRIV_SUBNET_1_AZ,\$VPC_PRIV_SUBNET_2_ID,\$VPC_PRIV_SUBNET_2_AZ,\$VPC_PRIV_SUBNET_3_ID,\$VPC_PRIV_SUBNET_3_AZ,\$AWS_ACCT_ID,\$AWS_REGION,\$SWC_K8S_SA_SECRET <% > %.tmp ; mv %.tmp %'
 
-# install eksctl
-curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/0.19.0/eksctl_Linux_amd64.tar.gz" | sudo tar xz -C /usr/local/bin
+# install eksctl #UPDATE
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/local/bin
 echo "INFO: Installed eksctl"
 eksctl version
 
-#install kubectl
-curl --silent -o /tmp/kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/kubectl
+#install kubectl #UPDATE
+curl --silent -o /tmp/kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.20.4/2021-04-12/bin/linux/amd64/kubectl
 chmod +x /tmp/kubectl
 sudo mv /tmp/kubectl /usr/local/bin
 echo "INFO: Installed kubectl"
