@@ -3,26 +3,23 @@ kind: ClusterConfig
 metadata:
   name: app-first-sec
   region: ${AWS_REGION}
-  version: "1.15"
+  version: "1.20"
+
+iam:
+  withOIDC: true
 
 nodeGroups:
-  - name: app-first-sec
+  - name: app-first-sec-prod-nodes
     instanceType: t2.medium
-    privateNetworking: true
-    amiFamily: Ubuntu1804
     desiredCapacity: 3
-    preBootstrapCommands:
-    - "apt -y update"
-    - "apt -y install lsof unzip dmidecode ipset rpm"
-    - "curl -sSL https://${AWS_TET_AGENT_BUCKET}.s3.${AWS_REGION}.amazonaws.com/tetration_installer_${POD_NAME}_enforcer_linux_tet-pov-rtp1.sh | bash"
+    privateNetworking: true
     ssh:
-        allow: true
-        publicKeyName: cisco-app-first-sec-cloud9
+      allow: true
+      publicKeyName: ${AWS_KEYPAIR_NAME}
 
 vpc:
   subnets:
     private:
-      ${VPC_PRIV_SUBNET_1_AZ}:
-        id: "${VPC_PRIV_SUBNET_1_ID}"
-      ${VPC_PRIV_SUBNET_2_AZ}:
-        id: "${VPC_PRIV_SUBNET_2_ID}"
+      ${VPC_PRIV_SUBNET_1_AZ}: { id: ${VPC_PRIV_SUBNET_1_ID} }
+      ${VPC_PRIV_SUBNET_2_AZ}: { id: ${VPC_PRIV_SUBNET_2_ID} }
+      ${VPC_PRIV_SUBNET_3_AZ}: { id: ${VPC_PRIV_SUBNET_3_ID} }
