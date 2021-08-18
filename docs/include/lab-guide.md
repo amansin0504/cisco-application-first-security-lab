@@ -66,8 +66,6 @@ This lab uses AWS to host the workloads and applications and takes advantage of 
 * [Wrap-Up](#wrap-up)
 * [Definitions](#definitions)
 
-If you want to skip ahead to where the hands-on lab begins, feel free to jump to [Prepare infrastructure and application](#prepare-infrastructure-and-application). You can always return to the Definitions section if you need more context.
-
 
 ## Prepare infrastructure and application
 
