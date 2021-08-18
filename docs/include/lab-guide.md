@@ -56,7 +56,7 @@ You're about to start on a doozy of lab that covers a lot of ground in a short t
 
 This lab uses AWS to host the workloads and applications and takes advantage of many of their native services. This diagram shows how the different components are logically connected.
 
-<img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/AppFirst-Lab-Diagram.jpg" alt="image-AppFirst_Lab_Diagram" style="zoom:50%;" />
+<img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/AppFirst-Lab-Diagram.png" alt="image-AppFirst_Lab_Diagram" style="zoom:50%;" />
 
 
 ## Lab Content
