@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #create EKS cluster and deploy sockshop
-eksctl create cluster --config-file create-eks-cluster.yaml
-kubectl apply -f sock-shop.yaml
+eksctl create cluster --config-file ../aws/eks-cluster.yaml
+kubectl apply -f ../sock-shop/sock-shop.yaml
 echo " "
 echo "-----------------------------------------------"
 echo "EKS Cluster with Sock Shop Application Created"
