@@ -1,0 +1,83 @@
+#!/bin/bash
+
+#create EKS cluster and deploy sockshop
+eksctl create cluster --config-file create-eks-cluster.yaml
+kubectl apply -f sock-shop.yaml
+echo " "
+echo "-----------------------------------------------"
+echo "EKS Cluster with Sock Shop Application Created"
+echo "-----------------------------------------------"
+
+# Mark your EKS cluster private and Allow SG communitcation from outside
+# read answer
+# if yes move forward else go back
+
+#PROMPT: login to Gitlab UI and Create Personal Access Token for api/git calls
+echo " "
+echo "####################################"
+ssh-keyscan -H $AWS_GITLAB_IP >> ~/.ssh/known_hosts
+echo "=======GitLab Credentials======="
+echo "Username: root"
+echo "$(ssh -i $AWS_KEYPAIR_NAME ubuntu@$AWS_GITLAB_IP 'sudo grep Password: /etc/gitlab/initial_root_password')"
+echo "=======GitLab Credentials======="
+echo "Use the credentials above to login to Gitlab UI at ${AWS_GITLAB_FQDN}"
+echo "Generate a Private Access Token by navigating to Preferences>Access Tokens by adding api and write_repository permissions"
+echo "Enter the Private Access Token:"
+read GITLAB_TOKEN
+#Create the Gitlab project
+curl --header "Private-Token: $GITLAB_TOKEN" -X POST "http://$AWS_GITLAB_FQDN/api/v4/projects?name=Front-End"
+echo " "
+echo "----------------------------------"
+echo "Created Gitlab Project - Front-End"
+echo "----------------------------------"
+
+# PROMPT: login to Gitlab UI and grab registration token
+echo " "
+echo "####################################"
+echo "Go back to Gitlab UI home page and navigate to Front-End>Settings>CI/CD"
+echo "Expand the Runners section and copy the registration token"
+echo "Enter the Gitlab Runner Registration token:"
+read RUNNER_TOKEN
+#Register a Gitlab runner for pipeline
+ssh -i $AWS_KEYPAIR_NAME ubuntu@$AWS_GITLAB_IP << EOF
+sudo gitlab-runner register \
+--non-interactive \
+--url "http://$AWS_GITLAB_FQDN/" \
+--registration-token $RUNNER_TOKEN \
+--executor "docker" \
+--docker-image alpine:latest \
+--description "docker-runner" \
+--docker-privileged \
+--tag-list "docker,aws"
+EOF
+echo " "
+echo "----------------------------------"
+echo "Gitlab Runner for CI/CD pipeline is registered now!"
+echo "----------------------------------"
+
+#Add AWS environment variables for pipeline
+echo " "
+echo "####################################"
+export AWS_ACCESS_KEY=$(grep aws_access_key_id ~/.aws/credentials | awk '{ print $3 }')
+export AWS_SECRET_ACCESS=$(grep aws_secret_access_key ~/.aws/credentials | awk '{ print $3 }')
+curl --request POST  --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "http://$AWS_GITLAB_FQDN/api/v4/projects/2/variables" --form "key=AWS_ACCESS_KEY_ID" --form "value=$AWS_ACCESS_KEY"
+curl --request POST  --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "http://$AWS_GITLAB_FQDN/api/v4/projects/2/variables" --form "key=AWS_SECRET_ACCESS_KEY" --form "value=$AWS_SECRET_ACCESS"
+curl --request POST  --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "http://$AWS_GITLAB_FQDN/api/v4/projects/2/variables" --form "key=AWS_DEFAULT_REGION" --form "value=$AWS_REGION"
+curl --request POST  --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "http://$AWS_GITLAB_FQDN/api/v4/projects/2/variables" --form "key=DOCKER_REGISTRY" --form "value=$DOCKER_REGISTRY"
+echo " "
+echo "------------------------------------------------------"
+echo "Added the AWS environment variables for CI/CD Pipeline"
+echo "------------------------------------------------------"
+
+#Set up the private Git Client Repo
+echo " "
+echo "####################################"
+cd /home/ec2-user/environment
+git clone https://github.com/amansin0504/front-end.git && cd front-end
+git config --global user.name "Administrator" && git config --global user.email "admin@cloudnativeapp.com"
+git remote rm origin && git remote add origin http://Administrator:$GITLAB_TOKEN@$AWS_GITLAB_FQDN/root/front-end.git
+git push -u origin --all
+echo " "
+echo "------------------------------------------------------"
+echo "Front-End Repo is ready on Gitlab instance"
+echo "------------------------------------------------------"
