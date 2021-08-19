@@ -1048,10 +1048,10 @@ In software development lifecycle, an application goes through a series of stage
 
 #### Steps
 
-* [Setup Private Gitlab Repository](#setup-private-gitlab-repository)
-* [Setup CI/CD Pipeline](#setup-cicd-pipeline)
+* [Setup Private GitLab Repository](#setup-private-gitlab-repository)
+* [Setup CI/CD Pipeline](#setup-ci/cd-pipeline)
 
-##### Setup Private Gitlab Repository
+##### Setup Private GitLab Repository
 
 When you create your Amazon EKS cluster, it has [requirements](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html) for the VPC networking to function properly. For this lab, we've already setup the requirements for the public and private subnets, NAT gateway, and route tables. EKS requires _tags_ to be applied to the VPC and subnets to enable Kubernetes to discover them.
 
