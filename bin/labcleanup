@@ -26,8 +26,6 @@ source $HOME/.bashrc_lab
 echo ""
 echo "AWS CloudFormation Stack: ${AWS_CF_STACK_NAME}"
 echo "AWS S3 Bucket for Flow Logs: ${AWS_FLOW_LOG_BUCKET}"
-echo "AWS S3 Bucket for Tetration agent installer: ${AWS_TET_AGENT_BUCKET}"
-echo "AWS EC2 Key Pair: cisco-app-first-sec-cloud9"
 echo ""
 
 read -p "Type 'delete' if you're sure you want to permanently delete these AWS resources: " -r
@@ -37,9 +35,10 @@ then
     exit 0
 fi
 
-aws s3 rb s3://${AWS_TET_AGENT_BUCKET} --force
 aws s3 rb s3://${AWS_FLOW_LOG_BUCKET} --force
-aws ec2 delete-key-pair --key-name cisco-app-first-sec-cloud9
+aws ec2 delete-key-pair --key-name ${AWS_KEYPAIR_NAME}
+kubectl delete ns sock-shop
+eksctl delete cluster --name app-first-sec
 aws cloudformation delete-stack --stack-name ${AWS_CF_STACK_NAME}
 
 echo "Lab cleanup will continue in the background. This Cloud9 environment will stop working very shortly."

@@ -1,12 +1,21 @@
 #!/bin/bash
 
 #create EKS cluster and deploy sockshop
-eksctl create cluster --config-file ../aws/eks-cluster.yaml
+eksctl get clusters app-first-sec &> /dev/null
+if [ $? -eq 0 ]; then
+    echo $(eksctl get clusters app-first-sec)
+    echo " "
+    echo "-----------------------------------------------"
+    echo "EKS Cluster with Sock Shop Application exists"
+    echo "-----------------------------------------------"
+else
+    eksctl create cluster --config-file ../aws/eks-cluster.yaml
+    echo " "
+    echo "-----------------------------------------------"
+    echo "EKS Cluster with Sock Shop Application Created"
+    echo "-----------------------------------------------"
+fi
 kubectl apply -f ../sock-shop/sock-shop.yaml
-echo " "
-echo "-----------------------------------------------"
-echo "EKS Cluster with Sock Shop Application Created"
-echo "-----------------------------------------------"
 
 # Mark your EKS cluster private and Allow SG communitcation from outside
 # read answer
@@ -18,7 +27,7 @@ echo "####################################"
 ssh-keyscan -H $AWS_GITLAB_IP >> ~/.ssh/known_hosts
 echo "=======GitLab Credentials======="
 echo "Username: root"
-echo "$(ssh -i $AWS_KEYPAIR_NAME ubuntu@$AWS_GITLAB_IP 'sudo grep Password: /etc/gitlab/initial_root_password')"
+echo "$(ssh -i ~/.ssh/$AWS_KEYPAIR_NAME ubuntu@$AWS_GITLAB_IP 'sudo grep Password: /etc/gitlab/initial_root_password')"
 echo "=======GitLab Credentials======="
 echo "Use the credentials above to login to Gitlab UI at ${AWS_GITLAB_FQDN}"
 echo "Generate a Private Access Token by navigating to Preferences>Access Tokens by adding api and write_repository permissions"
@@ -39,7 +48,7 @@ echo "Expand the Runners section and copy the registration token"
 echo "Enter the Gitlab Runner Registration token:"
 read RUNNER_TOKEN
 #Register a Gitlab runner for pipeline
-ssh -i $AWS_KEYPAIR_NAME ubuntu@$AWS_GITLAB_IP << EOF
+ssh -i ~/.ssh/$AWS_KEYPAIR_NAME ubuntu@$AWS_GITLAB_IP << EOF
 sudo gitlab-runner register \
 --non-interactive \
 --url "http://$AWS_GITLAB_FQDN/" \
