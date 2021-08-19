@@ -75,7 +75,7 @@ This section of the lab will have you prepare the public cloud infrastructure an
 * [Access the lab environment](#access-the-lab-environment)
 * [Create a Kuberenetes cluster](#create-a-kuberenetes-cluster)
 * [Deploy applications on Kubernetes](#deploy-applications-on-kubernetes)
-* [Set up a local Git environment](#setup-a-local-git-environment)
+* [Setup a local Git environment](#setup-a-local-git-environment)
 
 
 > **NOTE**
@@ -1037,7 +1037,7 @@ It's essential to be able to access these logs and often view the output in real
 > kubectl exec -it my-pod --container main-app -- /bin/bash
 > ```
 
-### Set up a local Git environment
+### Setup a local Git environment
 
 #### Overview
 
