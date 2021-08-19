@@ -1039,9 +1039,38 @@ It's essential to be able to access these logs and often view the output in real
 
 ### CI/CD Pipeline
 
-Login to Gitlab UI
-Create PA token and save it
-Create project
-Register runner
-Create CI/CD variables
-Clone front end and point to gitlab and commit to trigger pipeline
+#### Overview
+
+In software development lifecycle, an application goes through a series of stages to be finally available to an end user to consume. These series of stages, once a developer triggers the commit, would typically include building an image, testing it and eventually merging the code to the main branch. Once the changes are merged, the new version of app is released to the repository. The final stage is when this newly released application is deployed and made available to the end users. This entire process has numerous challenges. Large development teams working together parallelly on the same application components, encounter merge conflicts and dependency issues, slowing down the overall velocity of feature release. To complicate this further, security is just an afterthought and basically bolted on top of the deployed application once it’s in the production environment. This security approach only tried to mitigate the damage that has likely already been done during the application development phase.
+
+<img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/cicd.png" alt="img"  />
+
+
+#### Steps
+
+* [Setup Private Gitlab Repository](#setup-private-gitlab-repository)
+* [Setup CI/CD Pipeline](#setup-cicd-pipeline)
+
+##### Setup Private Gitlab Repository
+
+When you create your Amazon EKS cluster, it has [requirements](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html) for the VPC networking to function properly. For this lab, we've already setup the requirements for the public and private subnets, NAT gateway, and route tables. EKS requires _tags_ to be applied to the VPC and subnets to enable Kubernetes to discover them.
+
+1. Login to the Private GitLab UI and create the front-end project.
+
+2. Navigate to preferences and create a personal access token.
+
+3. Switch back to Cloud9 terminal and set up a local repo pointing to your private GitLab instance.
+
+##### Setup CI/CD Pipeline
+
+Talk about Runners, Repository, Pipeline
+
+1. Login to the Private GitLab UI and Navigate to Front-End > Settings and add the environment variables.
+
+1. Navigate to CICD Runner and copy the registration token.
+
+2. Switch back to Cloud9 terminal and run the command below to register the runner.
+
+4. Make a change in gitlab ReadMe file and commit and push the changes.
+
+5. Verify that the CI/CD pipeline is triggered and runs successfully. Review the logs.
