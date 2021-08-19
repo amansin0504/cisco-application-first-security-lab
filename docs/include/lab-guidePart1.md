@@ -1049,7 +1049,7 @@ In software development lifecycle, an application goes through a series of stage
 #### Steps
 
 * [Setup Private GitLab Repository](#setup-private-gitlab-repository)
-* [Setup CI/CD Pipeline](#setup-ci/cd-pipeline)
+* [Setup CICD Pipeline](#setup-cicd-pipeline)
 
 ##### Setup Private GitLab Repository
 
@@ -1061,7 +1061,7 @@ When you create your Amazon EKS cluster, it has [requirements](https://docs.aws.
 
 3. Switch back to Cloud9 terminal and set up a local repo pointing to your private GitLab instance.
 
-##### Setup CI/CD Pipeline
+##### Setup CICD Pipeline
 
 Talk about Runners, Repository, Pipeline
 
