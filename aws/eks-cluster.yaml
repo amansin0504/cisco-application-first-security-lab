@@ -4,10 +4,7 @@ metadata:
   name: app-first-sec
   region: ${AWS_REGION}
   version: "1.20"
-
-iam:
-  withOIDC: true
-
+  
 nodeGroups:
   - name: app-first-sec-prod-nodes
     instanceType: t2.medium

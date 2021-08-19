@@ -21,7 +21,7 @@ Parameters:
   PodPassword:
     Description: "Password for Pod. User defined or use value provided in DevNet Sandbox email."
     Type: String
-    Default: safe
+    Default: 0e63a6aa91470478e@$
   DuoSecret:
     Description: "Secret used to configure Duo. *Must* use value provided in DevNet Sandbox email."
     Type: String
@@ -193,12 +193,34 @@ Resources:
 
   ciscoAppFirstSecUser:
     Type: AWS::IAM::User
-      Properties:
-        LoginProfile:
-          Password: !Ref: PodPassword
-          PasswordResetRequired: false
-          ManagedPolicyArns: [ "arn:aws:iam::aws:policy/AdministratorAccess" ]
-          UserName: !Ref: PodName
+    Properties:
+      LoginProfile:
+        Password: !Ref PodPassword
+        PasswordResetRequired: false
+      ManagedPolicyArns: ["arn:aws:iam::aws:policy/AdministratorAccess"]
+      UserName: !Ref PodName
+  ciscoAppFirstSecUserGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: AppFirstUserGroup
+  ciscoAppFirstSecUserToGroup:
+    Type: AWS::IAM::UserToGroupAddition
+    DependsOn: [ciscoAppFirstSecUserGroup,ciscoAppFirstSecUser]
+    Properties:
+      GroupName: AppFirstUserGroup
+      Users: [!Ref PodName]
+  ciscoAppFirstSecUserPolicy:
+    Type: AWS::IAM::Policy
+    DependsOn: [ciscoAppFirstSecUserGroup,ciscoAppFirstSecUser]
+    Properties:
+      PolicyDocument:
+        'Fn::Transform':
+          Name: 'AWS::Include'
+          Parameters:
+            Location: s3://devnetlabcvd/policy.json #NEED TO UPDATE THE S3 BUCKET
+      PolicyName: AppFirstUserPolicy
+      Groups: [AppFirstUserGroup]
+
   HubSafeCloud9IDE:
     Type: AWS::Cloud9::EnvironmentEC2
     Properties:
