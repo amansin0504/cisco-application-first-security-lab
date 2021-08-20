@@ -108,7 +108,7 @@ echo -n ${SWC_K8S_SA_SECRET} > ${HOME}/environment/lab/swc/swc-service-key.txt
 
 # update all config files using env vars #UPDATE
 find . -type f \( -iname \*.json -o -iname \*.yaml -o -iname \*.md -o -iname config -o -iname \*.txt \) | \
-  xargs -I % sh -c 'envsubst \$DUO_SECRET,\$AWS_KEYPAIR_NAME,\$AWS_FLOW_LOG_BUCKET,\$AWS_CF_STACK_NAME,\$DEVNET_EMAIL_ADDRESS,\$CLOUD9_IP_ADDRESS,\$AWS_TET_AGENT_BUCKET,\$DOLLAR_SIGN,\$POD_NAME,\$POD_PASSWORD,\$VPC_PRIV_SUBNET_1_ID,\$VPC_PRIV_SUBNET_1_AZ,\$VPC_PRIV_SUBNET_2_ID,\$VPC_PRIV_SUBNET_2_AZ,\$VPC_PRIV_SUBNET_3_ID,\$VPC_PRIV_SUBNET_3_AZ,\$AWS_ACCT_ID,\$AWS_REGION,\$SWC_K8S_SA_SECRET <% > %.tmp ; mv %.tmp %'
+  xargs -I % sh -c 'envsubst \$DUO_SECRET,\$AWS_GITLAB_IP,\$AWS_GITLAB_FQDN,\$AWS_ACCESS_KEY,\$AWS_SECRET_ACCESS,\$DOCKER_REGISTRY,\$AWS_KEYPAIR_NAME,\$AWS_FLOW_LOG_BUCKET,\$AWS_CF_STACK_NAME,\$DEVNET_EMAIL_ADDRESS,\$CLOUD9_IP_ADDRESS,\$AWS_TET_AGENT_BUCKET,\$DOLLAR_SIGN,\$POD_NAME,\$POD_PASSWORD,\$VPC_PRIV_SUBNET_1_ID,\$VPC_PRIV_SUBNET_1_AZ,\$VPC_PRIV_SUBNET_2_ID,\$VPC_PRIV_SUBNET_2_AZ,\$VPC_PRIV_SUBNET_3_ID,\$VPC_PRIV_SUBNET_3_AZ,\$AWS_ACCT_ID,\$AWS_REGION,\$SWC_K8S_SA_SECRET <% > %.tmp ; mv %.tmp %'
 
 # install eksctl #UPDATE
 curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
