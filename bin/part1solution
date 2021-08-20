@@ -9,13 +9,13 @@ if [ $? -eq 0 ]; then
     echo "EKS Cluster with Sock Shop Application exists"
     echo "-----------------------------------------------"
 else
-    eksctl create cluster --config-file ../aws/eks-cluster.yaml
+    eksctl create cluster --config-file /home/ec2-user/environment/lab/aws/eks-cluster.yaml
     echo " "
     echo "-----------------------------------------------"
     echo "EKS Cluster with Sock Shop Application Created"
     echo "-----------------------------------------------"
 fi
-kubectl apply -f ../sock-shop/sock-shop.yaml
+kubectl apply -f /home/ec2-user/environment/lab/sock-shop/sock-shop.yaml
 
 # Mark your EKS cluster private and Allow SG communitcation from outside
 # read answer
@@ -24,7 +24,6 @@ kubectl apply -f ../sock-shop/sock-shop.yaml
 #PROMPT: login to Gitlab UI and Create Personal Access Token for api/git calls
 echo " "
 echo "####################################"
-ssh-keyscan -H $AWS_GITLAB_IP >> ~/.ssh/known_hosts
 echo "=======GitLab Credentials======="
 echo "Username: root"
 echo "$(ssh -i ~/.ssh/$AWS_KEYPAIR_NAME ubuntu@$AWS_GITLAB_IP 'sudo grep Password: /etc/gitlab/initial_root_password')"
