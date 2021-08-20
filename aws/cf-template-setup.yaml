@@ -218,6 +218,8 @@ Resources:
           Name: 'AWS::Include'
           Parameters:
             Location: s3://devnetlabcvd/policy.json #NEED TO UPDATE THE S3 BUCKET
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
       PolicyName: AppFirstUserPolicy
       Groups: [AppFirstUserGroup]
 
