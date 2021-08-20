@@ -209,7 +209,7 @@ AWS allows customers to assign metadata to their AWS resources in the form of ta
 
 4. Now, select any subnet starting with _Name_ as _Cisco-App-First-Sec Spoke Public Subnet_ or use the provided link.
 
-    > [https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}#subnets:search=Cisco-App-First-Sec Spoke Public Subnet](https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}subnets:search=Cisco-App-First-Sec Spoke Public Subnet)
+    > [https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}#subnets:search='Cisco-App-First-Sec Spoke Public Subnet'](https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}subnets:search='Cisco-App-First-Sec Spoke Public Subnet')
 
 5. Click on the _Tags_ tab in the lower left pane
 
@@ -1005,6 +1005,8 @@ It's essential to be able to access these logs and often view the output in real
 
 ### Setup development environment
 
+------
+
 #### Overview
 
 In software development lifecycle, an application goes through a series of stages to be finally available to an end user to consume. These series of stages, once a developer pushes the changes from their local environment to a remote repository, would typically include building an image, testing it and eventually merging the code to the main branch of source code management system. Once the changes are merged, the new version of app is released to the repository. The final stage is when this newly released application is deployed and made available to the end users.
@@ -1013,16 +1015,20 @@ In this section, you will create a project for Front-End microservice of Sock Sh
 
 After the local and remote repositories are set up, you will set up a CI/CD pipeline for your _Sock-Shop-Front-End_ GitLab project and automate the testing, building and deployment of the Front End microservice to EKS cluster.
 
+
 #### Steps
 
 * [Setup GitLab environment](#setup-gitlab-environment)
 * [Setup CICD Pipeline](#setup-cicd-pipeline)
 
+
+
+
 ##### Setup GitLab environment
 
-1. Login to the Private GitLab console and click on _New project_ > _Create blank project_. Enter the project name _Sock-Shop-Front-End_
+1. Login to the Private GitLab console and click on _New project_ > _Create blank project_. Enter the project name _Sock-Shop-Front-End_.
 
-  > [http://${AWS_GITLAB_FQDN}/projects/new#blank_project](http://${AWS_GITLAB_FQDN}/projects/new#blank_project)
+    > [http://${AWS_GITLAB_FQDN}/projects/new#blank_project](http://${AWS_GITLAB_FQDN}/projects/new#blank_project)
 
   Username: root
   Run the command below to retrieve the password
