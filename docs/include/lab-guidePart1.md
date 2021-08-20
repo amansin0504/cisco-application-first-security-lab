@@ -24,19 +24,13 @@ WARNING: This file is intended to be used within Cloud9 in preview mode for the 
 
 You're about to start on a doozy of lab that covers a lot of ground in a short time. Buckle in and get ready to secure a cloud-native application and public cloud infrastructure using Cisco Products: Tetration, Stealthwatch Cloud, and Duo. You'll stage the infrastructure, modify and deploy the application, instrument the security products into the environment. In the process, you'll get your hands dirty with products and technologies including git, Kubernetes, GitHub, Docker, AWS and others.
 
-
-
 <img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/arch2.png" alt="arch2.png" />
-
-
 
 > **TIP**
 >
 > You can expand the lab guide into a dedicated browser tab by clicking on arrow icon in the top right corner of the viewer pane in the Cloud9 IDE.
 >
 > <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191023063905369.png" alt="image-20191023063905369" style="zoom:33%;" />
-
-
 
 ## Overview of Cisco Application-First Security
 
@@ -47,10 +41,7 @@ You're about to start on a doozy of lab that covers a lot of ground in a short t
 * _Adaptive to application dependencies_: Security designed to adapt to your application so it can give you granular control and reduce risk by detecting and preventing threats based on overall understanding of your environment.
 
 
-
 <img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/afs.png" alt="afs.png" />
-
-
 
 ## AWS Public Cloud
 
@@ -59,42 +50,40 @@ This lab uses AWS to host the workloads and applications and takes advantage of 
 <img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/AppFirst-Lab-Diagram.png" alt="image-AppFirst_Lab_Diagram" style="zoom:50%;" />
 
 
-## Lab Content
+## Overall Lab Content
 
-* [Prepare infrastructure and application](#prepare-infrastructure-and-application)
-* [Implement security](#implement-security)
+* [Part1: Prepare infrastructure and application](#prepare-infrastructure-and-application)
+* [Part2: Implement security - Secure Cloud Analytics](#Part2)
+* [Part3: Implement security - Secure Cloud Workload](#Part3)
+* [Part4: Implement security - Secure Cloud Access by Duo](#Part4)
 * [Wrap-Up](#wrap-up)
-* [Definitions](#definitions)
-
 
 ## Prepare infrastructure and application
 
-This section of the lab will have you prepare the public cloud infrastructure and deploy a microservice cloud-native application. Throughout the steps, you'll be laying the groundwork to implement security in a later sections.
+This section of the lab will have you prepare the public cloud infrastructure and deploy a micro-services based cloud-native application. Throughout the steps, you'll be laying the groundwork to implement security in a later sections.
 
 * [Management interfaces](#management-interfaces)
 * [Access the lab environment](#access-the-lab-environment)
-* [Create a Kuberenetes cluster](#create-a-kuberenetes-cluster)
+* [Create a Kubernetes cluster](#create-a-kuberenetes-cluster)
 * [Deploy applications on Kubernetes](#deploy-applications-on-kubernetes)
-* [Setup a local Git environment](#setup-a-local-git-environment)
+* [Setup development environment](#setup-development-environment)
 
 
 > **NOTE**
 >
 > As you work through the lab you will come across sections that have _Commands_ and _Output_. The _Output_ that is shown can be different than what you will see because some values are randomly generated or specific to your lab pod. Use it as a guidepost and not a definitive view of your output. Also, if no _Output_ is shown after a _Command_ then you should not expect any output from the command.
 
-
-
 ### Management interfaces
 
 ------
 
-There are three management interfaces that you will need to access to complete this lab. You'll be provided with links throughout the lab that will direct you to the following interfaces:
+There are five management interfaces that you will need to access to complete this lab. You'll be provided with links throughout the lab that will direct you to the following interfaces:
 
 * [AWS Management Console - https://${AWS_REGION}.console.aws.amazon.com/](https://${AWS_REGION}.console.aws.amazon.com/)
 * [Tetration - https://tet-pov-rtp1.cpoc.co/](https://tet-pov-rtp1.cpoc.co/)
 * [Stealthwatch Cloud - https://cisco-${POD_NAME}.obsrvbl.com](https://cisco-${POD_NAME}.obsrvbl.com)
 * [Duo - https://admin.duosecurity.com/](https://admin.duosecurity.com/)
-
+* [GitLab - http://${AWS_GITLAB_FQDN}/](http://${AWS_GITLAB_FQDN}/)
 
 
 ### Credentials
@@ -119,8 +108,6 @@ This section will help you do the following:
 
 1. Get familiar with Cloud9 IDE
 
-
-
 #### Overview
 
 The lab is intended to be driven from the Cloud9 environment that will already setup for you. Cloud9 is a cloud-based integrated development environment (IDE) that lets you write, run, and debug your code with just a browser. It includes a code editor, debugger, and terminal. It's not necessary for running applications in the public cloud, but it provides a good interface for running labs.
@@ -132,12 +119,9 @@ The lab is intended to be driven from the Cloud9 environment that will already s
 > <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191023063905369.png" alt="image-20191023063905369" style="zoom:33%;" />
 
 
-
 #### Steps
 
 - [Explore the lab IDE](#explore-the-lab-ide)
-
-
 
 ##### Explore the lab IDE
 
@@ -196,67 +180,44 @@ The Kubernetes master node is responsible for the management of Kubernetes clust
 Self-managing production large-scale Kubernetes is really challenging and many organizations are looking to managed Kubernetes from AWS, GCP and Azure to alleviate the that burden. You'll be using AWS EKS for this lab.
 
 
-
 #### Steps
 
-* [Enable discovery of VPC resources by Kubernetes](#enable-discovery-of-vpc-resources-by-kubernetes)
-* [Review IAM user permissions](#give-an-iam-user-eks-administrative-permissions)
+* [Review AWS subnet tags required by EKS](#review-aws-subnet-tags-required-by-eks)
+* [Verify IAM user permissions](#verify-iam-user-permissions)
 * [Create an EKS Kubernetes cluster](#create-an-eks-kubernetes-cluster)
 * [Explore Kubernetes using kubectl](#explore-kubernetes-using-kubectl)
 
 
 ##### Enable discovery of VPC resources by Kubernetes
 
-When you create your Amazon EKS cluster, it has [requirements](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html) for the VPC networking to function properly. For this lab, we've already setup the requirements for the public and private subnets, NAT gateway, and route tables. EKS requires _tags_ to be applied to the VPC and subnets to enable Kubernetes to discover them.
+When you create your Amazon EKS cluster, it has [requirements](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html) for the VPC networking to function properly. For this lab, we've already setup all the requirements for the public and private subnets, NAT gateway, and route tables. EKS requires _tags_ to be applied to the VPC and subnets to enable Kubernetes to discover them.
 
-AWS allows customers to assign metadata to their AWS resources in the form of tags. Each tag is a simple label consisting of a customer-defined key and an optional value that can make it easier to manage, search for, and filter resources. Although there are no inherent types of tags, they enable customers to categorize resources by purpose, owner, environment, or other criteria.
+AWS allows customers to assign metadata to their AWS resources in the form of tags. Each tag is a simple label consisting of a customer-defined key and an optional value that can make it easier to manage, search for, and filter resources.
 
-1. Open the VPC console to review the tag on the _app-first-sec_ VPC.
-
-    > [https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}#vpcs:tag:Name=app-first-sec-vpc;sort=tag:Name](https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}#vpcs:tag:Name=app-first-sec-vpc;sort=tag:Name)
-
-2. Click on the _Tags_ tab in the lower left pane
-
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191016223152924.png" alt="image-20191016223152924" style="zoom:50%;" />
-
-3. Click on the _Add/Edit Tags_ button
-
-4. Review the following tag keys and values. _app-first-sec_ is going to be the name of the Kubernetes cluster that you'll setup in later steps. Ignore any other tags that are already present.
-
-    | Key                                 | Value  |
-    | ----------------------------------- | ------ |
-    | kubernetes.io/cluster/app-first-sec | shared |
-
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191016223509479.png" alt="image-20191016223509479" style="zoom:50%;" />
-
-5. Open _Subnets_ from the menu in the left pane and select the subnet with the _Name_ set to _Cisco App-First Sec Public Subnet_ or use the provided link.
+1. Navigate to the VPC console and open _Subnets_ from the menu in the left pane and select the subnet with the _Name_ starting with _Cisco-App-First-Sec Public Subnet_ or use the provided link.
 
     > [https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}#subnets:tag:Name=app-first-sec-public-subnet;sort=desc:tag:Name](https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}#subnets:tag:Name=app-first-sec-public-subnet;sort=desc:tag:Name)
 
-6. Click on the _Tags_ tab in the lower left pane
+2. Click on the _Tags_ tab in the lower left pane
 
-7. Click on the _Add/Edit Tags_ button
+3. Click on the _Manage tags_ button
 
-8. Review the the following tag keys and values. Ignore any tags that are already present. Setting the _kubernetes.io/role/elb_ tag tells Kubernetes that it can use this subnet to create external load balancers, which you will do in a later step.
+4. Review the the following tag keys and values. Ignore any other tags that are already present. Setting the _kubernetes.io/role/elb_ tag tells EKS that it can use this subnet to create external load balancers, which you will do in a later step.
 
     | Key                                 | Value  |
     | ----------------------------------- | ------ |
     | kubernetes.io/cluster/app-first-sec | shared |
     | kubernetes.io/role/elb              | 1      |
 
-9. Select the subnet with the _Name_ set to _app-first-sec-private-subnet-1_ or use the provided link.
+5. Select any subnet starting with _Name_ as _Cisco-App-First-Sec Private Subnet_ or use the provided link.
 
     > [https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}#subnets:tag:Name=app-first-sec-private-subnet-1;sort=desc:tag:Name](https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}#subnets:tag:Name=app-first-sec-private-subnet-1;sort=desc:tag:Name)
 
-    > **NOTE**
-    >
-    > There are two private subnets that have been created in this VPC. You only need to tag the subnet named _app-first-sec-private-subnet-1_ because the other subnets have already been tagged for you to expedite the lab.
+6. Click on the _Tags_ tab in the lower left pane
 
-10. Click on the _Tags_ tab in the lower left pane
+7. Click on the _Manage tags_ button
 
-11. Click on the _Add/Edit Tags_ button
-
-12. Review the the following tag keys and values. Ignore any tags that are already present. Setting the _kubernetes.io/role/internal-elb_ tag tells Kubernetes that it can use this subnet to create internal load balancers.
+8. Review the the following tag keys and values. Ignore any other tags that are already present. Setting the _kubernetes.io/role/internal-elb_ tag tells EKS that it can use this subnet to create internal load balancers.
 
     | Key                                 | Value  |
     | ----------------------------------- | ------ |
@@ -270,7 +231,9 @@ It's important to understand how authentication of IAM users to EKS managed Kube
 
 We have already associated the required permissions to your IAM user. Follow the steps below to review the permissions.
 
-1. Navigate AWS UI to review the policy attached to your IAM user
+1. Navigate AWS console to review the policy attached to your IAM user under _Permissions_ tab.
+
+    > [https://console.aws.amazon.com/iam/home#/users/${POD_NAME}](https://console.aws.amazon.com/iam/home#/users/${POD_NAME})
 
 2. Verify that the AWS CLI profile is configured correctly by ensuring that the _Arn_ key's value ends with _user/${POD_NAME}_.
 
@@ -298,19 +261,27 @@ There are three ways to create an EKS-managed Kubernetes cluster: eksctl CLI, ma
 
 2. Review the content of the EKS cluster yaml _${DOLLAR_SIGN}LAB/aws/eks-cluster.yaml_ by double-clicking on it in the file tree to understand some of the parameters that eksctl will use to setup the cluster.
 
-    You'll also see the _ssh_ portion references the EC2 _key pair_ name used in a previous step that contains the SSH public key for EC2 instances.
+    You'll also see the _ssh_ portion references the EC2 _key pair_ name provided at the beginning of the lab.
 
     ```
     ssh:
        allow: true
-       publicKeyName: cisco-app-first-sec-cloud9
+       publicKeyName: ${AWS_KEYPAIR_NAME}
     ```
 
     >  **TIP**
     >
     > It's also worth noting that the EC2 instance type specified as _t2.medium_. Compute types smaller than that will quickly pose problems for even for non-production deployments of Kubernetes and small applications.
 
-3. Start the process of creating the EKS Kubernertes cluster from the Cloud9 bottom right pane within a terminal. It's important to create the cluster using an AWS profile that has restricted permissions within your AWS org, which in this case is done setting a temporary env variable that was setup in previous steps at the beginning of the command.
+    You'll also notice the _vpc_ portion references the _private subnets_ created under Spoke VPC.
+
+    ```
+    ssh:
+       allow: true
+       publicKeyName: ${AWS_KEYPAIR_NAME}
+    ```
+
+3. Start the process of creating the EKS Kubernetes cluster from the Cloud9 bottom right pane within a terminal. It's important to create the cluster using an AWS profile that has restricted permissions within your AWS org, which in this case is done setting a temporary env variable that was setup in previous steps at the beginning of the command.
 
     ###### Command
 
@@ -318,7 +289,7 @@ There are three ways to create an EKS-managed Kubernetes cluster: eksctl CLI, ma
     eksctl create cluster -f ${DOLLAR_SIGN}LAB/aws/eks-cluster.yaml
     ```
 
-    This single command begins a complex process driven through CloudFormation that will take approxiately 15 minutes to complete given the shear number of steps to prepare all of the AWS services.
+    This single command begins a complex process driven through CloudFormation that will take approximately 15 minutes to complete given the shear number of steps to prepare all of the AWS services.
 
     > **WARNING**
     >
@@ -326,21 +297,18 @@ There are three ways to create an EKS-managed Kubernetes cluster: eksctl CLI, ma
 
     There are two CloudFormation stacks created by the _eksctl_ command. The EKS control plane stack is named _eksctl-app-first-sec-cluster_ and the worker node group stack is named _eks-app-first-sec-nodegroup-app-first-sec_. The worker node group will not be created immediately.
 
-4. Open a new terminal tab in the bottom right pane in the Cloud9 IDE while _eksctl create cluster_ completes. This tab will be used for to continue the lab steps.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
-
-5. Review each step of the two CloudFormation stacks from the management console.
+4. Review each step of the two CloudFormation stacks from the management console.
 
     > [https://console.aws.amazon.com/cloudformation/home?region=${AWS_REGION}#/stacks?filteringText=eksctl-app-first-sec-&filteringStatus=active&viewNested=true&hideStacks=false&stackId=](https://console.aws.amazon.com/cloudformation/home?region=${AWS_REGION}#/stacks?filteringText=eksctl-app-first-sec-&filteringStatus=active&viewNested=true&hideStacks=false&stackId=)
 
-6. Click on the _Stack name_ listed as _eksctl-app-first-sec-cluster_.
+5. Click on the _Stack name_ listed as _eksctl-app-first-sec-cluster_.
 
-7. Select the _Events_ tab in the right pane. You can periodically refresh the events using the <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017091146525.png" alt="image-20191017091146525" style="zoom:50%;" /> button
+6. Select the _Events_ tab in the right pane. You can periodically refresh the events using the <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017091146525.png" alt="image-20191017091146525" style="zoom:50%;" /> button
 
     <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022190239285.png" alt="image-20191022190239285" style="zoom:50%;" />
 
-8. When eksctl completes both the _eksctl-app-first-sec-cluster_ and _eksctl-app-first-sec-nodegroup-app-first-sec_ stacks will show _CREATE\_COMPLETE_ to the left of the _Events_ listing.
+7. When eksctl completes both the _eksctl-app-first-sec-cluster_ and _eksctl-app-first-sec-nodegroup-app-first-sec_ stacks will show _CREATE\_COMPLETE_ to the left of the _Events_ listing.
 
     <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022190152523.png" alt="image-20191022190152523" style="zoom:50%;" />
 
@@ -388,7 +356,7 @@ Once you have created a cluster using _eksctl_, you will find that cluster crede
     >
     > If there were mutliple contexts, you could swtich between them using _kubectl config set-context \[name of context\]_. You can check the current selected context using _kubectl config current-context_.
 
-2. List the Kuberenetes worker nodes where pods will be scheduled.
+2. List the Kubernetes worker nodes where pods will be scheduled.
 
     ###### Command
 
@@ -479,7 +447,6 @@ This section will help you do the following:
 In order to understand the importance of Kubernetes and Cisco Seucrity products, it's important that we are actually running a microservice application. You'll deploy the [Sock Shop](https://microservices-demo.github.io/) demo application maintained by Weaveworks and Container Solutions. Sock Shop simulates the user-facing part of an e-commerce website that sells socks. All of the Sock Shop [source](https://github.com/microservices-demo) is on GitHub and you'll be updating part of the application's source in a future portion of the lab.
 
 
-
 #### Steps
 
 * [Deploy application to Kubernetes](#deploy-application-to-kubernetes)
@@ -545,7 +512,6 @@ In order to understand the importance of Kubernetes and Cisco Seucrity products,
     ```
 
 
-
 ##### Explore the Kubernetes architecture used for the application
 
 Deployments define how a replicaset of pods are to be deployed. Services define a logical set of pods and a policy by which to access them. It is recommended that applicaitons deployed using Kubernetes use all four of these object types to benefit from all of the orchestration capabilities although the flexibility of Kubernetes allows for more minimal deployment models.
@@ -592,7 +558,7 @@ Deployments define how a replicaset of pods are to be deployed. Services define 
 
 ##### Expose the front-end service externally
 
-1. View the services that provide access to the pods. These service will have their own IP address and port that provides a reverse proxy for the pods. This vitualization is fundamental to providing resiliency when a pod fails, upgrades or a deployment is scaled up or down.
+1. View the services that provide access to the pods. These service will have their own IP address and port that provides a reverse proxy for the pods. This virtualization is fundamental to providing resiliency when a pod fails, upgrades or a deployment is scaled up or down.
 
     ###### Command
 
@@ -1037,14 +1003,11 @@ It's essential to be able to access these logs and often view the output in real
 > kubectl exec -it my-pod --container main-app -- /bin/bash
 > ```
 
-### Setup a local Git environment
+### Setup development environment
 
 #### Overview
 
-In software development lifecycle, an application goes through a series of stages to be finally available to an end user to consume. These series of stages, once a developer triggers the commit, would typically include building an image, testing it and eventually merging the code to the main branch. Once the changes are merged, the new version of app is released to the repository. The final stage is when this newly released application is deployed and made available to the end users. This entire process has numerous challenges. Large development teams working together parallelly on the same application components, encounter merge conflicts and dependency issues, slowing down the overall velocity of feature release. To complicate this further, security is just an afterthought and basically bolted on top of the deployed application once it’s in the production environment. This security approach only tried to mitigate the damage that has likely already been done during the application development phase.
-
-<img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/cicd.png" alt="img"  />
-
+In software development lifecycle, an application goes through a series of stages to be finally available to an end user to consume. These series of stages, once a developer triggers the commit, would typically include building an image, testing it and eventually merging the code to the main branch of source code management system. Once the changes are merged, the new version of app is released to the repository. The final stage is when this newly released application is deployed and made available to the end users.
 
 #### Steps
 
@@ -1053,7 +1016,7 @@ In software development lifecycle, an application goes through a series of stage
 
 ##### Setup Private GitLab Repository
 
-When you create your Amazon EKS cluster, it has [requirements](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html) for the VPC networking to function properly. For this lab, we've already setup the requirements for the public and private subnets, NAT gateway, and route tables. EKS requires _tags_ to be applied to the VPC and subnets to enable Kubernetes to discover them.
+In this section, you will set up a local code repo on Cloud9 IDE and then configure git client to push the code to a project on private GitLab Instance. We have already hosted a private Gitlab instance AWS VPC and git client utilities are preinstalled on the Cloud9 IDE environment .
 
 1. Login to the Private GitLab UI and create the front-end project.
 
@@ -1063,7 +1026,9 @@ When you create your Amazon EKS cluster, it has [requirements](https://docs.aws.
 
 ##### Setup CICD Pipeline
 
-Talk about Runners, Repository, Pipeline
+In Modern day software development environments, new commits to an application are continuously built, tested and merged via an automated process. This phase is commonly referred to as Continuous Integration or ‘CI’. The next phase is Continuous Delivery or Deployment i.e., ‘CD’. This phase includes further automated testing of the built image, uploading the image to the artifactory and then finally deploying the newly released version of application to live production environment in an automated manner as well, greatly reducing any overhead for operations team.
+
+Talk about Runners, Repository, Pipeline [Runners](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html)
 
 1. Login to the Private GitLab UI and Navigate to Front-End > Settings and add the environment variables.
 
