@@ -197,12 +197,12 @@ Resources:
       LoginProfile:
         Password: !Ref PodPassword
         PasswordResetRequired: false
-      ManagedPolicyArns: ["arn:aws:iam::aws:policy/AdministratorAccess"]
       UserName: !Ref PodName
   ciscoAppFirstSecUserGroup:
     Type: AWS::IAM::Group
     Properties:
       GroupName: AppFirstUserGroup
+      ManagedPolicyArns: ["arn:aws:iam::aws:policy/AdministratorAccess"]
   ciscoAppFirstSecUserToGroup:
     Type: AWS::IAM::UserToGroupAddition
     DependsOn: [ciscoAppFirstSecUserGroup,ciscoAppFirstSecUser]
@@ -218,8 +218,6 @@ Resources:
           Name: 'AWS::Include'
           Parameters:
             Location: s3://devnetlabcvd/policy.json #NEED TO UPDATE THE S3 BUCKET
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AdministratorAccess
       PolicyName: AppFirstUserPolicy
       Groups: [AppFirstUserGroup]
 
