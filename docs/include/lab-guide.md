@@ -1037,12 +1037,12 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
     ###### Command
 
     ```
-    ssh -i ~/.ssh/$AWS_KEYPAIR_NAME ubuntu@$AWS_GITLAB_IP sudo grep Password: /etc/gitlab/initial_root_password
+    ssh -i ~/.ssh/$AWS_KEYPAIR_NAME ubuntu@$AWS_GITLAB_IP 'sudo grep Password: /etc/gitlab/initial_root_password'
     ```
 
 2. From the drop down menu on the top right corner, navigate to _Edit Profile > Access Token_ and create a personal access token with _write_repository_ and _api_ permissions. Export the token to environment variable for later use.
 
-  > [http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens](http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens)
+    > [http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens](http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens)
 
 
     ###### Command
