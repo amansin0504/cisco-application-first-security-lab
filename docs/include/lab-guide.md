@@ -1028,22 +1028,23 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
   Run the command below to retrieve the password
 
 
-  ###### Command
+    ###### Command
 
-  ```
-  ssh -i ~/.ssh/$AWS_KEYPAIR_NAME ubuntu@$AWS_GITLAB_IP 'sudo grep Password: /etc/gitlab/initial_root_password'
-  ```
+    ```
+    ssh -i ~/.ssh/$AWS_KEYPAIR_NAME ubuntu@$AWS_GITLAB_IP 'sudo grep Password: /etc/gitlab/initial_root_password'
+    ```
 
 2. From the drop down menu on the top right corner, navigate to _Edit Profile > Access Token_ and create a personal access token with _write_repository_ and _api_ permissions. Export the token to environment variable for later use.
 
   > [http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens](http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens)
 
 
-  ###### Command
+    ###### Command
 
-  ```
-  export GITLAB_TOKEN=<personal-access-token>
-  ```
+    ```
+    export GITLAB_TOKEN=<personal-access-token>
+    ```
+
 3. Switch back to Cloud9 terminal and set up a local repo pointing to your private GitLab instance.
 
 
@@ -1138,7 +1139,7 @@ Talk about Runners, Repository, Pipeline [GitLab Runners](https://docs.gitlab.co
 
 
   ###### Command
-  
+
   ```
   kubectl describe deployment front-end -n sock-shop | grep Image:
   ```
