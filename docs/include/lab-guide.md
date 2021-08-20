@@ -1009,9 +1009,9 @@ It's essential to be able to access these logs and often view the output in real
 
 In software development lifecycle, an application goes through a series of stages to be finally available to an end user to consume. These series of stages, once a developer pushes the changes from their local environment to a remote repository, would typically include building an image, testing it and eventually merging the code to the main branch of source code management system. Once the changes are merged, the new version of app is released to the repository. The final stage is when this newly released application is deployed and made available to the end users.
 
-In this section, you will create a project for Front-End microservice of Sock Shop application on your private GitLab Instance. You will then set up your local environment on Cloud9 IDE and configure the git client to point to Front-End project on you private GitLab Instance. We have already hosted a private Gitlab instance ins AWS Hub VPC and git client utilities are preinstalled on the Cloud9 host.
+In this section, you will create a project for Front-End microservice of Sock Shop application on your private GitLab Instance. You will then set up your local environment on Cloud9 IDE and configure the git client to point to your private Front-End project GitLab Instance. We have already hosted a private Gitlab instance ins AWS Hub VPC.
 
-After the local and remote repositories are set up, you will set up a CI/CD pipeline for your front end GitLab project and automate the testing, building and deployment of front end microservice to EKS cluster.
+After the local and remote repositories are set up, you will set up a CI/CD pipeline for your _Sock-Shop-Front-End_ GitLab project and automate the testing, building and deployment of the Front End microservice to EKS cluster.
 
 #### Steps
 
@@ -1026,7 +1026,10 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
 
   Username: root
   Run the command below to retrieve the password
+
+
   ###### Command
+
   ```
   ssh -i ~/.ssh/$AWS_KEYPAIR_NAME ubuntu@$AWS_GITLAB_IP 'sudo grep Password: /etc/gitlab/initial_root_password'
   ```
@@ -1035,13 +1038,17 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
 
   > [http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens](http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens)
 
+
   ###### Command
+
   ```
   export GITLAB_TOKEN=<personal-access-token>
   ```
 3. Switch back to Cloud9 terminal and set up a local repo pointing to your private GitLab instance.
 
+
   ###### Command
+
   ```
   cd $HOME/environment
   git clone https://github.com/amansin0504/front-end.git Sock-Shop-Front-End && cd Sock-Shop-Front-End
@@ -1054,7 +1061,7 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
 
 In this section, you will set up a CI/CD pipeline for your newly created GitLab project _Sock-Shop-Front-End_.
 
-Talk about Runners, Repository, Pipeline [Runners](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html)
+Talk about Runners, Repository, Pipeline [GitLab Runners](https://docs.gitlab.com/runner/)
 
 1. Navigate to _Administrator/Sock-Shop-Front-End > Settings > CI/CD_, expand the _Variables_ section add the following Key Value pairs as environment variables.
 
@@ -1062,10 +1069,10 @@ Talk about Runners, Repository, Pipeline [Runners](https://docs.aws.amazon.com/e
 
   | Key                       | Value                       |
   | --------------------------| ----------------------------|
-  | AWS_ACCESS_KEY_ID}        | ${AWS_ACCESS_KEY}           |
-  | AWS_SECRET_ACCESS_KEY}    | ${AWS_SECRET_ACCESS}        |
-  | AWS_DEFAULT_REGION}       | ${AWS_REGION}               |
-  | DOCKER_REGISTRY}          | ${DOCKER_REGISTRY}          |
+  | AWS_ACCESS_KEY_ID         | ${AWS_ACCESS_KEY}           |
+  | AWS_SECRET_ACCESS_KEY     | ${AWS_SECRET_ACCESS}        |
+  | AWS_DEFAULT_REGION        | ${AWS_REGION}               |
+  | DOCKER_REGISTRY           | ${DOCKER_REGISTRY}          |
 
 
   > **TIP**
@@ -1077,13 +1084,16 @@ Talk about Runners, Repository, Pipeline [Runners](https://docs.aws.amazon.com/e
 
   > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd)
 
+
   ###### Command
+
   ```
   export RUNNER_TOKEN=<registration-token>
   ```
 
 3. Switch back to Cloud9 terminal, update the registration token and run the command below to register the runner.
 
+  ###### Command
 
   ```
   ssh -i ~/.ssh/${AWS_KEYPAIR_NAME} ubuntu@${AWS_GITLAB_IP} << EOF
@@ -1102,6 +1112,7 @@ Talk about Runners, Repository, Pipeline [Runners](https://docs.aws.amazon.com/e
 4. Make a test change to ReadMe file and push the local update to the remote repo _Sock-Shop-Front-End_ on your private GitLab instance.
 
   ###### Command
+
   ```
     cd $HOME/environment/Sock-Shop-Front-End
     echo "test" >> README.md
@@ -1116,14 +1127,18 @@ Talk about Runners, Repository, Pipeline [Runners](https://docs.aws.amazon.com/e
 
 6. Run the command below to see the newly pushed image to private Elastic Container Repository(ECR).
 
+
   ###### Command
+
   ```
   aws ecr list-images --repository-name sock-shop/front-end
   ```
 
 7. Provide manual input by clicking on play button on deployment stage to automatically deploy your newly build Front-End microservice container image to the Sock-Shop application running on EKS cluster. Once, the deployment is successful, run the CLI below to see the updated pod image on EKS cluster. The image name will match the name listed in last step
 
+
   ###### Command
+  
   ```
   kubectl describe deployment front-end -n sock-shop | grep Image:
   ```

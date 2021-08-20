@@ -51,6 +51,7 @@ sudo yum -y install gettext httping
 curl -O https://bootstrap.pypa.io/get-pip.py
 python3 get-pip.py --user > /dev/null
 export PATH=~/.local/bin:$PATH
+rm get-pip.py
 pip install ansible tetpyclient phonenumbers
 
 # change dir to where we expect files to live
