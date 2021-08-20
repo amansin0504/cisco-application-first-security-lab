@@ -1016,26 +1016,80 @@ In software development lifecycle, an application goes through a series of stage
 
 ##### Setup Private GitLab Repository
 
-In this section, you will set up a local code repo on Cloud9 IDE and then configure git client to push the code to a project on private GitLab Instance. We have already hosted a private Gitlab instance AWS VPC and git client utilities are preinstalled on the Cloud9 IDE environment .
+In this section, you will set up a local repo on Cloud9 IDE for the front-end microservice of the Sock-Shop application. You will configure git client to point to front-end project on private GitLab Instance. We have already hosted a private Gitlab instance ins AWS Hub VPC and git client utilities are preinstalled on the Cloud9 host.
 
-1. Login to the Private GitLab UI and create the front-end project.
+1. Login to the Private GitLab console and click on _Create Blank Project_. Enter the project name _Sock-Shop-Front-End_
 
-2. Navigate to preferences and create a personal access token.
+2. Create _Personal Access Token_ with _write_repository_ and _api_ permissions.
 
 3. Switch back to Cloud9 terminal and set up a local repo pointing to your private GitLab instance.
+
+  ```
+  cd /home/ec2-user/environment
+  git clone https://github.com/amansin0504/front-end.git Sock-Shop-Front-End && cd Sock-Shop-Front-End
+  git config --global user.name "Administrator" && git config --global user.email "admin@cloudnativeapp.com"
+  git remote rm origin && git remote add origin http://Administrator:$GITLAB_TOKEN@$AWS_GITLAB_FQDN/root/sock-shop-front-end.git
+  git push -u origin --all
+  ```
 
 ##### Setup CICD Pipeline
 
 In Modern day software development environments, new commits to an application are continuously built, tested and merged via an automated process. This phase is commonly referred to as Continuous Integration or ‘CI’. The next phase is Continuous Delivery or Deployment i.e., ‘CD’. This phase includes further automated testing of the built image, uploading the image to the artifactory and then finally deploying the newly released version of application to live production environment in an automated manner as well, greatly reducing any overhead for operations team.
 
+In this section, you will set up a CI/CD pipeline for your newly created GitLab project _Sock-Shop-Front-End_.
+
 Talk about Runners, Repository, Pipeline [Runners](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html)
 
-1. Login to the Private GitLab UI and Navigate to Front-End > Settings and add the environment variables.
+1. Login to the Private GitLab UI and navigate to Administrator/Sock-Shop-Front-End > Settings and add the environment variables.
 
-1. Navigate to CICD Runner and copy the registration token.
+  AWS_ACCESS_KEY_ID = ${AWS_ACCESS_KEY}
+  AWS_SECRET_ACCESS_KEY = ${AWS_SECRET_ACCESS}
+  AWS_DEFAULT_REGION = ${AWS_REGION}
+  DOCKER_REGISTRY = ${DOCKER_REGISTRY}
 
-2. Switch back to Cloud9 terminal and run the command below to register the runner.
+  > **TIP**
+  >
+  > For ease of lab, we are displaying the AWS Secret Key, this is not recommended in a real world environment. We will delete these keys as part of lab clean up once the lab is complete.
+  >
 
-4. Make a change in gitlab ReadMe file and commit and push the changes.
+1. Navigate to _Administrator/Sock-Shop-Front-End > CI/CD_, expand the _Runner_ section and copy the registration token.
 
-5. Verify that the CI/CD pipeline is triggered and runs successfully. Review the logs.
+2. Switch back to Cloud9 terminal, update the registration token and run the command below to register the runner.
+
+  ```
+  ssh -i ~/.ssh/${AWS_KEYPAIR_NAME} ubuntu@${AWS_GITLAB_IP} << EOF
+  sudo gitlab-runner register \
+  --non-interactive \
+  --url "http://${AWS_GITLAB_FQDN}/" \
+  --registration-token <update-registration-token-here> \
+  --executor "docker" \
+  --docker-image alpine:latest \
+  --description "docker-runner" \
+  --docker-privileged \
+  --tag-list "docker,aws"
+  EOF
+  ```
+
+4. Make a test change to ReadMe file and push the local update to the remote repo _Sock-Shop-Front-End_ on your private GitLab instance.
+
+  ```
+    cd /home/ec2-user/environment/Sock-Shop-Front-End
+    echo "test" >> README.md
+    git add README.md
+    git commit -m "Test change to README.md"
+    git push
+  ```
+
+5. Navigate to Administrator/Sock-Shop-Front-End > CICD > Pipeline. A new pipeline run should be triggered. The pipeline will build the a new image and push it to the container repository and pause at deployment stage for manual input. While the pipeline is running review the .gitlab-ci.yml file to see the tasks peformed at various stages of pipeline.
+
+6. Run the command below to see the newly pushed image to private Elastic Container Repository(ECR).
+
+  ```
+  aws ecr describe-repositories --repository-names sock-shop/front-end
+  ```
+
+7. Provide manual input by clicking on play button on deployment stage to automatically deploy your newly build Front-End microservice container image to the Sock-Shop application running on EKS cluster. Once, the deployment is successful, run the CLI below to see the updated pod definition on EKS cluster.
+
+  ```
+  kubectl describe deployment front-end -n sock-shop
+  ```
