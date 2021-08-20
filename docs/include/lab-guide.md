@@ -1054,15 +1054,15 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
 3. Switch back to Cloud9 terminal and set up a local repo pointing to your private GitLab instance.
 
 
-  ###### Command
+    ###### Command
 
-  ```
-  cd $HOME/environment
-  git clone https://github.com/amansin0504/front-end.git Sock-Shop-Front-End && cd Sock-Shop-Front-End
-  git config --global user.name "Administrator" && git config --global user.email "admin@cloudnativeapp.com"
-  git remote rm origin && git remote add origin http://Administrator:$GITLAB_TOKEN@$AWS_GITLAB_FQDN/root/sock-shop-front-end.git
-  git push -u origin --all
-  ```
+    ```
+    cd $HOME/environment
+    git clone https://github.com/amansin0504/front-end.git Sock-Shop-Front-End && cd Sock-Shop-Front-End
+    git config --global user.name "Administrator" && git config --global user.email "admin@cloudnativeapp.com"
+    git remote rm origin && git remote add origin http://Administrator:$GITLAB_TOKEN@$AWS_GITLAB_FQDN/root/sock-shop-front-end.git
+    git push -u origin --all
+    ```
 
 ##### Setup CICD Pipeline
 
@@ -1072,7 +1072,7 @@ Talk about Runners, Repository, Pipeline [GitLab Runners](https://docs.gitlab.co
 
 1. Navigate to _Administrator/Sock-Shop-Front-End > Settings > CI/CD_, expand the _Variables_ section add the following Key Value pairs as environment variables.
 
-  > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd)
+    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd)
 
 
   | Key                       | Value                       |
@@ -1083,72 +1083,74 @@ Talk about Runners, Repository, Pipeline [GitLab Runners](https://docs.gitlab.co
   | DOCKER_REGISTRY           | ${DOCKER_REGISTRY}          |
 
 
-  > **TIP**
-  >
-  > For ease of lab, we are displaying the AWS Secret Key, this is not recommended in a real world environment. We will delete these keys as part of lab clean up once the lab is complete.
-  >
+    > **TIP**
+    >
+    > For ease of lab, we are displaying the AWS Secret Key, this is not recommended in a real world environment. We will delete these keys as part of lab clean up once the lab is complete.
+    >
 
 
 2. Navigate to _Administrator/Sock-Shop-Front-End > Settings > CI/CD_, expand the _Runners_ section and copy the registration token.
 
-  > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd)
+    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd)
 
 
-  ###### Command
+    ###### Command
 
-  ```
-  export RUNNER_TOKEN=<registration-token>
-  ```
+    ```
+    export RUNNER_TOKEN=<registration-token>
+    ```
 
 3. Switch back to Cloud9 terminal, update the registration token and run the command below to register the runner.
 
-  ###### Command
 
-  ```
-  ssh -i ~/.ssh/${AWS_KEYPAIR_NAME} ubuntu@${AWS_GITLAB_IP} << EOF
-  sudo gitlab-runner register \
-  --non-interactive \
-  --url "http://${AWS_GITLAB_FQDN}/" \
-  --registration-token $RUNNER_TOKEN \
-  --executor "docker" \
-  --docker-image alpine:latest \
-  --description "docker-runner" \
-  --docker-privileged \
-  --tag-list "docker,aws"
-  EOF
-  ```
+    ###### Command
+
+    ```
+    ssh -i ~/.ssh/${AWS_KEYPAIR_NAME} ubuntu@${AWS_GITLAB_IP} << EOF
+    sudo gitlab-runner register \
+    --non-interactive \
+    --url "http://${AWS_GITLAB_FQDN}/" \
+    --registration-token $RUNNER_TOKEN \
+    --executor "docker" \
+    --docker-image alpine:latest \
+    --description "docker-runner" \
+    --docker-privileged \
+    --tag-list "docker,aws"
+    EOF
+    ```
 
 4. Make a test change to ReadMe file and push the local update to the remote repo _Sock-Shop-Front-End_ on your private GitLab instance.
 
-  ###### Command
 
-  ```
-    cd $HOME/environment/Sock-Shop-Front-End
-    echo "test" >> README.md
-    git add README.md
-    git commit -m "Test change to README.md"
-    git push
-  ```
+    ###### Command
+
+    ```
+      cd $HOME/environment/Sock-Shop-Front-End
+      echo "test" >> README.md
+      git add README.md
+      git commit -m "Test change to README.md"
+      git push
+    ```
 
 5. Navigate to Administrator/Sock-Shop-Front-End > CICD > Pipeline. A new pipeline run should be triggered. The pipeline will build the new Front-End container image and push it to the ECR registry and then, pause at deployment stage for a manual input. While the pipeline is running review the .gitlab-ci.yml file under the GitLab project to see the tasks performed at various stages of pipeline.
 
-  > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor)
+    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor)
 
 
 6. Run the command below to see the newly pushed image to private Elastic Container Repository(ECR).
 
 
-  ###### Command
+    ###### Command
 
-  ```
-  aws ecr list-images --repository-name sock-shop/front-end
-  ```
+    ```
+    aws ecr list-images --repository-name sock-shop/front-end
+    ```
 
 7. Provide manual input by clicking on play button on deployment stage to automatically deploy your newly build Front-End microservice container image to the Sock-Shop application running on EKS cluster. Once, the deployment is successful, run the CLI below to see the updated pod image on EKS cluster. The image name will match the name listed in last step
 
 
-  ###### Command
+    ###### Command
 
-  ```
-  kubectl describe deployment front-end -n sock-shop | grep Image:
-  ```
+    ```
+    kubectl describe deployment front-end -n sock-shop | grep Image:
+    ```
