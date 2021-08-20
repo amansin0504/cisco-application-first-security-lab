@@ -1018,15 +1018,15 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
 
 #### Steps
 
-* [Setup GitLab environment](#setup-gitlab-environment)
+* [Setup Private GitLab environment](#setup-private-gitlab-environment)
 * [Setup CICD Pipeline](#setup-cicd-pipeline)
 
 
 
 
-##### Setup GitLab environment
+##### Setup Private GitLab environment
 
-1. Login to the Private GitLab console and click on _New project_ > _Create blank project_. Enter the project name _Sock-Shop-Front-End_.
+1. Login to the Private GitLab console and navigate to _New project > Create blank project_. Enter the project name _Sock-Shop-Front-End_ and create a new blank GitLab project.
 
     > [http://${AWS_GITLAB_FQDN}/projects/new#blank_project](http://${AWS_GITLAB_FQDN}/projects/new#blank_project)
 
@@ -1040,7 +1040,7 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
     ssh -i ~/.ssh/$AWS_KEYPAIR_NAME ubuntu@$AWS_GITLAB_IP 'sudo grep Password: /etc/gitlab/initial_root_password'
     ```
 
-2. From the drop down menu on the top right corner, navigate to _Edit Profile > Access Token_ and create a personal access token with _write_repository_ and _api_ permissions. Export the token to environment variable for later use.
+2. From the drop down menu on the top right corner, navigate to _Edit Profile > Access Token_ and create a personal access token with _write_repository_ and _api_ permissions. Export the token to environment variable for later use. We will need to token to set up local git repository on Cloud9 host.
 
     > [http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens](http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens)
 
@@ -1051,7 +1051,7 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
     export GITLAB_TOKEN=<personal-access-token>
     ```
 
-3. Switch back to Cloud9 terminal and set up a local repo pointing to your private GitLab instance.
+3. Switch back to Cloud9 terminal and set up a local repository pointing to your private GitLab instance.
 
 
     ###### Command
@@ -1068,9 +1068,9 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
 
 In this section, you will set up a CI/CD pipeline for your newly created GitLab project _Sock-Shop-Front-End_.
 
-Talk about Runners, Repository, Pipeline [GitLab Runners](https://docs.gitlab.com/runner/)
+[GitLab Runners](https://docs.gitlab.com/runner/) is an application that works with GitLab CI/CD to run jobs in a pipeline.
 
-1. Navigate to _Administrator/Sock-Shop-Front-End > Settings > CI/CD_, expand the _Variables_ section add the following Key Value pairs as environment variables.
+1. Navigate to _Administrator/Sock-Shop-Front-End > Settings > CI/CD_, expand the _Variables_ section add the following key-value pairs as environment variables.
 
     > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd)
 
@@ -1085,7 +1085,7 @@ Talk about Runners, Repository, Pipeline [GitLab Runners](https://docs.gitlab.co
 
     > **TIP**
     >
-    > For ease of lab, we are displaying the AWS Secret Key, this is not recommended in a real world environment. We will delete these keys as part of lab clean up once the lab is complete.
+    > For ease of lab, we are displaying the AWS Secret Key in this guide, this is not recommended in a real world environment. We will delete these keys as part of lab clean up at the end of this lab.
     >
 
 
@@ -1100,7 +1100,7 @@ Talk about Runners, Repository, Pipeline [GitLab Runners](https://docs.gitlab.co
     export RUNNER_TOKEN=<registration-token>
     ```
 
-3. Switch back to Cloud9 terminal, update the registration token and run the command below to register the runner.
+3. On the Cloud9 terminal, run the command below to register the runner to GitLab project.
 
 
     ###### Command
@@ -1119,7 +1119,7 @@ Talk about Runners, Repository, Pipeline [GitLab Runners](https://docs.gitlab.co
     EOF
     ```
 
-4. Make a test change to ReadMe file and push the local update to the remote repo _Sock-Shop-Front-End_ on your private GitLab instance.
+4. Make a test change to ReadMe file in Sock-Shop-Front-End sourec. Push the local update to the remote repository _Sock-Shop-Front-End_ on your private GitLab instance.
 
 
     ###### Command
@@ -1132,12 +1132,12 @@ Talk about Runners, Repository, Pipeline [GitLab Runners](https://docs.gitlab.co
       git push
     ```
 
-5. Navigate to Administrator/Sock-Shop-Front-End > CICD > Pipeline. A new pipeline run should be triggered. The pipeline will build the new Front-End container image and push it to the ECR registry and then, pause at deployment stage for a manual input. While the pipeline is running review the .gitlab-ci.yml file under the GitLab project to see the tasks performed at various stages of pipeline.
+5. Navigate to Administrator/Sock-Shop-Front-End > CICD > Pipeline. A new pipeline run should be triggered. The pipeline will build a new Front-End container image and push it to the ECR registry. The pipeline will pause at deployment stage for a manual input. While the pipeline is running, review the .gitlab-ci.yml file under the GitLab Sock-Shop-Front-End project to see the tasks performed at various stages of pipeline.
 
     > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor)
 
 
-6. Run the command below to see the newly pushed image to private Elastic Container Repository(ECR).
+6. Once the CI/CD pipeline run completes successfully the testing stage, run the command below to see the newly pushed image to private Elastic Container Repository(ECR).
 
 
     ###### Command
@@ -1146,7 +1146,7 @@ Talk about Runners, Repository, Pipeline [GitLab Runners](https://docs.gitlab.co
     aws ecr list-images --repository-name sock-shop/front-end
     ```
 
-7. Provide manual input by clicking on play button on deployment stage to automatically deploy your newly build Front-End microservice container image to the Sock-Shop application running on EKS cluster. Once, the deployment is successful, run the CLI below to see the updated pod image on EKS cluster. The image name will match the name listed in last step
+7. Now, provide manual input by clicking on play button on deployment stage to automatically deploy your newly build Front-End microservice container image to the Sock-Shop application running on EKS cluster. Once, the deployment stage is successful, run the CLI below to see the updated pod image on EKS cluster. The image name will match the name listed in last step.
 
 
     ###### Command
