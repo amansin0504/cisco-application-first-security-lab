@@ -1068,6 +1068,7 @@ Talk about Runners, Repository, Pipeline [GitLab Runners](https://docs.gitlab.co
 
   > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd)
 
+
   | Key                       | Value                       |
   | --------------------------| ----------------------------|
   | AWS_ACCESS_KEY_ID         | ${AWS_ACCESS_KEY}           |
@@ -1080,6 +1081,7 @@ Talk about Runners, Repository, Pipeline [GitLab Runners](https://docs.gitlab.co
   >
   > For ease of lab, we are displaying the AWS Secret Key, this is not recommended in a real world environment. We will delete these keys as part of lab clean up once the lab is complete.
   >
+
 
 2. Navigate to _Administrator/Sock-Shop-Front-End > Settings > CI/CD_, expand the _Runners_ section and copy the registration token.
 
@@ -1125,6 +1127,7 @@ Talk about Runners, Repository, Pipeline [GitLab Runners](https://docs.gitlab.co
 5. Navigate to Administrator/Sock-Shop-Front-End > CICD > Pipeline. A new pipeline run should be triggered. The pipeline will build the new Front-End container image and push it to the ECR registry and then, pause at deployment stage for a manual input. While the pipeline is running review the .gitlab-ci.yml file under the GitLab project to see the tasks performed at various stages of pipeline.
 
   > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor)
+
 
 6. Run the command below to see the newly pushed image to private Elastic Container Repository(ECR).
 
