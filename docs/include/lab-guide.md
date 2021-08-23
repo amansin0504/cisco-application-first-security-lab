@@ -1617,7 +1617,7 @@ You'll integration Secure Cloud Analytics Cloud with AWS and a Kubernetes cluste
 
 * [Set Secure Cloud Analytics Credentials](#set-secure-cloud-analytics-credentials)
 * [Give Secure Cloud Analytics Cloud access to AWS](#give-secure-cloud-analytics-access-to-aws)
-* [Consume AWS Flow Logs in Secure Cloud Analytics Cloud](#consume-aws-flow-logs-in-Secure Cloud Analytics-cloud)
+* [Consume AWS Flow Logs in Secure Cloud Analytics Cloud](#consume-aws-flow-logs-in-secure-cloud-analytics-cloud)
 * [Instrument Secure Cloud Analytics Cloud into Kubernetes](#instrument-secure-cloud-analytics-into-kubernetes)
 
 
