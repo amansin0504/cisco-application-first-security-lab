@@ -1619,7 +1619,7 @@ You'll integration Secure Cloud Analytics Cloud with AWS and a Kubernetes cluste
 * [Instrument Secure Cloud Analytics Cloud into Kubernetes](#instrument-secure-cloud-analytics-into-kubernetes)
 
 
-##### Set Secure Cloud Analytics Cloud Credentials
+#### Set Secure Cloud Analytics Cloud Credentials
 
 We're using your own email of _${DEVNET_EMAIL_ADDRESS}_ to give access to Secure Cloud Analytics Cloud. You'll set the password for this account.
 
@@ -1636,7 +1636,7 @@ We're using your own email of _${DEVNET_EMAIL_ADDRESS}_ to give access to Secure
     > [https://cisco-${POD_NAME}.obsrvbl.com](https://cisco-${POD_NAME}.obsrvbl.com)
 
 
-##### Give Secure Cloud Analytics Cloud access to AWS
+#### Give Secure Cloud Analytics Cloud access to AWS
 
 Secure Cloud Analytics Cloud Public Cloud Monitoring (PCM) is a visibility, threat identification, and compliance service for Amazon Web Services (AWS). Secure Cloud Analytics Cloud consumes network traffic data, including Virtual Private Cloud (VPC) flow logs, from your AWS public cloud network. It then performs dynamic entity modeling by running analytics on that data to detect threats and indicators of compromise.
 
@@ -1775,7 +1775,7 @@ Secure Cloud Analytics Cloud consumes VPC flow logs directly from your AWS accou
 
 
 
-##### Consume AWS Flow Logs in Secure Cloud Analytics Cloud
+#### Consume AWS Flow Logs in Secure Cloud Analytics Cloud
 
 When the VPC for this lab was created using CloudFormation, VPC flow logs were setup for you. This is a recommended best practice so that there's a record of all traffic within a VPC before any workloads are even deployed.
 
@@ -1810,7 +1810,7 @@ It's worth taking some time to review the CloudFormation template _${DOLLAR_SIGN
     <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191021172621979.png" alt="image-20191021172621979" style="zoom:50%;" />
 
 
-##### Instrument Secure Cloud Analytics Cloud into Kubernetes
+#### Instrument Secure Cloud Analytics Cloud into Kubernetes
 
 The Secure Cloud Analytics Cloud service can monitor network traffic between pods running in Kubernetes clusters. In order to to have visibility into inter-pod traffic, each node needs a Secure Cloud Analytics Cloud sensor pod. A Kuberentes DaemonSet is used to ensure that those pods always exist on those nodes.
 
