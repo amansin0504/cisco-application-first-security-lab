@@ -22,7 +22,7 @@ WARNING: This file is intended to be used within Cloud9 in preview mode for the 
 
 # Cisco Application-First Security Lab
 
-You're about to start on a doozy of lab that covers a lot of ground in a short time. Buckle in and get ready to secure a cloud-native application and public cloud infrastructure using Cisco Products: Tetration, Stealthwatch Cloud, and Duo. You'll stage the infrastructure, modify and deploy the application, instrument the security products into the environment. In the process, you'll get your hands dirty with products and technologies including git, Kubernetes, GitHub, Docker, AWS and others.
+You're about to start on a doozy of lab that covers a lot of ground in a short time. Buckle in and get ready to secure a cloud-native application and public cloud infrastructure using Cisco Products: Tetration, Secure Cloud Analytics Cloud, and Duo. You'll stage the infrastructure, modify and deploy the application, instrument the security products into the environment. In the process, you'll get your hands dirty with products and technologies including git, Kubernetes, GitHub, Docker, AWS and others.
 
 <img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/arch2.png" alt="arch2.png" />
 
@@ -34,7 +34,7 @@ You're about to start on a doozy of lab that covers a lot of ground in a short t
 
 ## Overview of Cisco Application-First Security
 
-[Cisco's Application-First Security](https://www.cisco.com/c/en/us/solutions/security/application-first-security/index.html) solution enables you to gain visibility into application behavior and increase the effectiveness of security controls by combining capabilities of best-in-class products including Tetration, Stealthwatch Cloud, Duo Beyond and AppDynamics. Key features include:
+[Cisco's Application-First Security](https://www.cisco.com/c/en/us/solutions/security/application-first-security/index.html) solution enables you to gain visibility into application behavior and increase the effectiveness of security controls by combining capabilities of best-in-class products including Tetration, Secure Cloud Analytics Cloud, Duo Beyond and AppDynamics. Key features include:
 
 * _Closer to the application_: Security closer to your application gives you insight and context of your applications so you can easily make intelligent decisions to protect them.
 * _Continuous as application changes_: Application-First Security follows your applications as it changes and moves to ensure continuous protections in your digital business.
@@ -52,13 +52,13 @@ This lab uses AWS to host the workloads and applications and takes advantage of 
 
 ## Overall Lab Content
 
-* [Part1: Prepare infrastructure and application](#prepare-infrastructure-and-application)
-* [Part2: Implement security - Secure Cloud Workload](#Part2)
-* [Part3: Implement security - Secure Cloud Analytics](#Part3)
-* [Part4: Implement security - Secure Cloud Access by Duo](#Part4)
+* [Part1: Prepare infrastructure and application](#part1:-prepare-infrastructure-and-application)
+* [Part2: Implement security - Secure Access by Duo](#part2:-implement-security-secure-access-by-duo)
+* [Part3: Implement security - Secure Cloud Analytics](#part3:-implement-security-secure-cloud-analytics)
+* [Part4: Implement security - Secure Cloud Workload](#part4:-implement-security-secure-cloud-workload)
 * [Wrap-Up](#wrap-up)
 
-## Prepare infrastructure and application
+## Part1: Prepare infrastructure and application
 
 This section of the lab will have you prepare the public cloud infrastructure and deploy a micro-services based cloud-native application. Throughout the steps, you'll be laying the groundwork to implement security in a later sections.
 
@@ -81,7 +81,7 @@ There are five management interfaces that you will need to access to complete th
 
 * [AWS Management Console - https://${AWS_REGION}.console.aws.amazon.com/](https://${AWS_REGION}.console.aws.amazon.com/)
 * [Tetration - https://tet-pov-rtp1.cpoc.co/](https://tet-pov-rtp1.cpoc.co/)
-* [Stealthwatch Cloud - https://cisco-${POD_NAME}.obsrvbl.com](https://cisco-${POD_NAME}.obsrvbl.com)
+* [Secure Cloud Analytics Cloud - https://cisco-${POD_NAME}.obsrvbl.com](https://cisco-${POD_NAME}.obsrvbl.com)
 * [Duo - https://admin.duosecurity.com/](https://admin.duosecurity.com/)
 * [GitLab - http://${AWS_GITLAB_FQDN}/](http://${AWS_GITLAB_FQDN}/)
 
@@ -92,12 +92,12 @@ There are five management interfaces that you will need to access to complete th
 
 The details below will be used for credentials unless you decide to use different passwords than what's recommended. In the relevant sections, you'll be instructed to set passwords where necessary.
 
-| Product                                                     | Username / Email            | Password                      |
-| ----------------------------------------------------------- | --------------------------- | ----------------------------- |
-| [AWS](https://${AWS_REGION}.console.aws.amazon.com/)        | ${POD_NAME}                 | ${POD_PASSWORD}               |
-| [Tetration](https://tet-pov-rtp1.cpoc.co/)                  | ${DEVNET_EMAIL_ADDRESS}     | ${POD_PASSWORD} (recommended) |
-| [Stealthwatch Cloud](https://cisco-${POD_NAME}.obsrvbl.com) | ${DEVNET_EMAIL_ADDRESS}     | ${POD_PASSWORD} (recommended) |
-| [Duo](https://admin.duosecurity.com/)                       | ${POD_NAME}@cisco.com       | ${POD_PASSWORD}               |
+| Product                                                               | Username / Email            | Password                      |
+| ----------------------------------------------------------------------| --------------------------- | ----------------------------- |
+| [AWS](https://${AWS_REGION}.console.aws.amazon.com/)                  | ${POD_NAME}                 | ${POD_PASSWORD}               |
+| [Tetration](https://tet-pov-rtp1.cpoc.co/)                            | ${DEVNET_EMAIL_ADDRESS}     | ${POD_PASSWORD} (recommended) |
+| [Secure Cloud Analytics Cloud](https://cisco-${POD_NAME}.obsrvbl.com) | ${DEVNET_EMAIL_ADDRESS}     | ${POD_PASSWORD} (recommended) |
+| [Duo](https://admin.duosecurity.com/)                                 | ${POD_NAME}@cisco.com       | ${POD_PASSWORD}               |
 
 
 ### Access the lab environment
@@ -209,7 +209,7 @@ AWS allows customers to assign metadata to their AWS resources in the form of ta
 
 4. Now, select any subnet starting with _Name_ as _Cisco-App-First-Sec Spoke Public Subnet_ or use the provided link.
 
-    > [https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}#subnets:search='Cisco-App-First-Sec Spoke Public Subnet'](https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}subnets:search='Cisco-App-First-Sec Spoke Public Subnet')
+    > [https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}#subnets:SubnetId=${VPC_PUB_SUBNET_1_ID},${VPC_PUB_SUBNET_2_ID},${VPC_PUB_SUBNET_3_ID}](https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}#subnets:SubnetId=${VPC_PUB_SUBNET_1_ID},${VPC_PUB_SUBNET_2_ID},${VPC_PUB_SUBNET_3_ID})
 
 5. Click on the _Tags_ tab in the lower left pane
 
@@ -399,7 +399,7 @@ Once you have created a cluster using _eksctl_, you will find that cluster crede
     >
     > By default, all kubectl commands that are issued without specifying _--namespace=\[namespace name\]_ will use the _default_ namespace.
 
-5. List pods contained within the _kube-system_ namespace that support the Kubernetes control plane.
+4. List pods contained within the _kube-system_ namespace that support the Kubernetes control plane.
 
     ###### Command
 
@@ -607,7 +607,7 @@ Deployments define how a replicaset of pods are to be deployed. Services define 
 
     Note the _configured_ status for the _front-end_ service.
 
-4. Compare the different manifests of the _front-end_ service.
+3. Compare the different manifests of the _front-end_ service.
 
     ###### Command
 
@@ -646,7 +646,7 @@ Deployments define how a replicaset of pods are to be deployed. Services define 
     Note the difference in the _type_ value and the removal of the _nodePort_ parameter from the _LoadBalancer_ version of the manifest.
 
 
-3. Check that an EC2 Load Balancer has been allocated to the _front-end_ service using kubectl.
+4. Check that an EC2 Load Balancer has been allocated to the _front-end_ service using kubectl.
 
     ###### Command
 
@@ -1132,7 +1132,10 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
       git push
     ```
 
-5. Navigate to _Administrator/Sock-Shop-Front-End > CICD > Pipeline_ on GitLab console. A new pipeline run should be triggered. The pipeline will build a new Front End Sock Shop container image and push it to the AWS ECR registry. The pipeline will then pause at deployment stage for a manual input. While the pipeline is running, review the _.gitlab-ci.yml_ file under the GitLab _Sock-Shop-Front-End_ project to see the tasks performed at various stages of pipeline.
+5. Navigate to _Administrator/Sock-Shop-Front-End > CICD > Pipeline_ on GitLab console. A new pipeline run should be triggered. The pipeline will build a new Front End Sock Shop container image and push it to the AWS ECR registry. The pipeline will then pause at deployment stage for a manual input.
+
+
+6. While the pipeline is running, review the _.gitlab-ci.yml_ file under the GitLab _Sock-Shop-Front-End_ project to see the tasks performed at various stages of pipeline.
 
     > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor)
 
@@ -1140,7 +1143,7 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
     >
     > The new Front End container image is essentially same image as the one we are already running in the EKS cluster because only made a change to the ReadMe file, no code changes were done
 
-6. Once the CI/CD pipeline run completes the testing stage, run the command below to see the newly pushed image to the private Elastic Container Repository(ECR).
+7. Once the CI/CD pipeline run completes the testing stage, run the command below to see the newly pushed image to the private Elastic Container Repository(ECR).
 
 
     ###### Command
@@ -1149,7 +1152,7 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
     aws ecr list-images --repository-name sock-shop/front-end
     ```
 
-7. Now, provide the manual input by clicking on play button on deployment stage to automatically deploy your newly built Front-End microservice container image to the Sock-Shop application running on the EKS cluster. Once the deployment stage is successful, run the CLI below to see the updated pod image on EKS cluster. The image name will match the name listed in the ECR registry in the last step.
+8. Now, provide the manual input by clicking on play button on deployment stage to automatically deploy your newly built Front-End microservice container image to the Sock-Shop application running on the EKS cluster. Once the deployment stage is successful, run the CLI below to see the updated pod image on EKS cluster. The image name will match the name listed in the ECR registry in the last step.
 
 
     ###### Command
@@ -1161,7 +1164,7 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
 ------
 
 
-### Implement Duo
+### Part2: Implement security - Secure Access by Duo
 
 ------
 
@@ -1267,7 +1270,7 @@ You'll test the current login process, update the source code of the Sock Shop, 
 		>
 		> If your login is unsuccessful, you might have missed the step where you created this user. Execute the command _addshopuser_ in a Cloud9 terminal and try to login to the Sock Shop again.
 
-4. Once you've confirmed the login was successful, click on the _Logout_ link in the top right.
+5. Once you've confirmed the login was successful, click on the _Logout_ link in the top right.
 
 
 ###### Make Duo secrets available to Sock Shop
@@ -1368,7 +1371,7 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     cd ${DOLLAR_SIGN}Sock-Shop-Front-End/
     ```
 
-5. Copy the three source files in _${DOLLAR_SIGN}LAB/src/duo/_ that are already instrumented with a Duo MFA login process into the cloned front-end repository.
+3. Copy the three source files in _${DOLLAR_SIGN}LAB/src/duo/_ that are already instrumented with a Duo MFA login process into the cloned front-end repository.
 
     _duo.js_ is the Duo Web SDK for Node.js and handles all interactions with the Duo service and is provided by Duo. _index.js_ defines the API for the user endpoint, which includes the login process. _client.js_ handles the web browser client logic for connecting to the backend services like the user endpoint.
 
@@ -1384,7 +1387,7 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     >
     > If you're more comfortable in another language, Duo provides SDKs for lots of languages and provide [documentation](https://duo.com/docs/duoweb) on how to use them. You can access the SDKs from [Duo's GitHub](https://github.com/duosecurity).
 
-6. Add all the changes into the front-end repository staging area. The _git add_ command tells Git that you want to include updates to a particular file in the next commit.
+4. Add all the changes into the front-end repository staging area. The _git add_ command tells Git that you want to include updates to a particular file in the next commit.
 
     ###### Command
 
@@ -1392,7 +1395,7 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     git add .
     ```
 
-7. Commit all changes to the front-end repository and provide a meaningful commit message. The _git commit_ command captures a snapshot of the project's currently staged changes. Committed snapshots can be thought of as “safe” versions of a project—Git will never change them unless you explicitly ask it to.
+5. Commit all changes to the front-end repository and provide a meaningful commit message. The _git commit_ command captures a snapshot of the project's currently staged changes. Committed snapshots can be thought of as “safe” versions of a project—Git will never change them unless you explicitly ask it to.
 
     ###### Command
 
@@ -1412,7 +1415,7 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     create mode 100644 public/js/client.js
     ```
 
-8. Push the local changes to these three files to the remote repository on your private GitLab Project using the command.
+6. Push the local changes to these three files to the remote repository on your private GitLab Project using the command.
 
   ###### Command
 
@@ -1476,12 +1479,12 @@ The git push action in last section will trigger the CI/CD pipeline run. The pip
 
 4. Once the image is built, the pipeline moves to the next stage and tests the newly build image by running it. You can click _docker_test_ stage to review the logs.
 
-    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor)
+    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)
 
 
 5. Last stage is _deployment_, which will require manual input from you. Once you click on play button, the pipeline will resume and deploy the Front End image with Duo MFA to the EKS cluster deployment.
 
-    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor)
+    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)
 
 6. Ensure that the new front-end pod has started and is in a _Running_ status. You'll see that the _AGE_ will be different than the rest of the running pods. You can also verify the image name using _kubectl describe deployment front-end -n sock-shop | grep Image:_ command.
 
@@ -1591,7 +1594,7 @@ Duo is providing self-managed MFA for a custom web application using the Duo Web
 
 ------
 
-### Implement Stealthwatch Cloud
+### Part3: Implement Security - Secure Cloud Analytics
 
 ------
 
@@ -1599,28 +1602,28 @@ Duo is providing self-managed MFA for a custom web application using the Duo Web
 
 This section will help you do the following:
 
-1. Configure AWS and Stealthwatch Cloud integration
-2. Configure Kubernetes and Stealthwatch Cloud integration
+1. Configure AWS and Secure Cloud Analytics Cloud integration
+2. Configure Kubernetes and Secure Cloud Analytics Cloud integration
 
 
 #### Overview
 
-Stealthwatch Cloud improves security and incident response across the distributed network, from the private network and branch office to the public cloud. This solution addresses the need for digital businesses to quickly identify threats posed by their network devices and cloud resources, and to do so with minimal management, oversight, and security manpower.
+Secure Cloud Analytics Cloud improves security and incident response across the distributed network, from the private network and branch office to the public cloud. This solution addresses the need for digital businesses to quickly identify threats posed by their network devices and cloud resources, and to do so with minimal management, oversight, and security manpower.
 
-You'll integration Stealthwatch Cloud with AWS and a Kubernetes cluster in this section.
+You'll integration Secure Cloud Analytics Cloud with AWS and a Kubernetes cluster in this section.
 
 
 #### Steps
 
-* [Set Stealthwatch Cloud Credentials](#set-stealthwatch-cloud-credentials)
-* [Give Stealthwatch Cloud access to AWS](#give-stealthwatch-cloud-access-to-aws)
-* [Consume AWS Flow Logs in Stealthwatch Cloud](#consume-aws-flow-logs-in-stealthwatch-cloud)
-* [Instrument Stealthwatch Cloud into Kubernetes](#instrument-stealthwatch-cloud-into-kubernetes)
+* [Set Secure Cloud Analytics Cloud Credentials](#set-Secure Cloud Analytics-cloud-credentials)
+* [Give Secure Cloud Analytics Cloud access to AWS](#give-Secure Cloud Analytics-cloud-access-to-aws)
+* [Consume AWS Flow Logs in Secure Cloud Analytics Cloud](#consume-aws-flow-logs-in-Secure Cloud Analytics-cloud)
+* [Instrument Secure Cloud Analytics Cloud into Kubernetes](#instrument-Secure Cloud Analytics-cloud-into-kubernetes)
 
 
-##### Set Stealthwatch Cloud Credentials
+##### Set Secure Cloud Analytics Cloud Credentials
 
-We're using your own email of _${DEVNET_EMAIL_ADDRESS}_ to give access to Stealthwatch Cloud. You'll set the password for this account.
+We're using your own email of _${DEVNET_EMAIL_ADDRESS}_ to give access to Secure Cloud Analytics Cloud. You'll set the password for this account.
 
 1. Check for an email to _${DEVNET_EMAIL_ADDRESS}_ inviting you to join _cisco-${POD_NAME}.obsrvbl.com_
 
@@ -1630,16 +1633,16 @@ We're using your own email of _${DEVNET_EMAIL_ADDRESS}_ to give access to Stealt
     >
     > It's recommended to use the password _${POD_PASSWORD}_ to simplify access for yourself across all interfaces in the lab.
 
-3. Confirm you can log into the Stealthwatch Cloud management interface
+3. Confirm you can log into the Secure Cloud Analytics Cloud management interface
 
     > [https://cisco-${POD_NAME}.obsrvbl.com](https://cisco-${POD_NAME}.obsrvbl.com)
 
 
-##### Give Stealthwatch Cloud access to AWS
+##### Give Secure Cloud Analytics Cloud access to AWS
 
-Stealthwatch Cloud Public Cloud Monitoring (PCM) is a visibility, threat identification, and compliance service for Amazon Web Services (AWS). Stealthwatch Cloud consumes network traffic data, including Virtual Private Cloud (VPC) flow logs, from your AWS public cloud network. It then performs dynamic entity modeling by running analytics on that data to detect threats and indicators of compromise.
+Secure Cloud Analytics Cloud Public Cloud Monitoring (PCM) is a visibility, threat identification, and compliance service for Amazon Web Services (AWS). Secure Cloud Analytics Cloud consumes network traffic data, including Virtual Private Cloud (VPC) flow logs, from your AWS public cloud network. It then performs dynamic entity modeling by running analytics on that data to detect threats and indicators of compromise.
 
-Stealthwatch Cloud consumes VPC flow logs directly from your AWS account using a cross-account IAM role with the proper permissions. In addition, Stealthwatch Cloud can consume other sources of data, like CloudTrail and IAM, for additional context and monitoring.
+Secure Cloud Analytics Cloud consumes VPC flow logs directly from your AWS account using a cross-account IAM role with the proper permissions. In addition, Secure Cloud Analytics Cloud can consume other sources of data, like CloudTrail and IAM, for additional context and monitoring.
 
 1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
 
@@ -1686,9 +1689,9 @@ Stealthwatch Cloud consumes VPC flow logs directly from your AWS account using a
     }
     ```
 
-    It's worth taking a minute to review the assume role policy document _${DOLLAR_SIGN}LAB/swc/swc-aws-assume-role.json_. You'll see it specifies the AWS principal of _757972810156_. That's Stealthwatch Cloud's ID used for the AWS integration.
+    It's worth taking a minute to review the assume role policy document _${DOLLAR_SIGN}LAB/swc/swc-aws-assume-role.json_. You'll see it specifies the AWS principal of _757972810156_. That's Secure Cloud Analytics Cloud's ID used for the AWS integration.
 
-    You'll also see a condition that says that _sts:ExternalId_ must equal _cisco-${POD_NAME}_. This is a unique identity within Stealthwatch Cloud for your account.
+    You'll also see a condition that says that _sts:ExternalId_ must equal _cisco-${POD_NAME}_. This is a unique identity within Secure Cloud Analytics Cloud for your account.
 
 3. Create an IAM policy for the SWC role to use that restricts access to AWS resources and actions.
 
@@ -1721,7 +1724,7 @@ Stealthwatch Cloud consumes VPC flow logs directly from your AWS account using a
 
     > **TIP**
     >
-    > You can adjust the policy as you see fit to restrict Stealthwatch Cloud. It will adjust it's capabilities according to what access it has been granted.
+    > You can adjust the policy as you see fit to restrict Secure Cloud Analytics Cloud. It will adjust it's capabilities according to what access it has been granted.
 
 4. Attach the IAM policy to the role to set access permissions. There will be no output from the command unless there's an error.
 
@@ -1731,7 +1734,7 @@ Stealthwatch Cloud consumes VPC flow logs directly from your AWS account using a
     aws iam attach-role-policy --role-name swc-role --policy-arn arn:aws:iam::${AWS_ACCT_ID}:policy/swc-policy
     ```
 
-5. Retrieve the role ARN from the step where you created the role or execute the following command to retrieve it. We'll need this value to enter into the Stealthwatch Cloud AWS settings.
+5. Retrieve the role ARN from the step where you created the role or execute the following command to retrieve it. We'll need this value to enter into the Secure Cloud Analytics Cloud AWS settings.
 
     ###### Command
 
@@ -1745,7 +1748,7 @@ Stealthwatch Cloud consumes VPC flow logs directly from your AWS account using a
     arn:aws:iam::${AWS_ACCT_ID}:role/swc-role
     ```
 
-6. Visit the Stealthwatch Cloud management interface's AWS settings.
+6. Visit the Secure Cloud Analytics Cloud management interface's AWS settings.
 
     > [https://cisco-${POD_NAME}.obsrvbl.com/accounts/settings/aws/#/settings/aws/credentials](https://cisco-${POD_NAME}.obsrvbl.com/accounts/settings/aws/#/settings/aws/credentials)
 
@@ -1756,7 +1759,7 @@ Stealthwatch Cloud consumes VPC flow logs directly from your AWS account using a
     | Email                 | ${DEVNET_EMAIL_ADDRESS}                                      |
     | Password              | ${POD_PASSWORD} (or password you set)                        |
 
-8. Provide the role ARN and name from past steps for Stealthwatch Cloud to use for access to your AWS environment. Set the the fields with the following values.
+8. Provide the role ARN and name from past steps for Secure Cloud Analytics Cloud to use for access to your AWS environment. Set the the fields with the following values.
 
     | Role ARN                                  | Name     |
     | ----------------------------------------- | -------- |
@@ -1764,17 +1767,17 @@ Stealthwatch Cloud consumes VPC flow logs directly from your AWS account using a
 
 9. Click on the _+_ button to save the details.
 
-10. Review the permissions that Stealthwatch Cloud has access to using the management interface. This page lists the most important permissions for Stealthwatch Cloud.
+10. Review the permissions that Secure Cloud Analytics Cloud has access to using the management interface. This page lists the most important permissions for Secure Cloud Analytics Cloud.
 
     > **NOTE**
     >
-    > It's likely that there will be no AWS services listed when you visit this page immediately after adding your newly created role. It could take 5 to 10 minutes for Stealthwatch Cloud processes to validate access to all services.
+    > It's likely that there will be no AWS services listed when you visit this page immediately after adding your newly created role. It could take 5 to 10 minutes for Secure Cloud Analytics Cloud processes to validate access to all services.
 
     > [https://cisco-${POD_NAME}.obsrvbl.com/accounts/settings/aws/#/settings/aws/permissions](https://cisco-${POD_NAME}.obsrvbl.com/accounts/settings/aws/#/settings/aws/permissions)
 
 
 
-##### Consume AWS Flow Logs in Stealthwatch Cloud
+##### Consume AWS Flow Logs in Secure Cloud Analytics Cloud
 
 When the VPC for this lab was created using CloudFormation, VPC flow logs were setup for you. This is a recommended best practice so that there's a record of all traffic within a VPC before any workloads are even deployed.
 
@@ -1792,7 +1795,7 @@ It's worth taking some time to review the CloudFormation template _${DOLLAR_SIGN
     aws s3api put-bucket-policy --bucket ${AWS_FLOW_LOG_BUCKET} --policy file://${DOLLAR_SIGN}LAB/swc/swc-flowlogs-bucket-policy.json
     ```
 
-3. Provide Stealthwatch Cloud with the S3 Bucket name that contains the VPC flow logs. Visit the management interface and set the fields with the following values.
+3. Provide Secure Cloud Analytics Cloud with the S3 Bucket name that contains the VPC flow logs. Visit the management interface and set the fields with the following values.
 
     > [https://cisco-${POD_NAME}.obsrvbl.com/accounts/settings/aws/#/settings/aws/flowlogs](https://cisco-${POD_NAME}.obsrvbl.com/accounts/settings/aws/#/settings/aws/flowlogs)
 
@@ -1802,16 +1805,16 @@ It's worth taking some time to review the CloudFormation template _${DOLLAR_SIGN
 
 4. Click the _+_ button.
 
-5. Visit the Stealthwatch Cloud management interface to confirm that the _AWS_ sensor shows up in the _Sensor List_ and has a green icon to indicate the configuration is working as expected.
+5. Visit the Secure Cloud Analytics Cloud management interface to confirm that the _AWS_ sensor shows up in the _Sensor List_ and has a green icon to indicate the configuration is working as expected.
 
     > [https://cisco-${POD_NAME}.obsrvbl.com/sensors/list/](https://cisco-${POD_NAME}.obsrvbl.com/sensors/list/)
 
     <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191021172621979.png" alt="image-20191021172621979" style="zoom:50%;" />
 
 
-##### Instrument Stealthwatch Cloud into Kubernetes
+##### Instrument Secure Cloud Analytics Cloud into Kubernetes
 
-The Stealthwatch Cloud service can monitor network traffic between pods running in Kubernetes clusters. In order to to have visibility into inter-pod traffic, each node needs a Stealthwatch Cloud sensor pod. A Kuberentes DaemonSet is used to ensure that those pods always exist on those nodes.
+The Secure Cloud Analytics Cloud service can monitor network traffic between pods running in Kubernetes clusters. In order to to have visibility into inter-pod traffic, each node needs a Secure Cloud Analytics Cloud sensor pod. A Kuberentes DaemonSet is used to ensure that those pods always exist on those nodes.
 
 > **TIP**
 >
@@ -1819,7 +1822,7 @@ The Stealthwatch Cloud service can monitor network traffic between pods running 
 
 > **TIP**
 >
-> There are good instructions for setting up this integration (among others) in the Stealthwatch Cloud administrative interface. It's worth reviewing, although it's recommended for this lab to follow the steps below to better understand what you're doing and maintain naming conventions.
+> There are good instructions for setting up this integration (among others) in the Secure Cloud Analytics Cloud administrative interface. It's worth reviewing, although it's recommended for this lab to follow the steps below to better understand what you're doing and maintain naming conventions.
 >
 > [https://cisco-${POD_NAME}.obsrvbl.com/integrations/kubernetes/](https://cisco-${POD_NAME}.obsrvbl.com/integrations/kubernetes/)
 
@@ -1841,7 +1844,7 @@ The Stealthwatch Cloud service can monitor network traffic between pods running 
     Context "arn:aws:eks:${AWS_REGION}:${AWS_ACCT_ID}:cluster/app-first-sec" modified.
     ```
 
-3. Create a Kubernetes secret with the service key that the pods will use to authenticate to Stealthwatch Cloud.
+3. Create a Kubernetes secret with the service key that the pods will use to authenticate to Secure Cloud Analytics Cloud.
 
     ###### Command
 
@@ -1914,7 +1917,7 @@ The Stealthwatch Cloud service can monitor network traffic between pods running 
     swc-ona-qsbpg   1/1     Running   ...   ip-10-50-110-164.ec2.internal
     ```
 
-8. Visit the Stealthwatch Cloud administrative interface to confirm that there are three new sensors showing up in the sensor list.
+8. Visit the Secure Cloud Analytics Cloud administrative interface to confirm that there are three new sensors showing up in the sensor list.
 
     > [https://cisco-${POD_NAME}.obsrvbl.com/sensors/list/](https://cisco-${POD_NAME}.obsrvbl.com/sensors/list/)
 
@@ -1938,15 +1941,15 @@ The Stealthwatch Cloud service can monitor network traffic between pods running 
 
 
 
-#### Stealthwatch Cloud summary
+#### Secure Cloud Analytics Cloud summary
 
-Now you can sleep more soundly knowing that Stealthwatch Cloud is providing public visibility and threat detection for your vibrant Sock Shop business.
+Now you can sleep more soundly knowing that Secure Cloud Analytics Cloud is providing public visibility and threat detection for your vibrant Sock Shop business.
 
-Stealthwatch Cloud is now consuming all sources of telemetry native to AWS, including Amazon Virtual Private Cloud (VPC) flow logs, and Kubernetes pod traffic to monitor all activity in the cloud without the need for software agents. Stealthwatch Cloud was deployed in these environments in a matter of minutes with no disruption to service availability. Stealthwatch Cloud uses this data to model the behavior of each cloud resource, a method called entity modeling. It is then able to detect and alert on sudden changes in behavior, malicious activity, and signs of compromise.
+Secure Cloud Analytics Cloud is now consuming all sources of telemetry native to AWS, including Amazon Virtual Private Cloud (VPC) flow logs, and Kubernetes pod traffic to monitor all activity in the cloud without the need for software agents. Secure Cloud Analytics Cloud was deployed in these environments in a matter of minutes with no disruption to service availability. Secure Cloud Analytics Cloud uses this data to model the behavior of each cloud resource, a method called entity modeling. It is then able to detect and alert on sudden changes in behavior, malicious activity, and signs of compromise.
 
 ------
 
-## Implement security - Secure Cloud Workload
+## Part4: Implement security - Secure Cloud Workload
 
 ------
 
@@ -2126,7 +2129,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     | AWS Secret Access Key | [_SecretAccessKey_ from _aws iam create-access-key_ in previous step] |
     | AWS Region            | ${AWS_REGION}                                                         |
 
-10. Retrieve the Kubernetes API hostname using the AWS CLI _eks describe-cluster_ command to use when entering the Kubernetes configuration into Secure Workload in future steps. Switch to Hosts List tab from vertical menu on the left-hand side and add API server endpoint address and port (TCP Port 443) details for the EKS cluster in the provided space.
+9. Retrieve the Kubernetes API hostname using the AWS CLI _eks describe-cluster_ command to use when entering the Kubernetes configuration into Secure Workload in future steps. Switch to Hosts List tab from vertical menu on the left-hand side and add API server endpoint address and port (TCP Port 443) details for the EKS cluster in the provided space.
 
     ###### Command
 
@@ -2140,7 +2143,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     40D7AAC6763809EAD50E.gr1.${AWS_REGION}.eks.amazonaws.com
     ```
 
-11. Click the _Create_ button. Once Secure Workload successfully connects to AWS it will display a _Connection Status_ of _Success_.
+10. Click the _Create_ button. Once Secure Workload successfully connects to AWS it will display a _Connection Status_ of _Success_.
 
     <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022192046986.png" alt="image-20191022192046986" style="zoom:50%;" />
 
@@ -2148,11 +2151,11 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     >
     > The _Connection Status_ field will show a value of _Failure_ for the _app-first-sec-aws_ row before it has attempted to connect to AWS. Give it a minute to validate the configuration you just entered. Once the _Connection Status_ field value is set to _Success_ proceed to the next step.
 
-12. You can confirm that AWS annotations are available in Secure Workload by visiting _Inventory Search_ under _VISIBILITY_ in the left menu pane.
+11. You can confirm that AWS annotations are available in Secure Workload by visiting _Inventory Search_ under _VISIBILITY_ in the left menu pane.
 
     <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022192311933.png" alt="image-20191022192311933" style="zoom:50%;" />
 
-13. In the _Filters_ field, type _aws_ to show the annotations that are available from the external orchestration integration you completed. These annotations can be used when defining policy, searching for inventory and filtering flows.
+12. In the _Filters_ field, type _aws_ to show the annotations that are available from the external orchestration integration you completed. These annotations can be used when defining policy, searching for inventory and filtering flows.
 
     <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022192756143.png" alt="image-20191022192756143" style="zoom:50%;" />
 
@@ -2640,11 +2643,11 @@ Negative impacts of enforced security policy is a large concern for application 
 		>
 		> If your login is unsuccessful, you might have missed the step where you created this user. Execute the command _addshopuser_ in a Cloud9 terminal and try to login to the Sock Shop again.
 
-4. Find a pair of socks from the catalogue that are equal to or below ${DOLLAR_SIGN}40 and click on _Add to cart_. Socks that cost more than ${DOLLAR_SIGN}40 can't be purchased due to an simulated limit on credit card purchases within the app.
+6. Find a pair of socks from the catalogue that are equal to or below ${DOLLAR_SIGN}40 and click on _Add to cart_. Socks that cost more than ${DOLLAR_SIGN}40 can't be purchased due to an simulated limit on credit card purchases within the app.
 
-5. Click on the _N item(s) in cart_ button to view your cart in the Sock Shop application.
+7. Click on the _N item(s) in cart_ button to view your cart in the Sock Shop application.
 
-6. Click _Proceed to checkout_. This will complete the order and a new row will be added to the _My orders_ page.
+8. Click _Proceed to checkout_. This will complete the order and a new row will be added to the _My orders_ page.
 
     ![image-20191021025811246](https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191021025811246.png)
 
