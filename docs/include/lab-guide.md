@@ -1955,7 +1955,7 @@ This section will help you do the following:
 2. Create Kubernetes service accounts
 3. Understand attack lateral movement in Kubernetes
 
-#### Overview
+### Overview
 
 Cisco Secure Workload offers holistic workload protection for multi-cloud data centers by enabling a zero-trust model using segmentation. This approach allows you to identify security incidents faster, contain lateral movement, and reduce your attack surface. Secure Workload's infrastructure-agnostic approach supports both on-premises and public cloud workloads.
 
@@ -1968,7 +1968,7 @@ Secure Workload provides these core benefits:
 - Collects comprehensive telemetry from a heterogeneous environment to provide actionable insights in minutes.
 - Enables long-term data retention for deep forensics, analysis, and troubleshooting.
 
-#### Steps
+### Steps
 
 * [Secure Workload integration with AWS](#secure-workload-integration-with-aws)
 * [Secure Workload integration with Kubernetes](#secure-workload-integration-with-kubernetes)
@@ -1984,7 +1984,7 @@ Secure Workload provides these core benefits:
 >
 > Firefox is not a supported browser for the Secure Workload management interface.
 
-###### Set Secure Workload Credentials
+#### Set Secure Workload Credentials
 
 Since this is the first time you'll be accessing Secure Workload, you'll need to set your credentials. We're using your own email _${DEVNET_EMAIL_ADDRESS}_ to give access to Secure Workload, but you'll need set the password for this account.
 
@@ -2007,7 +2007,7 @@ Since this is the first time you'll be accessing Secure Workload, you'll need to
     > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co)
 
 
-##### Secure Workload integration with AWS
+#### Secure Workload integration with AWS
 
 Create AWS IAM policy and user for Secure Workload with restrictive permissions using the AWS CLI.
 
@@ -2162,7 +2162,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
 
 
 
-##### Enforce application segmentation based on Kubernetes annotations
+#### Enforce application segmentation based on Kubernetes annotations
 
 Application definition in Secure Workload plays a central role in many features including visibility, policy enforcement, policy compliance and multi-tenancy.
 
@@ -2174,7 +2174,7 @@ You'll use Ansible playbooks to configure and enforce the policy, which will pro
 
 
 
-###### Simulate a breach and lateral movement
+#### Simulate a breach and lateral movement
 
 1. Simulate an attacker gaining shell access via the _front-end_ service by opening a shell on the _front-end_ pod. First we need to retrieve the _front-end_ pod name.
 
@@ -2251,7 +2251,7 @@ You'll use Ansible playbooks to configure and enforce the policy, which will pro
     > Although obvious, it's worth noting that it is not recommend to leave _netcat_ installed in a container image. In addition, it's recommended to run containers as immutable so that software can't be installed or built locally should an attacker gain access. As we all know, best practices are not always followed so this scenario is 100% valid and witnessed in production application deployments.
 
 
-###### Perform a flow search
+#### Perform a flow search
 
 The Flows option in the top-level menu takes you to the Flow Search page. This page provides the means for quickly filtering and drilling down into the flows corpus. The basic unit is a “Flow Observation” which is a per-minute aggregation of each unique flow. The two sides of the flow are called “Consumer” and “Provider”, the Consumer is the side that initiated the flow, and the Provider is responding to the Consumer (e.g. “Client” and “Server” respectively). Each observation tracks the number of packets, bytes, and other metrics in each direction for that flow for that minute interval.
 
@@ -2286,7 +2286,7 @@ You want to confirm that the software agent is sending flow data to Secure Workl
     <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018123212670.png" alt="image-20191018123212670" style="zoom:50%;" />
 
 
-###### Create an API Key to use with Ansible
+#### Create an API Key to use with Ansible
 
 Given the application dependencies and kubernetes environment are well understood, this is an ideal situation to leverage the power of infrastructure automation. In our case, you'll use open source [Secure Workload modules](https://github.com/CiscoDevNet/Secure Workload-ansible-playbooks) for Ansible along with Ansible playbooks that have already been created for your environment.
 
@@ -2326,7 +2326,7 @@ First you'll need to create a Secure Workload API Key that the modules will use 
 
 
 
-###### Create inventory filters using Ansible
+#### Create inventory filters using Ansible
 
 Now that we have an API Key we can configure Ansible to access Secure Workload and then run our playbooks to create inventory filters for all of the application, Kubernetes, AWS, and external inventory.
 
@@ -2418,7 +2418,7 @@ Now that we have an API Key we can configure Ansible to access Secure Workload a
 > You might notice that the inventory filter you created for the front-end pods has changed. The playbook added the Kubernetes namespace to the query details to make the filters more precise and created an additional filter for the front-end service.
 
 
-###### Define application segmentation using Ansible
+#### Define application segmentation using Ansible
 
 Network security policies are the building block for many powerful features of Cisco Secure Workload. They provide a simple and intuitive mechanism for both application owners and security teams to define the necessary intents to secure assets and applications within data centers.
 
@@ -2512,7 +2512,7 @@ In an earlier step, you configured policy filters. Now we'll use Ansible to appl
 
 
 
-###### Confirm lateral movement has been blocked
+#### Confirm lateral movement has been blocked
 
 These are the same steps that you did earlier, but this time the attempt to simulate a breach and lateral  movement from the _front-end_ pod to the _payment_ service will fail.
 
@@ -2586,7 +2586,7 @@ These are the same steps that you did earlier, but this time the attempt to simu
 
 
 
-###### Confirm the application is working as expected
+#### Confirm the application is working as expected
 
 Negative impacts of enforced security policy is a large concern for application owners and DevOps teams. In some cases, they will avoid engaging with security teams altogether to avoid the risk of security "breaking" their applicaiton. It's important to be able to show that the application continues to work after enforcing our security policy.
 
