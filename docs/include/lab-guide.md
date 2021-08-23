@@ -52,13 +52,13 @@ This lab uses AWS to host the workloads and applications and takes advantage of 
 
 ## Overall Lab Content
 
-* [Part#1: Prepare infrastructure and application](#part#1:-prepare-infrastructure-and-application)
-* [Part#2: Implement security - Cisco Secure Access by Duo](#part#2:-cisco-implement-security-secure-access-by-duo)
-* [Part#3: Implement security - Cisco Secure Cloud Analytics](#part#3:-cisco-implement-security-secure-cloud-analytics)
-* [Part#4: Implement security - Cisco Secure Cloud Workload](#part#4:-cisco-implement-security-secure-cloud-workload)
+* [Part1: Prepare infrastructure and application](#part1:-prepare-infrastructure-and-application)
+* [Part2: Implement security - Cisco Secure Access by Duo](#part2:-cisco-implement-security-secure-access-by-duo)
+* [Part3: Implement security - Cisco Secure Cloud Analytics](#part3:-cisco-implement-security-secure-cloud-analytics)
+* [Part4: Implement security - Cisco Secure Cloud Workload](#part4:-cisco-implement-security-secure-cloud-workload)
 * [Wrap-Up](#wrap-up)
 
-## Part#1: Prepare infrastructure and application
+## Part1: Prepare infrastructure and application
 
 This section of the lab will have you prepare the public cloud infrastructure and deploy a micro-services based cloud-native application. Throughout the steps, you'll be laying the groundwork to implement security in a later sections.
 
