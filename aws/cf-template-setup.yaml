@@ -46,7 +46,7 @@ Parameters:
   keyPairName:
     Description: Key pair name (Create a new key pair prior to deploying this template)
     Type: String
-    Default: oregon
+    Default: devnet
 
   HubVpcCIDR:
     Description: Please enter the IP range (CIDR notation) for hub VPC
