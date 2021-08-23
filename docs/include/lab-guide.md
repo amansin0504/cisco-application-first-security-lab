@@ -1595,6 +1595,7 @@ You can rest easy knowing access to your lucrative Sock Shop has MFA enabled for
 
 Duo is providing self-managed MFA for a custom web application using the Duo Web SDK. Additional configuration in Duo could further protect those resources by setting device restrictions using Duo Beyond.
 
+
 ## Part3: Implement Security - Cisco Secure Cloud Analytics
 
 <img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/arch2-swc.png" alt="arch2.png" />
