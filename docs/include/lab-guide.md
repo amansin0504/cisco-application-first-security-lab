@@ -53,8 +53,8 @@ This lab uses AWS to host the workloads and applications and takes advantage of 
 ## Overall Lab Content
 
 * [Part1: Prepare infrastructure and application](#prepare-infrastructure-and-application)
-* [Part2: Implement security - Secure Cloud Analytics](#Part2)
-* [Part3: Implement security - Secure Cloud Workload](#Part3)
+* [Part2: Implement security - Secure Cloud Workload](#Part2)
+* [Part3: Implement security - Secure Cloud Analytics](#Part3)
 * [Part4: Implement security - Secure Cloud Access by Duo](#Part4)
 * [Wrap-Up](#wrap-up)
 
@@ -1040,7 +1040,7 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
     ssh -i ~/.ssh/$AWS_KEYPAIR_NAME ubuntu@$AWS_GITLAB_IP 'sudo grep Password: /etc/gitlab/initial_root_password'
     ```
 
-2. From the drop down menu on the top right corner, navigate to _Edit Profile > Access Token_ and create a personal access token with _write_repository_ and _api_ permissions. Export the token to environment variable for later use. We will need to token to set up local git repository on Cloud9 host.
+2. From the drop down menu on the top right corner, navigate to _Edit Profile > Access Tokens_ and create a personal access token with _write_repository_ and _api_ permissions. Export the token to an environment variable for later use. We will need this token to set up local git repository on Cloud9 host in the next step.
 
     > [http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens](http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens)
 
@@ -1051,7 +1051,7 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
     export GITLAB_TOKEN=<personal-access-token>
     ```
 
-3. Switch back to Cloud9 terminal and set up a local repository pointing to your private GitLab instance.
+3. Switch back to Cloud9 host terminal and set up a local git repository pointing to your private GitLab instance.
 
 
     ###### Command
@@ -1068,7 +1068,7 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
 
 In this section, you will set up a CI/CD pipeline for your newly created GitLab project _Sock-Shop-Front-End_.
 
-[GitLab Runners](https://docs.gitlab.com/runner/) is an application that works with GitLab CI/CD to run jobs in a pipeline.
+[GitLab Runners](https://docs.gitlab.com/runner/) is an application that works with GitLab CI/CD to run jobs in a pipeline. An AWS Elastic Container Registry is already set up as part of initial lab set up, you will use this registry to push container images that you will build during the course of this lab.
 
 1. Navigate to _Administrator/Sock-Shop-Front-End > Settings > CI/CD_, expand the _Variables_ section add the following key-value pairs as environment variables.
 
@@ -1085,11 +1085,11 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
 
     > **TIP**
     >
-    > For ease of lab, we are displaying the AWS Secret Key in this guide, this is not recommended in a real world environment. We will delete these keys as part of lab clean up at the end of this lab.
+    > For ease of use, we are displaying the AWS Secret Key in this guide, this is not recommended in a real world environment because of security reasons. We will delete these keys as part of lab clean up at the end of this lab.
     >
 
 
-2. Navigate to _Administrator/Sock-Shop-Front-End > Settings > CI/CD_, expand the _Runners_ section and copy the registration token.
+2. Navigate to _Administrator/Sock-Shop-Front-End > Settings > CI/CD_, expand the _Runners_ section and copy the registration token and export it as environment variable.
 
     > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd)
 
@@ -1100,7 +1100,7 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
     export RUNNER_TOKEN=<registration-token>
     ```
 
-3. On the Cloud9 terminal, run the command below to register the runner to GitLab project.
+3. On the Cloud9 host terminal, run the command below to register a GitLab runner to the GitLab project.
 
 
     ###### Command
@@ -1119,7 +1119,7 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
     EOF
     ```
 
-4. Make a test change to ReadMe file in Sock-Shop-Front-End sourec. Push the local update to the remote repository _Sock-Shop-Front-End_ on your private GitLab instance.
+4. Make a test change to ReadMe file in Sock-Shop-Front-End source. Push the local update to the remote repository _Sock-Shop-Front-End_ on your private GitLab instance.
 
 
     ###### Command
@@ -1132,12 +1132,15 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
       git push
     ```
 
-5. Navigate to Administrator/Sock-Shop-Front-End > CICD > Pipeline. A new pipeline run should be triggered. The pipeline will build a new Front-End container image and push it to the ECR registry. The pipeline will pause at deployment stage for a manual input. While the pipeline is running, review the .gitlab-ci.yml file under the GitLab Sock-Shop-Front-End project to see the tasks performed at various stages of pipeline.
+5. Navigate to _Administrator/Sock-Shop-Front-End > CICD > Pipeline_ on GitLab console. A new pipeline run should be triggered. The pipeline will build a new Front End Sock Shop container image and push it to the AWS ECR registry. The pipeline will then pause at deployment stage for a manual input. While the pipeline is running, review the _.gitlab-ci.yml_ file under the GitLab _Sock-Shop-Front-End_ project to see the tasks performed at various stages of pipeline.
 
     > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor)
 
+    > **NOTE**
+    >
+    > The new Front End container image is essentially same image as the one we are already running in the EKS cluster because only made a change to the ReadMe file, no code changes were done
 
-6. Once the CI/CD pipeline run completes successfully the testing stage, run the command below to see the newly pushed image to private Elastic Container Repository(ECR).
+6. Once the CI/CD pipeline run completes the testing stage, run the command below to see the newly pushed image to the private Elastic Container Repository(ECR).
 
 
     ###### Command
@@ -1146,7 +1149,7 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
     aws ecr list-images --repository-name sock-shop/front-end
     ```
 
-7. Now, provide manual input by clicking on play button on deployment stage to automatically deploy your newly build Front-End microservice container image to the Sock-Shop application running on EKS cluster. Once, the deployment stage is successful, run the CLI below to see the updated pod image on EKS cluster. The image name will match the name listed in last step.
+7. Now, provide the manual input by clicking on play button on deployment stage to automatically deploy your newly built Front-End microservice container image to the Sock-Shop application running on the EKS cluster. Once the deployment stage is successful, run the CLI below to see the updated pod image on EKS cluster. The image name will match the name listed in the ECR registry in the last step.
 
 
     ###### Command
@@ -1154,3 +1157,1500 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
     ```
     kubectl describe deployment front-end -n sock-shop | grep Image:
     ```
+
+------
+
+
+### Implement Duo
+
+------
+
+<img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/arch2-duo-sdk.png" alt="arch2.png" />
+
+This section will help you do the following:
+
+1. Instrument an microservice application with Duo MFA
+2. Learn about Docker containers and registries
+3. Learn how to use git for version control
+4. Learn how CI/CD pipeline automates deployment
+
+#### Overview
+
+Duo secure's access to your applications and data, no matter where users are - on any device - from anywhere. For organizations of all sizes, Duo’s trusted access solution creates trust in users, devices and the applications they access. It reduces the risk of a data breach and ensures trusted access to sensitive data.
+
+To regain trust of endpoints, Duo Beyond provides the ability to identify corporate vs. personal devices, block untrusted devices, and give users secure access to internal applications.
+
+You'll instrument Duo MFA into the Sock Shop so that users of the application must have a second form of authentication to login.
+
+
+#### Steps
+
+* [Set Duo Admin Credentials](#set-duo-admin-credentials)
+* [Instrument the Sock Shop with Duo](#instrument-the-sock-shop-with-duo)
+  * [Validate authentication without MFA](#validate-authentication-without-mfa)
+  * [Make Duo secrets available to Sock Shop](#make-duo-secrets-available-to-sock-shop)
+  * [Update source with Duo MFA](#update-source-with-duo-mfa)
+  * [Validate authentication with Duo MFA](#validate-authentication-with-duo-mfa)
+
+
+##### Set Duo Admin Credentials
+
+We're using a pre-defined email of _${POD_NAME}@cisco.com_ to give access to the Duo Admin portal.
+
+1. Return to the Cloud9 environment and select a terminal tab in the bottom right pane
+
+2. Use the _duoconf_ script to configure the Duo Admin portal with your phone number for multi-factor authentication (MFA) in addition to transparenly setting your admin password to _${POD_PASSWORD}_. The phone number you provide will receive SMS messages, so normal messaging costs might apply.
+
+    > **NOTE**
+    >
+    > The script will validate the phone number format and if it's deemed invalid, you'll be prompted to provide it again. [E.164 format](https://www.google.com/search?q=e.164%20format) for this number is required.
+
+    ###### Command
+
+    ```
+    duoconf
+    ```
+
+    ###### Output
+
+    ```
+    Enter your phone number in E.164 format (example: +1 408 555 5555):
+    ```
+
+3. Confirm you can log into the Duo Admin management interface
+
+    > [https://admin.duosecurity.com/](https://admin.duosecurity.com/)
+
+
+##### Instrument the Sock Shop with Duo
+
+Duo Web SDK makes it easy to add strong two-factor authentication to your web application, complete with inline self-service enrollment and Duo Prompt.
+
+Implementing Duo two-factor authentication into your site involves simply adding a second login page and splitting your login handler into two parts. Client libraries are available for Python, Ruby, Classic ASP, ASP.NET, Java, PHP, Node.js, ColdFusion, and Perl.
+
+You'll test the current login process, update the source code of the Sock Shop, build a new container, create Kuberenetes secrets, update the Kubernetes manifest for the Sock Shop and finally experience the new login process.
+
+###### Validate authentication without MFA
+
+1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+
+2. Retrieve the EC2 Load Balancer DNS A record that has been allocated to the _front-end_ service using kubectl.
+
+    ###### Command
+
+    ```
+    kubectl get services front-end
+    ```
+
+    ###### Output
+
+    ```
+    NAME        TYPE           CLUSTER-IP       EXTERNAL-IP                         ...
+    front-end   LoadBalancer   172.20.229.246   acdeb.${AWS_REGION}.elb.amazonaws.com   ...
+    ```
+
+3. Visit the DNS A record in the _EXTERNAL-IP_ field in a web browser.
+
+4. Login to the Sock Shop as the user _${POD_NAME}_. Click the _Login_ link in the top right. Login with the following values.
+
+    > **NOTE**
+    >
+    > The password is intentionally the same as the username for this login.
+
+    | username          | password          |
+    | ----------------- | ----------------- |
+    | _${POD_NAME}_     | _${POD_NAME}_     |
+
+		> **NOTE**
+		>
+		> If your login is unsuccessful, you might have missed the step where you created this user. Execute the command _addshopuser_ in a Cloud9 terminal and try to login to the Sock Shop again.
+
+4. Once you've confirmed the login was successful, click on the _Logout_ link in the top right.
+
+
+###### Make Duo secrets available to Sock Shop
+
+Kubernetes _secret_ objects let you store and manage sensitive information, such as passwords, OAuth tokens, and ssh keys. Putting this information in a secret is safer and more flexible than putting it verbatim in a Pod definition or in a container image.
+
+You'll store four secrets in Kubernetes that will be available to the front-end service as environment variables. These secrets corrispond to the Duo Web SDK Application configured in the administrative portal.
+
+1. View the Duo Web SDK Applications from the administrative portal in a web browser.
+
+    > [https://admin.duosecurity.com/applications](https://admin.duosecurity.com/applications)
+
+2. Login using the following values.
+
+    | Field                 | Value                                        |
+    | --------------------- | -------------------------------------------- |
+    | Email                 | ${POD_NAME}@cisco.com                        |
+    | Password              | ${POD_PASSWORD}                              |
+
+3. Select your application name _${POD_NAME}-sock-shop_ from the list to view it's configuration.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022122800995.png" alt="image-20191022122800995" style="zoom:50%;" />
+
+4. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+
+5. Use the _duosecrets_ helper script to create a Kubernetes secret object with the values from the Duo Web SDK Application you opened in a previous step. You'll need to move back and forth between the Duo administrative portal and the Cloud9 IDE terminal as you copy and paste values.
+
+    ###### Command
+
+    ```
+    duosecrets
+    ```
+
+    ###### Output
+
+    ```
+    Integration key:
+    123abc123abc123abc123abc123abc
+
+    Secret key:
+    123abc123abc123abc123abc123abc
+
+    API hostname:
+    api-123abc.duosecurity.com
+
+    Application key (auto-generated):
+    123abc123abc123abc123abc123abc
+
+    Kubernetes secret object YAML:
+    apiVersion: v1
+    kind: Secret
+    metadata:
+     name: duo
+     namespace: sock-shop
+    type: Opaque
+    data:
+     ikey: MTIzYWJjMTIzYWJjMTIzYWJjMTIzYWJjMTIzYWJjCg==
+     skey: MTIzYWJjMTIzYWJjMTIzYWJjMTIzYWJjMTIzYWJjCg==
+     api_hostname: MTIzYWJjMTIzYWJjMTIzYWJjMTIzYWJjMTIzYWJjCg==
+     akey: MTIzYWJjMTIzYWJjMTIzYWJjMTIzYWJjMTIzYWJjCg==
+
+    Creating Kubernetes object using 'envsubst <${DOLLAR_SIGN}LAB/duo/duo-secrets.yaml | kubectl apply -f -':
+    secret/duo configured
+    ```
+
+6. Confirm the secret exists in Kubernetes where the front-end pods will be able to reach them.
+
+    ###### Command
+
+    ```
+    kubectl get secret duo
+    ```
+
+    ###### Output
+
+    ```
+    NAME   TYPE     DATA   AGE
+    duo    Opaque   4      7d22h
+    ```
+
+    > **TIP**
+    >
+    > If you want to view the secrets themselves, you'll need to use _kubectl get secret duo -o yaml_ and then _echo <secret value here> | base64 --decode_ as they are base64 encoded.
+
+###### Update source with Duo MFA
+
+1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+
+2. Change the working directory to work on the source for the Sock Shop front-end service.
+
+    ###### Command
+
+    ```
+    cd ${DOLLAR_SIGN}Sock-Shop-Front-End/
+    ```
+
+5. Copy the three source files in _${DOLLAR_SIGN}LAB/src/duo/_ that are already instrumented with a Duo MFA login process into the cloned front-end repository.
+
+    _duo.js_ is the Duo Web SDK for Node.js and handles all interactions with the Duo service and is provided by Duo. _index.js_ defines the API for the user endpoint, which includes the login process. _client.js_ handles the web browser client logic for connecting to the backend services like the user endpoint.
+
+    Take some time to open up the _index.js_ and _client.js_ files by double-clicking on them in the file navigator tree in Cloud9 IDE left pane. Search for _DUO_ to review the changes that were made to integrate Duo MFA into the login process. It was around 100 lines of code.
+
+    ###### Command
+
+    ```
+    cp ${DOLLAR_SIGN}LAB/src/duo/duo.js helpers/ ; cp ${DOLLAR_SIGN}LAB/src/duo/index.js api/user/ ; cp ${DOLLAR_SIGN}LAB/src/duo/client.js public/js/
+    ```
+
+    > **TIP**
+    >
+    > If you're more comfortable in another language, Duo provides SDKs for lots of languages and provide [documentation](https://duo.com/docs/duoweb) on how to use them. You can access the SDKs from [Duo's GitHub](https://github.com/duosecurity).
+
+6. Add all the changes into the front-end repository staging area. The _git add_ command tells Git that you want to include updates to a particular file in the next commit.
+
+    ###### Command
+
+    ```
+    git add .
+    ```
+
+7. Commit all changes to the front-end repository and provide a meaningful commit message. The _git commit_ command captures a snapshot of the project's currently staged changes. Committed snapshots can be thought of as “safe” versions of a project—Git will never change them unless you explicitly ask it to.
+
+    ###### Command
+
+    ```
+    git commit -m "add Duo MFA support to login"
+    ```
+
+    ###### Output
+
+    ```
+    [master edbbb1b] add Duo MFA support to login
+		Committer: EC2 Default User <ec2-user@ip-10-50-10-88.ec2.internal>
+		...
+    3 files changed, 0 insertions(+), 0 deletions(-)
+    create mode 100644 helpers/duo.js
+    create mode 100644 api/user/index.js
+    create mode 100644 public/js/client.js
+    ```
+
+8. Push the local changes to these three files to the remote repository on your private GitLab Project using the command.
+
+  ###### Command
+
+  ```
+  git push
+  ```
+
+  ###### Output
+
+  ```
+  [master edbbb1b] add Duo MFA support to login
+  Committer: EC2 Default User <ec2-user@ip-10-50-10-88.ec2.internal>
+  ...
+  3 files changed, 0 insertions(+), 0 deletions(-)
+  create mode 100644 helpers/duo.js
+  create mode 100644 api/user/index.js
+  create mode 100644 public/js/client.js
+  ```
+
+###### CI/CD pipeline automation
+
+Docker images are the basis of containers. An Image is an ordered collection of root filesystem changes and the corresponding execution parameters for use within a container runtime. An image typically contains a union of layered filesystems stacked on top of each other. An image does not have state and it never changes.
+
+Docker can automatically build images by reading the instructions from a Dockerfile. A Dockerfile is a text document that contains all the commands a user could call on the command line to assemble an image. Using docker build users can create an automated build that executes several command-line instructions in succession.
+
+The git push action in last section will trigger the CI/CD pipeline run. The pipeline will build a new Front-End container image using the dockerfile present in the repo and then, push the newly built image to the private registry in ECR.
+
+1. Change the working directory to the _front-end_ cloned repository.
+
+    ###### Command
+
+    ```
+    cd ${DOLLAR_SIGN}Sock-Shop-Front-End/
+    ```
+
+2. Review _${DOLLAR_SIGN}Sock-Shop-Front-End/Dockerfile_, which contains the instructions to build the front-end container image.
+
+    The line _ENV PORT 8079_ defines an environment variable that the service will read when starting to define what TCP port to listen on. When running that container image in a future step, you will need to specify what port on the host to map to the container's internal port.
+
+    > **TIP**
+    >
+    > You'll also see _EXPOSE 8079_, which surprisingly does *not* expose that port to external connections. It functions as a type of documentation between the person who builds the image and the person who runs the container, about which ports are intended to be published.
+
+3. Go back to CI/CD pipeline on GitLab console. The pipeline should be running at this point. Click on _docker build_ stage and review the logs. The GitLab pipeline will use the dockerfile instructions to build a new container image and then push it to ECR repository in an automated manner.
+
+    ###### Output
+
+    ```
+    Sending build context to Docker daemon  102.9MB
+    Step 1/13 : FROM node:10-alpine
+    ...
+    Successfully built 48237c37f9b9
+    Successfully tagged sock-shop/front-end:latest
+    ```
+
+    Each step in the output correlates to steps included in _${DOLLAR_SIGN}LAB/src/front-end/Dockerfile_ . In the _Successfully built_ line of output the value _48237c37f9b9_ is the container image ID that was created.
+
+    > **NOTE**
+    >
+    > If you were to rebuild this container image, the Docker daemon would reuse layers from the first build to reuse for build this image, which speeds up the build process and saves on resources.
+
+4. Once the image is built, the pipeline moves to the next stage and tests the newly build image by running it. You can click _docker_test_ stage to review the logs.
+
+    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor)
+
+
+5. Last stage is _deployment_, which will require manual input from you. Once you click on play button, the pipeline will resume and deploy the Front End image with Duo MFA to the EKS cluster deployment.
+
+    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor)
+
+6. Ensure that the new front-end pod has started and is in a _Running_ status. You'll see that the _AGE_ will be different than the rest of the running pods. You can also verify the image name using _kubectl describe deployment front-end -n sock-shop | grep Image:_ command.
+
+    ###### Command
+
+    ```
+    kubectl get pods
+    ```
+
+    ###### Output
+
+    ```
+    NAME                            READY   STATUS    RESTARTS   AGE
+    carts-6bfcf84f4-cnd7d           1/1     Running   1          4d22h
+    carts-db-6bfc588c5f-tw48c       1/1     Running   1          4d22h
+    ...
+    front-end-b5f568888-vz6sc       1/1     Running   1          30s
+    ...
+    ```
+
+    > **TIP**
+    >
+    > In production it's possible to make this update without a service disruption. You'll need to have more replicas than the the single pod you have in the lab. That way, the Deployment will declaratively update the deployed front-end pod progressively behind the scene. It ensures that only a certain number of old replicas may be down while they are being updated, and only a certain number of new replicas may be created above the desired number of pods.
+
+
+
+###### Validate authentication with Duo MFA
+
+1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+
+2. Retrieve the EC2 Load Balancer DNS A record that has been allocated to the _front-end_ service using kubectl.
+
+    ###### Command
+
+    ```
+    kubectl get services front-end
+    ```
+
+    ###### Output
+
+    ```
+    NAME        TYPE           CLUSTER-IP       EXTERNAL-IP                         ...
+    front-end   LoadBalancer   172.20.229.246   acdeb.${AWS_REGION}.elb.amazonaws.com   ...
+    ```
+
+3. Visit the DNS A record in the _EXTERNAL-IP_ field in a web browser.
+
+4. Login to the Sock Shop as the user _${POD_NAME}_. Click the _Login_ link in the top right. Login with the following values.
+
+    > **NOTE**
+    >
+    > The password is intentionally the same as the username for this login.
+
+    | username          | password          |
+    | ----------------- | ----------------- |
+    | _${POD_NAME}_     | _${POD_NAME}_     |
+
+		> **NOTE**
+		>
+		> If your login is unsuccessful, you might have missed the step where you created this user. Execute the command _addshopuser_ in a Cloud9 terminal and try to login to the Sock Shop again.
+
+4. You will be redirected to the Duo self enrollment dialogue after a succesfull authentication.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022183024378.png" alt="image-20191022183024378" style="zoom:50%;" />
+
+5. When prompted to select what device you are adding, use _Tablet_ and click _Continue_.
+
+    > **WARNING**
+    >
+    > Even though you might have installed the Duo app on your mobile phone, you can select _Tablet_. This avoids having to provide your mobile phone number, which isn't necessary for this lab.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022183515433.png" alt="image-20191022183515433" style="zoom:50%;" />
+
+6. When prompted for the type of tablet, select the appropriate OS based on your mobile device.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022183930111.png" alt="image-20191022183930111" style="zoom:50%;" />
+
+7. You should already have installed the Duo mobile app. If you haven't, install it now. Then click _I have Duo Mobile installed_.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022184041137.png" alt="image-20191022184041137" style="zoom:50%;" />
+
+8. When prompted to activate _Duo Mobile_, open the Duo app and tap the _+_ button at the top. Scan the displayed QR code.
+
+9. Once there's a green check in the center of the QR code, click _Continue_.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022184259668.png" alt="image-20191022184259668" style="zoom:50%;" />
+
+10. When prompted for device settings, select _Automatically send this device a Duo Push_ and click the _Continue to Login_ button.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022184434050.png" alt="image-20191022184434050" style="zoom:50%;" />
+
+11. You will receive a notification in the Duo app that there is a login request. If you select that notifcation, you'll be prompt to _Approve_ or _Deny_ the request. Tap _Approve_.
+
+12. Back in your web broswer, the Duo authentication prompt will have automatically redirected you back to the Sock Shop app. In the top right corner of the site, you will show as logged in.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022185118929.png" alt="image-20191022185118929" style="zoom:50%;" />
+
+
+#### Duo Summary
+
+You can rest easy knowing access to your lucrative Sock Shop has MFA enabled for its users.
+
+Duo is providing self-managed MFA for a custom web application using the Duo Web SDK. Additional configuration in Duo could further protect those resources by setting device restrictions using Duo Beyond.
+
+
+------
+
+### Implement Stealthwatch Cloud
+
+------
+
+<img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/arch2-swc.png" alt="arch2.png" />
+
+This section will help you do the following:
+
+1. Configure AWS and Stealthwatch Cloud integration
+2. Configure Kubernetes and Stealthwatch Cloud integration
+
+
+#### Overview
+
+Stealthwatch Cloud improves security and incident response across the distributed network, from the private network and branch office to the public cloud. This solution addresses the need for digital businesses to quickly identify threats posed by their network devices and cloud resources, and to do so with minimal management, oversight, and security manpower.
+
+You'll integration Stealthwatch Cloud with AWS and a Kubernetes cluster in this section.
+
+
+#### Steps
+
+* [Set Stealthwatch Cloud Credentials](#set-stealthwatch-cloud-credentials)
+* [Give Stealthwatch Cloud access to AWS](#give-stealthwatch-cloud-access-to-aws)
+* [Consume AWS Flow Logs in Stealthwatch Cloud](#consume-aws-flow-logs-in-stealthwatch-cloud)
+* [Instrument Stealthwatch Cloud into Kubernetes](#instrument-stealthwatch-cloud-into-kubernetes)
+
+
+##### Set Stealthwatch Cloud Credentials
+
+We're using your own email of _${DEVNET_EMAIL_ADDRESS}_ to give access to Stealthwatch Cloud. You'll set the password for this account.
+
+1. Check for an email to _${DEVNET_EMAIL_ADDRESS}_ inviting you to join _cisco-${POD_NAME}.obsrvbl.com_
+
+2. Follow the instructions to register your account credentials
+
+    > **NOTE**
+    >
+    > It's recommended to use the password _${POD_PASSWORD}_ to simplify access for yourself across all interfaces in the lab.
+
+3. Confirm you can log into the Stealthwatch Cloud management interface
+
+    > [https://cisco-${POD_NAME}.obsrvbl.com](https://cisco-${POD_NAME}.obsrvbl.com)
+
+
+##### Give Stealthwatch Cloud access to AWS
+
+Stealthwatch Cloud Public Cloud Monitoring (PCM) is a visibility, threat identification, and compliance service for Amazon Web Services (AWS). Stealthwatch Cloud consumes network traffic data, including Virtual Private Cloud (VPC) flow logs, from your AWS public cloud network. It then performs dynamic entity modeling by running analytics on that data to detect threats and indicators of compromise.
+
+Stealthwatch Cloud consumes VPC flow logs directly from your AWS account using a cross-account IAM role with the proper permissions. In addition, Stealthwatch Cloud can consume other sources of data, like CloudTrail and IAM, for additional context and monitoring.
+
+1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+
+2. Create an IAM role that allows SWC to access configuration and flow logs
+
+    > **NOTE**
+    >
+    > An IAM *role* is an IAM identity that you can create in your account that has specific permissions. An IAM role is similar to an IAM user, in that it is an AWS identity with permission policies that determine what the identity can and cannot do in AWS. However, instead of being uniquely associated with one person, a role is intended to be assumable by anyone who needs it. Also, a role does not have standard long-term credentials such as a password or access keys associated with it. Instead, when you assume a role, it provides you with temporary security credentials for your role session.
+
+    ###### Command
+
+    ```
+    aws iam create-role --role-name swc-role --assume-role-policy-document file://${DOLLAR_SIGN}LAB/swc/swc-aws-assume-role.json
+    ```
+
+    ###### Output
+
+    ```
+    {
+       "Role": {
+           "Path": "/",
+           "RoleName": "swc-role",
+           "RoleId": "AAODGROA5WOZRFUWOU5SB",
+           "Arn": "arn:aws:iam::${AWS_ACCT_ID}:role/swc-role",
+           "CreateDate": "2019-10-21T22:50:57Z",
+           "AssumeRolePolicyDocument": {
+               "Version": "2012-10-17",
+               "Statement": {
+                   "Effect": "Allow",
+                   "Action": "sts:AssumeRole",
+                   "Principal": {
+                       "AWS": "757972810156"
+                   },
+                   "Condition": {
+                       "StringEquals": {
+                           "sts:ExternalId": "cisco-${POD_NAME}"
+                       }
+                   }
+               }
+           }
+       }
+    }
+    ```
+
+    It's worth taking a minute to review the assume role policy document _${DOLLAR_SIGN}LAB/swc/swc-aws-assume-role.json_. You'll see it specifies the AWS principal of _757972810156_. That's Stealthwatch Cloud's ID used for the AWS integration.
+
+    You'll also see a condition that says that _sts:ExternalId_ must equal _cisco-${POD_NAME}_. This is a unique identity within Stealthwatch Cloud for your account.
+
+3. Create an IAM policy for the SWC role to use that restricts access to AWS resources and actions.
+
+    ###### Command
+
+    ```
+    aws iam create-policy --policy-name swc-policy --policy-document file://${DOLLAR_SIGN}LAB/swc/swc-aws-policy.json
+    ```
+
+    ###### Output
+
+    ```
+    {
+       "Policy": {
+           "PolicyName": "swc-policy",
+           "PolicyId": "AWH3QXOYQV7NPA5WOZRFU",
+           "Arn": "arn:aws:iam::${AWS_ACCT_ID}:policy/swc-policy",
+           "Path": "/",
+           "DefaultVersionId": "v1",
+           "AttachmentCount": 0,
+           "PermissionsBoundaryUsageCount": 0,
+           "IsAttachable": true,
+           "CreateDate": "2019-10-21T22:52:28Z",
+           "UpdateDate": "2019-10-21T22:52:28Z"
+       }
+    }
+    ```
+
+    If you review the policy file _${DOLLAR_SIGN}LAB/swc/swc-aws-policy.json_, you'll see the services and actions it requires. In most cases it doesn't need anything other than read access (e.g., _Get_, _List_). The exceptions to that are for Inspector and CloudWatch log filters.
+
+    > **TIP**
+    >
+    > You can adjust the policy as you see fit to restrict Stealthwatch Cloud. It will adjust it's capabilities according to what access it has been granted.
+
+4. Attach the IAM policy to the role to set access permissions. There will be no output from the command unless there's an error.
+
+    ###### Command
+
+    ```
+    aws iam attach-role-policy --role-name swc-role --policy-arn arn:aws:iam::${AWS_ACCT_ID}:policy/swc-policy
+    ```
+
+5. Retrieve the role ARN from the step where you created the role or execute the following command to retrieve it. We'll need this value to enter into the Stealthwatch Cloud AWS settings.
+
+    ###### Command
+
+    ```
+    aws iam get-role --role-name swc-role | jq -r '.Role.Arn'
+    ```
+
+    ###### Output
+
+    ```
+    arn:aws:iam::${AWS_ACCT_ID}:role/swc-role
+    ```
+
+6. Visit the Stealthwatch Cloud management interface's AWS settings.
+
+    > [https://cisco-${POD_NAME}.obsrvbl.com/accounts/settings/aws/#/settings/aws/credentials](https://cisco-${POD_NAME}.obsrvbl.com/accounts/settings/aws/#/settings/aws/credentials)
+
+7. Click on _Login via cisco-${POD_NAME}_ and login using the following values.
+
+    | Field                 | Value                                                        |
+    | --------------------- | ------------------------------------------------------------ |
+    | Email                 | ${DEVNET_EMAIL_ADDRESS}                                      |
+    | Password              | ${POD_PASSWORD} (or password you set)                        |
+
+8. Provide the role ARN and name from past steps for Stealthwatch Cloud to use for access to your AWS environment. Set the the fields with the following values.
+
+    | Role ARN                                  | Name     |
+    | ----------------------------------------- | -------- |
+    | arn:aws:iam::${AWS_ACCT_ID}:role/swc-role | swc-role |
+
+9. Click on the _+_ button to save the details.
+
+10. Review the permissions that Stealthwatch Cloud has access to using the management interface. This page lists the most important permissions for Stealthwatch Cloud.
+
+    > **NOTE**
+    >
+    > It's likely that there will be no AWS services listed when you visit this page immediately after adding your newly created role. It could take 5 to 10 minutes for Stealthwatch Cloud processes to validate access to all services.
+
+    > [https://cisco-${POD_NAME}.obsrvbl.com/accounts/settings/aws/#/settings/aws/permissions](https://cisco-${POD_NAME}.obsrvbl.com/accounts/settings/aws/#/settings/aws/permissions)
+
+
+
+##### Consume AWS Flow Logs in Stealthwatch Cloud
+
+When the VPC for this lab was created using CloudFormation, VPC flow logs were setup for you. This is a recommended best practice so that there's a record of all traffic within a VPC before any workloads are even deployed.
+
+It's worth taking some time to review the CloudFormation template _${DOLLAR_SIGN}LAB/aws/cf-setup-template.json_ we used if you haven't already. We needed to create a S3 Bucket, S3 Bucket Policy, and configure the VPC to send flow logs to the S3 Bucket. Those items were configured using the respective resources of _ciscoAppFirstSecFlowLogBucket_, _ciscoAppFirstSecFlowLogBucketPolicy_ and _ciscoAppFirstSecVpcFlowLog_.
+
+1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+
+2. Update the S3 flow log bucket policy to permit the *swc-role* to list and retrieve files. Take a minute to review the contents of the new policy at *${DOLLAR_SIGN}LAB/swc/swc-flowlogs-bucket-policy.json*. There will be no output from the command unless there's an error.
+
+    ###### Command
+
+    ```
+    aws s3api put-bucket-policy --bucket ${AWS_FLOW_LOG_BUCKET} --policy file://${DOLLAR_SIGN}LAB/swc/swc-flowlogs-bucket-policy.json
+    ```
+
+3. Provide Stealthwatch Cloud with the S3 Bucket name that contains the VPC flow logs. Visit the management interface and set the fields with the following values.
+
+    > [https://cisco-${POD_NAME}.obsrvbl.com/accounts/settings/aws/#/settings/aws/flowlogs](https://cisco-${POD_NAME}.obsrvbl.com/accounts/settings/aws/#/settings/aws/flowlogs)
+
+    | **S3 Path**                             | **Credentials**     |
+    | ----------------------------------------| ------------------- |
+    | ${AWS_FLOW_LOG_BUCKET}    | swc-role            |
+
+4. Click the _+_ button.
+
+5. Visit the Stealthwatch Cloud management interface to confirm that the _AWS_ sensor shows up in the _Sensor List_ and has a green icon to indicate the configuration is working as expected.
+
+    > [https://cisco-${POD_NAME}.obsrvbl.com/sensors/list/](https://cisco-${POD_NAME}.obsrvbl.com/sensors/list/)
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191021172621979.png" alt="image-20191021172621979" style="zoom:50%;" />
+
+
+##### Instrument Stealthwatch Cloud into Kubernetes
+
+The Stealthwatch Cloud service can monitor network traffic between pods running in Kubernetes clusters. In order to to have visibility into inter-pod traffic, each node needs a Stealthwatch Cloud sensor pod. A Kuberentes DaemonSet is used to ensure that those pods always exist on those nodes.
+
+> **TIP**
+>
+> If you're using Google Kubernetes Engine (GKE)  there is no need to deploy a Kubernetes sensor. Instead, set up an integration to GCP VPC Flow Logs, which already contain Kubernetes inter-pod traffic.
+
+> **TIP**
+>
+> There are good instructions for setting up this integration (among others) in the Stealthwatch Cloud administrative interface. It's worth reviewing, although it's recommended for this lab to follow the steps below to better understand what you're doing and maintain naming conventions.
+>
+> [https://cisco-${POD_NAME}.obsrvbl.com/integrations/kubernetes/](https://cisco-${POD_NAME}.obsrvbl.com/integrations/kubernetes/)
+
+1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+
+2. Change the current context for _kubectl_ to ensure that the Kubernetes objects that you're going to create are in the _default_ namesapce.
+
+    ###### Command
+
+    ```
+    kubectl config set-context --current --namespace=default
+    ```
+
+    ###### Output
+
+    ```
+    Context "arn:aws:eks:${AWS_REGION}:${AWS_ACCT_ID}:cluster/app-first-sec" modified.
+    ```
+
+3. Create a Kubernetes secret with the service key that the pods will use to authenticate to Stealthwatch Cloud.
+
+    ###### Command
+
+    ```
+    kubectl create secret generic swc --from-file=service_key=${DOLLAR_SIGN}HOME/environment/lab/swc/swc-service-key.txt
+    ```
+
+4. After creating the _swc_ secret, create a new Kubernetes service account named _swc_.
+
+    ###### Command
+
+    ```
+    kubectl create serviceaccount --generator=serviceaccount/v1 swc
+    ```
+
+    ###### Output
+
+    ```
+    serviceaccount/swc created
+    ```
+
+5.  Bind the _swc_ service account to the read-only cluster role named _view_.
+
+    ###### Command
+
+    ```
+    kubectl create clusterrolebinding swc --clusterrole=view --serviceaccount=default:swc
+    ```
+
+    ###### Output
+
+    ```
+    clusterrolebinding.rbac.authorization.k8s.io/swc created
+    ```
+
+6. Deploy the the DaemonSet to schedule a sensor pod on the nodes. By default, this DaemonSet will schedule pods on the master and worker nodes, which is a best practice.
+
+    A DaemonSet ensures that all (or some) nodes run a copy of a pod. As nodes are added to the cluster, pods are added to them. As nodes are removed from the cluster, those pods are garbage collected. Deleting a DaemonSet will clean up the pods it created.
+
+    > **NOTE**
+    >
+    > If you're using a managed Kubernetes service like AWS EKS, the master node is completely managed by AWS. Therefore, it's not possible to have the DaemonSet deploy a sensor pod to the master node. This follows the shared security model for PaaS and IaaS, where you expect AWS to secure the infrastructure like the master node.
+
+    ###### Command
+
+    ```
+    kubectl apply -f ${DOLLAR_SIGN}LAB/swc/swc-k8s-daemonset.yaml
+    ```
+
+    ###### Output
+
+    ```
+    daemonset.apps/swc-ona created
+    ```
+
+7. Verify that there are three _swc-ona_ pods running with one on each worker node in your cluster.
+
+    ###### Command
+
+    ```
+    kubectl get pods -o wide
+    ```
+
+    ###### Output
+
+    ```
+    NAME                READY   STATUS    ...   NODE
+    swc-ona-bptvr   1/1     Running   ...   ip-10-50-120-150.ec2.internal
+    swc-ona-hkgfd   1/1     Running   ...   ip-10-50-120-149.ec2.internal
+    swc-ona-qsbpg   1/1     Running   ...   ip-10-50-110-164.ec2.internal
+    ```
+
+8. Visit the Stealthwatch Cloud administrative interface to confirm that there are three new sensors showing up in the sensor list.
+
+    > [https://cisco-${POD_NAME}.obsrvbl.com/sensors/list/](https://cisco-${POD_NAME}.obsrvbl.com/sensors/list/)
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022200716161.png" alt="image-20191022200716161" style="zoom:50%;" />
+
+9. Return to the Cloud9 IDE terminal that you were just using.
+
+10. Change the current context for _kubectl_ back to the _sock-shop_ namespace for the remainder of the lab.
+
+    ###### Command
+
+    ```
+    kubectl config set-context --current --namespace=sock-shop
+    ```
+
+    ###### Output
+
+    ```
+    Context "arn:aws:eks:${AWS_REGION}:${AWS_ACCT_ID}:cluster/app-first-sec" modified.
+    ```
+
+
+
+#### Stealthwatch Cloud summary
+
+Now you can sleep more soundly knowing that Stealthwatch Cloud is providing public visibility and threat detection for your vibrant Sock Shop business.
+
+Stealthwatch Cloud is now consuming all sources of telemetry native to AWS, including Amazon Virtual Private Cloud (VPC) flow logs, and Kubernetes pod traffic to monitor all activity in the cloud without the need for software agents. Stealthwatch Cloud was deployed in these environments in a matter of minutes with no disruption to service availability. Stealthwatch Cloud uses this data to model the behavior of each cloud resource, a method called entity modeling. It is then able to detect and alert on sudden changes in behavior, malicious activity, and signs of compromise.
+
+------
+
+## Implement security - Secure Cloud Workload
+
+------
+
+<img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/arch2-tet.png" alt="arch2.png" />
+
+This section will help you do the following:
+
+1. Learn the basics of Cisco Secure Workload external integrations and policy
+2. Create Kubernetes service accounts
+3. Understand attack lateral movement in Kubernetes
+
+#### Overview
+
+Cisco Secure Workload offers holistic workload protection for multi-cloud data centers by enabling a zero-trust model using segmentation. This approach allows you to identify security incidents faster, contain lateral movement, and reduce your attack surface. Secure Workload's infrastructure-agnostic approach supports both on-premises and public cloud workloads.
+
+Secure Workload provides these core benefits:
+
+- Uses behavior-based application insight to automate whitelist policy.
+- Minimizes lateral movement using application segmentation to enable a secure zero-trust model.
+- Identifies anomalies faster by using process behavior deviations.
+- Reduces the attack surface within the data center by quickly identifying common vulnerabilities and exposures.
+- Collects comprehensive telemetry from a heterogeneous environment to provide actionable insights in minutes.
+- Enables long-term data retention for deep forensics, analysis, and troubleshooting.
+
+#### Steps
+
+* [Secure Workload integration with AWS](#Secure Workload-integration-with-aws)
+* [Secure Workload integration with Kubernetes](#Secure Workload-integration-with-kubernetes)
+* [Enforce application segmentation based on Kubernetes annotations](#enforce-application-segmentation-based-on-kubernetes-annotations)
+* [Simulate a breach and lateral movement](#simulate-a-breach-and-lateral-movement)
+* [Create a flow search](#create-a-flow-search)
+* [Create invetory filters](#create-invetory-filters)
+* [Define application segmenation](#define-application-segmenation)
+* [Confirm lateral movement has been blocked](#confirm-lateral-movement-has-been-blocked)
+* [Confirm the application is working as expected](#confirm-the-application-is-working-as-expected)
+
+> **WARNING**
+>
+> Firefox is not a supported browser for the Secure Workload management interface.
+
+###### Set Secure Workload Credentials
+
+Since this is the first time you'll be accessing Secure Workload, you'll need to set your credentials. We're using your own email _${DEVNET_EMAIL_ADDRESS}_ to give access to Secure Workload, but you'll need set the password for this account.
+
+1. Visit the Secure Workload management interface to set a password for your newly created Secure Workload account
+
+    > [https://tet-pov-rtp1.cpoc.co/h4_users/password/new](https://tet-pov-rtp1.cpoc.co/h4_users/password/new)
+
+2. Enter _${DEVNET_EMAIL_ADDRESS}_, which is the email address associated with your DevNet account when you reserved the sandbox for this lab. Click the _Send password reset link_ button.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200715054416.png" alt="image-20200715054416" style="zoom:50%;" />
+
+4. Check your for the password reset email and follow the steps in the email to set a new password for your account
+
+    > **NOTE**
+    >
+    > It's recommended to use the password _${POD_PASSWORD}_ to simplify access for yourself across all interfaces in the lab.
+
+5. Confirm you can log into the Secure Workload management interface using _${DEVNET_EMAIL_ADDRESS}_ and the password you just set
+
+    > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co)
+
+
+##### Secure Workload integration with AWS
+
+Create AWS IAM policy and user for Secure Workload with restrictive permissions using the AWS CLI.
+
+1. Create AWS IAM policy with access to resources and actions that Secure Workload needs.
+
+    ###### Command
+
+    ```
+    aws iam create-policy --policy-name Secure Workload-read-only --policy-document file://${DOLLAR_SIGN}LAB/Secure Workload/Secure Workload-aws-read-only-policy.json
+    ```
+
+    ###### Output
+
+    ```
+    {
+       "Policy": {
+           "PolicyName": "Secure Workload-read-only",
+           "PolicyId": "RFUWK63KANPA5WOZ4JBES",
+           "Arn": "arn:aws:iam::${AWS_ACCT_ID}:policy/Secure Workload-read-only",
+           "Path": "/",
+           "DefaultVersionId": "v1",
+           "AttachmentCount": 0,
+           "PermissionsBoundaryUsageCount": 0,
+           "IsAttachable": true,
+           "CreateDate": "2019-10-18T12:35:08Z",
+           "UpdateDate": "2019-10-18T12:35:08Z"
+       }
+    }
+    ```
+
+    If you review the policy applied to the _Secure Workload-read-only_ IAM user in _${DOLLAR_SIGN}LAB/Secure Workload/Secure Workload-aws-read-only-policy.json_, you'll notice that it explicitly specifies read-only _Actions_.
+
+2. Create AWS IAM user for Secure Workload to use.
+
+    ###### Command
+
+    ```
+    aws iam create-user --user-name Secure Workload-read-only
+    ```
+
+    ###### Output
+
+    ```
+    {
+       "User": {
+           "Path": "/",
+           "UserName": "Secure Workload-read-only",
+           "UserId": "WOZRFUAIDA5WDXCIN34YQ",
+           "Arn": "arn:aws:iam::${AWS_ACCT_ID}:user/Secure Workload-read-only2",
+           "CreateDate": "2019-10-18T12:35:55Z"
+       }
+    }
+    ```
+
+3. Attach the IAM policy to the IAM user to grant the user permissions to access resources. There will be no output from the command unless there's an error.
+
+    ###### Command
+
+    ```
+    aws iam attach-user-policy --policy-arn arn:aws:iam::${AWS_ACCT_ID}:policy/Secure Workload-read-only --user-name Secure Workload-read-only
+    ```
+
+4. Generate an access key for the _Secure Workload-read-only_ user.
+
+    ###### Command
+
+    ```
+    aws iam create-access-key --user-name Secure Workload-read-only
+    ```
+
+    ###### Output
+
+    ```
+    {
+       "AccessKey": {
+           "UserName": "Secure Workload-read-only",
+           "AccessKeyId": "AKIFUWHWXAQLFYA5WOZR",
+           "Status": "Active",
+           "SecretAccessKey": "AKIFUWHWXAQLFYA5WOZR/AKIFUWHWXAQLFYA5WOZR",
+           "CreateDate": "2019-10-18T12:42:58Z"
+       }
+    }
+    ```
+
+    You'll use the _AccessKeyId_ and _SecretAccessKey_ values when you configure Secure Workload for AWS external orchestration integration.
+
+5. Return to the Secure Workload administrative interface to add the AWS IAM user credentials.
+
+    > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co/)
+
+    Login using the following values.
+
+    | Field                 | Value                                        |
+    | --------------------- | -------------------------------------------- |
+    | Email                 | ${DEVNET_EMAIL_ADDRESS}                      |
+    | Password              | ${POD_PASSWORD} (or password you set)        |
+
+6. Navigate to the _External Orchestrators_ page under _VISIBILITY_ in the left menu pane.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018083122803.png" alt="image-20191018083122803" style="zoom:50%;" />
+
+7. Click the _Create New Configuration_ button.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018083250277.png" alt="image-20191018083250277" style="zoom:50%;" />
+
+8. Set the values in the _Create External Orchestrator Configuration_ dialogue modal with the following values. Select _Type_ as Kubernetes and _K8s Manager Type_ as EKS. The _AWS Access Key Id_ and _AWS Secret Access Key_ correspond to the _AccessKeyId_ and _SecretAccessKey_ values in the output of the _aws iam create-access-key_ command in an earlier step.
+
+    | Field                 | Value                                                                 |
+    | --------------------- | ----------------------------------------------------------------------|
+    | Type                  | AWS                                                                   |
+    | Name                  | app-first-sec-aws                                                     |
+    | AWS Access Key Id     | [_AccessKeyId_ from _aws iam create-access-key_ in previous step]     |
+    | AWS Secret Access Key | [_SecretAccessKey_ from _aws iam create-access-key_ in previous step] |
+    | AWS Region            | ${AWS_REGION}                                                         |
+
+10. Retrieve the Kubernetes API hostname using the AWS CLI _eks describe-cluster_ command to use when entering the Kubernetes configuration into Secure Workload in future steps. Switch to Hosts List tab from vertical menu on the left-hand side and add API server endpoint address and port (TCP Port 443) details for the EKS cluster in the provided space.
+
+    ###### Command
+
+    ```
+    aws eks describe-cluster --name app-first-sec | jq -r '.cluster.endpoint' | sed 's/https:\/\///'
+    ```
+
+    ###### Output
+
+    ```
+    40D7AAC6763809EAD50E.gr1.${AWS_REGION}.eks.amazonaws.com
+    ```
+
+11. Click the _Create_ button. Once Secure Workload successfully connects to AWS it will display a _Connection Status_ of _Success_.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022192046986.png" alt="image-20191022192046986" style="zoom:50%;" />
+
+    > **WARNING**
+    >
+    > The _Connection Status_ field will show a value of _Failure_ for the _app-first-sec-aws_ row before it has attempted to connect to AWS. Give it a minute to validate the configuration you just entered. Once the _Connection Status_ field value is set to _Success_ proceed to the next step.
+
+12. You can confirm that AWS annotations are available in Secure Workload by visiting _Inventory Search_ under _VISIBILITY_ in the left menu pane.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022192311933.png" alt="image-20191022192311933" style="zoom:50%;" />
+
+13. In the _Filters_ field, type _aws_ to show the annotations that are available from the external orchestration integration you completed. These annotations can be used when defining policy, searching for inventory and filtering flows.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022192756143.png" alt="image-20191022192756143" style="zoom:50%;" />
+
+    > **NOTE**
+    >
+    > It can take a minute or two for annotations to show up after the _Connection Status_ field value is set to _Success_.
+    > **WARNING**
+    >
+    > The _Connection Status_ field will show a value of _Failure_ for the _app-first-sec-k8s_ row before it has attempted to connect to Kubernetes. Give it a minute to validate the configuration you just entered. Once the _Connection Status_ field value is set to _Success_ proceed to the next step.
+
+
+
+##### Enforce application segmentation based on Kubernetes annotations
+
+Application definition in Secure Workload plays a central role in many features including visibility, policy enforcement, policy compliance and multi-tenancy.
+
+Application Dependency Mapping (ADM) is a functionality in Cisco Secure Workload that helps provide insight into the kind of complex applications that run in a datacenter. These automatic policy generation works extremely well in brown-field application environments where you're not sure what applications exist and where. In a DevOps would where everything is automated and infrastructure configuration is managed like application code, manually defined policies are important to secure applications as they are deployed. A blend of both provides for complete coverage for our customers.
+
+In our environment, we'll be using a zero trust policy specific to this lab that permits AWS EKS operational traffic, the Sock Shop application, and Cisco security services. You'll simulate an attack from the front-end service and subsequently block it from happening using the zero trust policy.
+
+You'll use Ansible playbooks to configure and enforce the policy, which will protect against lateral movement between services.
+
+
+
+###### Simulate a breach and lateral movement
+
+1. Simulate an attacker gaining shell access via the _front-end_ service by opening a shell on the _front-end_ pod. First we need to retrieve the _front-end_ pod name.
+
+    ###### Command
+
+    ```
+    kubectl get pods
+    ```
+
+    ###### Output
+
+    ```
+    NAME                            READY   STATUS    RESTARTS   AGE
+    carts-6bfcf84f4-cnd7d           1/1     Running   0          16h
+    carts-db-6bfc588c5f-tw48c       1/1     Running   0          16h
+    ...
+    front-end-b5f568888-rrjhh       1/1     Running   0          13h
+    ```
+
+    ###### Command
+
+    ```
+    kubectl exec -it <front-end pod name from previous command> -- /bin/sh
+    ```
+
+    ###### Output
+
+    ```
+    /usr/src/app $
+    ```
+
+2. Simulate lateral movement by having the attacker access the _payment_ service although only the _orders_ pods should have access to it. We'll use _netcat_ to connect to the _payment_ service and provide the necessary http headers and payload once connected.
+
+    In this simulation, we don't actual provide any unique identifiers to associated the authorization with a user's account or credit card, but the implications in the real-world could be crediting an account with some funds from another accounts payment details.
+
+    ###### Command
+
+    ```
+    nc payment 80
+    ```
+
+    ###### Enter
+
+    ```
+    POST /paymentAuth HTTP/1.1
+    Host: payment
+    Content-Length: 14
+
+    {"Amount":40}
+    ```
+
+    ###### Output
+
+    ```
+    {"authorised":true,"message":"Payment authorised"}
+    ```
+
+    ###### Enter
+
+    ```
+    [ctrl-c]
+    ```
+
+    ###### Output
+
+    ```
+    ^Cpunt!
+
+    /usr/src/app $
+    ```
+
+    > **TIP**
+    >
+    > Although obvious, it's worth noting that it is not recommend to leave _netcat_ installed in a container image. In addition, it's recommended to run containers as immutable so that software can't be installed or built locally should an attacker gain access. As we all know, best practices are not always followed so this scenario is 100% valid and witnessed in production application deployments.
+
+
+###### Perform a flow search
+
+The Flows option in the top-level menu takes you to the Flow Search page. This page provides the means for quickly filtering and drilling down into the flows corpus. The basic unit is a “Flow Observation” which is a per-minute aggregation of each unique flow. The two sides of the flow are called “Consumer” and “Provider”, the Consumer is the side that initiated the flow, and the Provider is responding to the Consumer (e.g. “Client” and “Server” respectively). Each observation tracks the number of packets, bytes, and other metrics in each direction for that flow for that minute interval.
+
+You want to confirm that the software agent is sending flow data to Secure Workload, so you'll use the _Flow Search_ to verify that it's seeing flows to the _front-end_ pods.
+
+1. Within the Secure Workload administrative interface navigate to _Flow Search_ under _VISIBILITY_ in the navigation menu on the left side.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018122327038.png" alt="image-20191018122327038" style="zoom:50%;" />
+
+2. Specify a _Filter_ to search for flows that were destined to the Sock Shop _front-end_ pods.
+
+    Type _name_ in the _Filters_ field. Select _* Provider Orchestrator name_ from the drop-down options provided.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018122810702.png" alt="image-20191018122810702" style="zoom:50%;" />
+
+    > **NOTE**
+    >
+    > Do not select _* Provider Orchestrator Name_. Notice the capitalized *N* compared to *name* in the instructions above.
+
+    Select _=_ from the drop-down options provided.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018122953224.png" alt="image-20191018122953224" style="zoom:50%;" />
+
+    Type _front-end_ and press _return_ or _Enter_.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018123045876.png" alt="image-20191018123045876" style="zoom:50%;" />
+
+    Click on the _Filter Flows_ button.
+
+    It will take some time for the flows to be filtered and then displayed at the bottom of the window.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018123212670.png" alt="image-20191018123212670" style="zoom:50%;" />
+
+
+###### Create an API Key to use with Ansible
+
+Given the application dependencies and kubernetes environment are well understood, this is an ideal situation to leverage the power of infrastructure automation. In our case, you'll use open source [Secure Workload modules](https://github.com/CiscoDevNet/Secure Workload-ansible-playbooks) for Ansible along with Ansible playbooks that have already been created for your environment.
+
+First you'll need to create a Secure Workload API Key that the modules will use to access the APIs and define the filters.
+
+1. Return to the Secure Workload administrative interface in your web broswer.
+
+    > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co/)
+
+2. Click the gears icon in the upper right-hand corner and then select *API Keys*.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200721073604.png" alt="image-20200721073604" style="zoom:50%;" />
+
+3. Click on the *Create API Key* button in the upper right-hand corner.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200306142231868.png" alt="image-20200306142231868" style="zoom:50%;" />
+
+4. Type *Ansible* in the *Description* field.
+
+5. Check the box for *Applications and policy management: API to manage applications and enforce policies*
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200306142555651.png" alt="image-20200306142555651" style="zoom:50%;" />
+
+    > **NOTE**
+    >
+    > The Secure Workload modules for Ansible could be used for other operations like managing users or doing flow searches. However, since we don't need them for this lab, we're following the least privilege principle and not enabling them.
+
+6. Click the *Create* button.
+
+7. You'll see a pop-up stating *API Key Created*.
+
+    > **WARNING**
+    >
+    > Either leave the *API Key* and *Secret* pop-up accessible or download them so you can copy and paste the values into a configuration file in the Cloud9 terminal. If you close this pop-up, you'll need to delete this key and create a new one as there isn't a way to retrieve the *Secret* again.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200306154917232.png" alt="image-20200306154917232" style="zoom:50%;" />
+
+
+
+###### Create inventory filters using Ansible
+
+Now that we have an API Key we can configure Ansible to access Secure Workload and then run our playbooks to create inventory filters for all of the application, Kubernetes, AWS, and external inventory.
+
+1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+
+2. Change the directory to the Secure Workload Ansible playbooks
+
+    ###### Command
+
+    ```
+    cd ${DOLLAR_SIGN}LAB/Secure Workload/ansible
+    ```
+
+3. Provide the Secure Workload *API Key* and *API Secret* using the helper script *tetansconf*, which will add the values to the host configuration file *${DOLLAR_SIGN}LAB/Secure Workload/ansible/host_vars/Secure Workload.yaml* and confgure the inventory filters (*${DOLLAR_SIGN}LAB/Secure Workload/ansible/tet-sock-shop-filters.yaml*) and segmentation policy (*${DOLLAR_SIGN}LAB/Secure Workload/ansible/tet-sock-shop-app.yaml*).
+
+    ###### Command
+
+    ```
+    tetansconf
+    ```
+
+    ###### Output
+
+    ```
+    Secure Workload API Key:
+    12341234123412341234
+
+    Secure Workload API Secret:
+    12341234123412341234
+
+    Ansible Host Configuration for Secure Workload:
+    ---
+    # URL for the Secure Workload Dashboard
+    Secure Workload_url: "https://tet-pov-rtp1.cpoc.co"
+    # API Details - Create new token from Secure Workload Dashboard!
+    api_key: "12341234123412341234"
+    api_secret: "12341234123412341234"
+    # Set to true for production setups that use trusted certificates!
+    validate_certs: true
+    app_scope_name: "app-first-sec-02"
+    external_orchestrator_name_k8s: "app-first-sec-k8s"
+    k8s_namespace: "sock-shop"
+    ```
+
+    > **NOTE**
+    >
+    > The variables set in this file are used in the Ansible playbooks you'll use in subsequent steps.
+
+4. Run the playbook to create the inventory filters. Take a moment to review the contents of *${DOLLAR_SIGN}LAB/Secure Workload/ansible/tet-sock-shop-filters.yaml* and note its human-readable structure.
+
+    ###### Command
+
+    ```
+    ansible-playbook tet-sock-shop-filters.yaml
+    ```
+
+    ###### Output
+
+    ```
+    PLAY [Configure Sock Shop Filters] ********
+
+    TASK [Sock Shop Secure Workload add Duo] ********
+    changed: [Secure Workload]
+    ...
+    PLAY RECAP ********
+    Secure Workload                  : ok=34   changed=34
+    ```
+
+    > **NOTE**
+    >
+    > Although the output will say changed for these filters, it doesn't mean that the filter already existed. If an object exists and the settings are the same, the output will be *ok*. If it doesn't exist or is modified it will be shown as *changed*.
+
+5. Return to the Secure Workload administrative interface in your web broswer.
+
+    > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co/)
+
+6. Select _Inventory Filters_ under _VISIBILITY_ in the navigation menu in the left pane.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018124622764.png" alt="image-20191018124622764" style="zoom:50%;" />
+
+7. Confirm that there are additional filters beyond what you had already created manually.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200306161527737.png" alt="image-20200306161527737" style="zoom:50%;" />
+
+> **NOTE**
+>
+> You might notice that the inventory filter you created for the front-end pods has changed. The playbook added the Kubernetes namespace to the query details to make the filters more precise and created an additional filter for the front-end service.
+
+
+###### Define application segmentation using Ansible
+
+Network security policies are the building block for many powerful features of Cisco Secure Workload. They provide a simple and intuitive mechanism for both application owners and security teams to define the necessary intents to secure assets and applications within data centers.
+
+Secure Workload supports any mixture of deny/allow security models for different applications, letting application owners define very fine-grained policies to secure their applications while simultaneously allowing the security teams to enforce their guidelines and best practices on wide sets of applications.
+
+The enforcement is managed by the Secure Workload software agents that are running on the Kubernetes worker nodes. The agent will modify the host firewall on the _Consumer_ and _Provider_ to deny or allow the specified connections.
+
+You'll define a policy to show the power of using eternal orchestration annotations from Kubernetes to stop the lateral breach you simulated earlier between the Sock Shop _front-end_ pod and _payment_ service.
+
+In an earlier step, you configured policy filters. Now we'll use Ansible to apply the complete zero trust policy for this application environment.
+
+1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+
+2. Change the directory to the Secure Workload Ansible playbooks
+
+    ###### Command
+
+    ```
+    cd ${DOLLAR_SIGN}LAB/Secure Workload/ansible
+    ```
+
+3. You should have already provided the Secure Workload *API Key* and *API Secret* using the helper script *tetansconf*, in a previous step. You can confirm values are set for *api_key* and *api_secret* in *${DOLLAR_SIGN}LAB/Secure Workload/ansible/host_vars/Secure Workload.yaml*.
+
+    ###### Command
+
+    ```
+    cat ${DOLLAR_SIGN}LAB/Secure Workload/ansible/host_vars/Secure Workload.yaml
+    ```
+
+    ###### Output
+
+    ```
+    ---
+    # URL for the Secure Workload Dashboard
+    Secure Workload_url: "https://tet-pov-rtp1.cpoc.co"
+    # API Details - Create new token from Secure Workload Dashboard!
+    api_key: "12341234123412341234"
+    api_secret: "12341234123412341234"
+    # Set to true for production setups that use trusted certificates!
+    validate_certs: true
+    app_scope_name: "app-first-sec-02"
+    external_orchestrator_name_k8s: "app-first-sec-k8s"
+    k8s_namespace: "sock-shop"
+    ```
+
+4. Run the playbook to create the application policy. Take a moment to review the contents of *${DOLLAR_SIGN}LAB/Secure Workload/ansible/tet-sock-shop-app.yaml* and note its human-readable structure.
+
+    ###### Command
+
+    ```
+    ansible-playbook tet-sock-shop-app.yaml
+    ```
+
+    ###### Output
+
+    ```
+    PLAY [Configure Sock Shop App Policy] ********
+
+    TASK [Create Application] ********
+    changed: [Secure Workload]
+    ...
+    PLAY RECAP ********
+    Secure Workload                  : ok=50   changed=47
+    ```
+
+    > **NOTE**
+    >
+    > Although the output will say changed for these policies, it doesn't mean that the policy already existed. If an object exists and the settings are the same, the output will be *ok*. If it doesn't exist or is modified it will be shown as *changed*.
+
+    > **WARNING**
+    >
+    > If you get an error similar to _"a primary application with this scope already exist"_, it's possible that when you manually created the workspace in Secure Workload that the name doesn't match the playbook expected name of _Sock Shop_. You can change the name in Secure Workload or in the playbook to make sure they match to overcome the error.
+
+5. Return to the Secure Workload administrative interface in your web broswer.
+
+    > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co/)
+
+6. Select _SEGMENTATION_ in the navigation menu in the left pane.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018125829189.png" alt="image-20191018125829189" style="zoom:50%;" />
+
+7. You should be taken back to the *Sock Shop* application workspace that you created in a previous step. If that's not the case, click _Switch Application_. Then select the *Sock Shop* application workspace.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018130105438.png" alt="image-20191018130105438" style="zoom:50%;" />
+
+8. Confirm that there are additional policies beyond what you had already created manually.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200306182347896.png" alt="image-20200306182347896" style="zoom:50%;" />
+
+
+
+###### Confirm lateral movement has been blocked
+
+These are the same steps that you did earlier, but this time the attempt to simulate a breach and lateral  movement from the _front-end_ pod to the _payment_ service will fail.
+
+1. Simulate an attacker gaining shell access via the _front-end_ service by opening a shell on the _front-end_ pod. First we need to retrieve the _front-end_ pod name.
+
+    ###### Command
+
+    ```
+    kubectl get pods
+    ```
+
+    ###### Output
+
+    ```
+    NAME                            READY   STATUS    RESTARTS   AGE
+    carts-6bfcf84f4-cnd7d           1/1     Running   0          16h
+    carts-db-6bfc588c5f-tw48c       1/1     Running   0          16h
+    ...
+    front-end-b5f568888-rrjhh       1/1     Running   0          13h
+    ```
+
+    ###### Command
+
+    ```
+    kubectl exec -it <front-end pod name from previous command> -- /bin/sh
+    ```
+
+    ###### Output
+
+    ```
+    /usr/src/app $
+    ```
+
+2. Simulate lateral movement by having the attacker access the _payment_ service although only the _orders_ pods should have access to it. We'll use _netcat_ to connect to the _payment_ service and provide the necessary http headers and payload once connected.
+
+    ###### Command
+
+    ```
+    nc payment 80
+    ```
+
+    ###### Enter
+
+    ```
+    POST /paymentAuth HTTP/1.1
+    Host: payment
+    Content-Length: 14
+
+    {"Amount":40}
+    ```
+
+    There should be no response after entering the last line and pressing enter. Thee connection was never established and the lateral movement has been denied.
+
+    > **NOTE**
+    >
+    > If there is still the same response as you saw earlier, Secure Workload hasn't made the changes yet in the host firewall. Wait ten more seconds, re-enter the text above.
+
+    ###### Enter
+
+    ```
+    [ctrl-c]
+    ```
+
+    ###### Output
+
+    ```
+    ^Cpunt!
+
+    /usr/src/app $
+    ```
+
+
+
+###### Confirm the application is working as expected
+
+Negative impacts of enforced security policy is a large concern for application owners and DevOps teams. In some cases, they will avoid engaging with security teams altogether to avoid the risk of security "breaking" their applicaiton. It's important to be able to show that the application continues to work after enforcing our security policy.
+
+> **NOTE**
+>
+> In a DevSecOps team, verification that the user experience hadn't been negatively impacted would be done as part of an automated test triggered by the change in the security policy in a staging environment. If the tests failed, the policy would be automatically removed and the person who had defined the policy would be notified of the failed test.
+
+1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+
+2. Create your lab user for the Sock Shop application using a helper script.
+
+    ###### Command
+
+    ```
+    addshopuser
+    ```
+
+3. Retrieve the EC2 Load Balancer DNS A record that has been allocated to the _front-end_ service using kubectl.
+
+    ###### Command
+
+    ```
+    kubectl get services front-end
+    ```
+
+    ###### Output
+
+    ```
+    NAME        TYPE           CLUSTER-IP       EXTERNAL-IP                         ...
+    front-end   LoadBalancer   172.20.229.246   acdeb.${AWS_REGION}.elb.amazonaws.com   ...
+    ```
+
+4. Visit the DNS A record in the _EXTERNAL-IP_ field in a web browser.
+
+5. Login to the Sock Shop as the user _${POD_NAME}_. Click the _Login_ button in the top right. Login with the following values.
+
+    > **NOTE**
+    >
+    > The password is intentionally the same as the username for this login.
+
+    | username          | password          |
+    | ----------------- | ----------------- |
+    | _${POD_NAME}_ | _${POD_NAME}_ |
+
+		> **NOTE**
+		>
+		> If your login is unsuccessful, you might have missed the step where you created this user. Execute the command _addshopuser_ in a Cloud9 terminal and try to login to the Sock Shop again.
+
+4. Find a pair of socks from the catalogue that are equal to or below ${DOLLAR_SIGN}40 and click on _Add to cart_. Socks that cost more than ${DOLLAR_SIGN}40 can't be purchased due to an simulated limit on credit card purchases within the app.
+
+5. Click on the _N item(s) in cart_ button to view your cart in the Sock Shop application.
+
+6. Click _Proceed to checkout_. This will complete the order and a new row will be added to the _My orders_ page.
+
+    ![image-20191021025811246](https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191021025811246.png)
+
+
+#### Secure Workload summary
+
+As a small business owner, you can rest soundly knowing that Secure Workload is now protecting your booming sock business without impacting your customers experience.
+
+You've seen that Secure Workload is a ready-to-use platform with advanced management capabilities to enable quick deployment with few configuration requirements. Using machine-learning capabilities, the platform drastically reduces the amount of human input required to understand communication patterns. And with its holistic workload capabilities, the platform allows you to build a more secure infrastructure for applications and significantly reduces the risk of exposure.

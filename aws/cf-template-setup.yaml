@@ -21,7 +21,7 @@ Parameters:
   PodPassword:
     Description: "Password for Pod. User defined or use value provided in DevNet Sandbox email."
     Type: String
-    Default: 0e63a6aa91470478e@$
+    Default: 0e63a6aa91470478e$
   DuoSecret:
     Description: "Secret used to configure Duo. *Must* use value provided in DevNet Sandbox email."
     Type: String
