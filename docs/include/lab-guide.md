@@ -1417,23 +1417,23 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
 
 6. Push the local changes to these three files to the remote repository on your private GitLab Project using the command.
 
-  ###### Command
+    ###### Command
 
-  ```
-  git push
-  ```
+    ```
+    git push
+    ```
 
-  ###### Output
+    ###### Output
 
-  ```
-  [master edbbb1b] add Duo MFA support to login
-  Committer: EC2 Default User <ec2-user@ip-10-50-10-88.ec2.internal>
-  ...
-  3 files changed, 0 insertions(+), 0 deletions(-)
-  create mode 100644 helpers/duo.js
-  create mode 100644 api/user/index.js
-  create mode 100644 public/js/client.js
-  ```
+    ```
+    [master edbbb1b] add Duo MFA support to login
+    Committer: EC2 Default User <ec2-user@ip-10-50-10-88.ec2.internal>
+    ...
+    3 files changed, 0 insertions(+), 0 deletions(-)
+    create mode 100644 helpers/duo.js
+    create mode 100644 api/user/index.js
+    create mode 100644 public/js/client.js
+    ```
 
 ###### CI/CD pipeline automation
 
