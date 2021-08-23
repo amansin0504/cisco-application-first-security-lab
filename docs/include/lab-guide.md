@@ -53,9 +53,9 @@ This lab uses AWS to host the workloads and applications and takes advantage of 
 ## Overall Lab Content
 
 * [Part1: Prepare infrastructure and application](#part1:-prepare-infrastructure-and-application)
-* [Part2: Implement security - Secure Access by Duo](#part2:-implement-security-secure-access-by-duo)
-* [Part3: Implement security - Secure Cloud Analytics](#part3:-implement-security-secure-cloud-analytics)
-* [Part4: Implement security - Secure Cloud Workload](#part4:-implement-security-secure-cloud-workload)
+* [Part2: Implement security - Cisco Secure Access by Duo](#part2:-cisco-implement-security-secure-access-by-duo)
+* [Part3: Implement security - Cisco Secure Cloud Analytics](#part3:-cisco-implement-security-secure-cloud-analytics)
+* [Part4: Implement security - Cisco Secure Cloud Workload](#part4:-cisco-implement-security-secure-cloud-workload)
 * [Wrap-Up](#wrap-up)
 
 ## Part1: Prepare infrastructure and application
@@ -1164,7 +1164,7 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
 ------
 
 
-### Part2: Implement security - Secure Access by Duo
+## Part2: Implement security - Cisco Secure Access by Duo
 
 ------
 
@@ -1594,7 +1594,7 @@ Duo is providing self-managed MFA for a custom web application using the Duo Web
 
 ------
 
-### Part3: Implement Security - Secure Cloud Analytics
+## Part3: Implement Security - Cisco Secure Cloud Analytics
 
 ------
 
@@ -1949,7 +1949,7 @@ Secure Cloud Analytics Cloud is now consuming all sources of telemetry native to
 
 ------
 
-## Part4: Implement security - Secure Cloud Workload
+## Part4: Implement security - CiscoSecure Cloud Workload
 
 ------
 
