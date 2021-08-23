@@ -1180,7 +1180,7 @@ This section will help you do the following:
 3. Learn how to use git for version control
 4. Learn how CI/CD pipeline automates deployment
 
-#### Overview
+### Overview
 
 Duo secure's access to your applications and data, no matter where users are - on any device - from anywhere. For organizations of all sizes, Duo’s trusted access solution creates trust in users, devices and the applications they access. It reduces the risk of a data breach and ensures trusted access to sensitive data.
 
@@ -1189,7 +1189,7 @@ To regain trust of endpoints, Duo Beyond provides the ability to identify corpor
 You'll instrument Duo MFA into the Sock Shop so that users of the application must have a second form of authentication to login.
 
 
-#### Steps
+### Steps
 
 * [Set Duo Admin Credentials](#set-duo-admin-credentials)
 * [Instrument the Sock Shop with Duo](#instrument-the-sock-shop-with-duo)
@@ -1199,7 +1199,7 @@ You'll instrument Duo MFA into the Sock Shop so that users of the application mu
   * [Validate authentication with Duo MFA](#validate-authentication-with-duo-mfa)
 
 
-##### Set Duo Admin Credentials
+#### Set Duo Admin Credentials
 
 We're using a pre-defined email of _${POD_NAME}@cisco.com_ to give access to the Duo Admin portal.
 
@@ -1228,7 +1228,7 @@ We're using a pre-defined email of _${POD_NAME}@cisco.com_ to give access to the
     > [https://admin.duosecurity.com/](https://admin.duosecurity.com/)
 
 
-##### Instrument the Sock Shop with Duo
+#### Instrument the Sock Shop with Duo
 
 Duo Web SDK makes it easy to add strong two-factor authentication to your web application, complete with inline self-service enrollment and Duo Prompt.
 
@@ -1236,7 +1236,7 @@ Implementing Duo two-factor authentication into your site involves simply adding
 
 You'll test the current login process, update the source code of the Sock Shop, build a new container, create Kuberenetes secrets, update the Kubernetes manifest for the Sock Shop and finally experience the new login process.
 
-###### Validate authentication without MFA
+##### Validate authentication without MFA
 
 1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
 
@@ -1276,7 +1276,7 @@ You'll test the current login process, update the source code of the Sock Shop, 
 5. Once you've confirmed the login was successful, click on the _Logout_ link in the top right.
 
 
-###### Make Duo secrets available to Sock Shop
+##### Make Duo secrets available to Sock Shop
 
 Kubernetes _secret_ objects let you store and manage sensitive information, such as passwords, OAuth tokens, and ssh keys. Putting this information in a secret is safer and more flexible than putting it verbatim in a Pod definition or in a container image.
 
@@ -1360,7 +1360,7 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     >
     > If you want to view the secrets themselves, you'll need to use _kubectl get secret duo -o yaml_ and then _echo <secret value here> | base64 --decode_ as they are base64 encoded.
 
-###### Update source with Duo MFA
+##### Update source with Duo MFA
 
 1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
 
@@ -1438,7 +1438,7 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     create mode 100644 public/js/client.js
     ```
 
-###### CI/CD pipeline automation
+##### CI/CD pipeline automation
 
 Docker images are the basis of containers. An Image is an ordered collection of root filesystem changes and the corresponding execution parameters for use within a container runtime. An image typically contains a union of layered filesystems stacked on top of each other. An image does not have state and it never changes.
 
@@ -1588,7 +1588,7 @@ The git push action in last section will trigger the CI/CD pipeline run. The pip
     <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022185118929.png" alt="image-20191022185118929" style="zoom:50%;" />
 
 
-#### Duo Summary
+### Duo Summary
 
 You can rest easy knowing access to your lucrative Sock Shop has MFA enabled for its users.
 
@@ -1939,7 +1939,7 @@ The Secure Cloud Analytics Cloud service can monitor network traffic between pod
 
 
 
-#### Secure Cloud Analytics Cloud summary
+### Secure Cloud Analytics Cloud summary
 
 Now you can sleep more soundly knowing that Secure Cloud Analytics Cloud is providing public visibility and threat detection for your vibrant Sock Shop business.
 
@@ -2646,7 +2646,7 @@ Negative impacts of enforced security policy is a large concern for application 
     ![image-20191021025811246](https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191021025811246.png)
 
 
-#### Secure Workload summary
+### Secure Workload summary
 
 As a small business owner, you can rest soundly knowing that Secure Workload is now protecting your booming sock business without impacting your customers experience.
 
