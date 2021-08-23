@@ -1169,9 +1169,6 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
     > kubectl exec -it my-pod --container main-app -- /bin/bash
     > ```
 
-
-
-
 ## Part2: Implement security - Cisco Secure Access by Duo
 
 <img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/arch2-duo-sdk.png" alt="arch2.png" />
@@ -1597,9 +1594,6 @@ You can rest easy knowing access to your lucrative Sock Shop has MFA enabled for
 
 Duo is providing self-managed MFA for a custom web application using the Duo Web SDK. Additional configuration in Duo could further protect those resources by setting device restrictions using Duo Beyond.
 
-
-
-
 ## Part3: Implement Security - Cisco Secure Cloud Analytics
 
 <img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/arch2-swc.png" alt="arch2.png" />
@@ -1950,9 +1944,6 @@ The Secure Cloud Analytics Cloud service can monitor network traffic between pod
 Now you can sleep more soundly knowing that Secure Cloud Analytics Cloud is providing public visibility and threat detection for your vibrant Sock Shop business.
 
 Secure Cloud Analytics Cloud is now consuming all sources of telemetry native to AWS, including Amazon Virtual Private Cloud (VPC) flow logs, and Kubernetes pod traffic to monitor all activity in the cloud without the need for software agents. Secure Cloud Analytics Cloud was deployed in these environments in a matter of minutes with no disruption to service availability. Secure Cloud Analytics Cloud uses this data to model the behavior of each cloud resource, a method called entity modeling. It is then able to detect and alert on sudden changes in behavior, malicious activity, and signs of compromise.
-
-
-
 
 ## Part4: Implement security - Cisco Secure Cloud Workload
 
