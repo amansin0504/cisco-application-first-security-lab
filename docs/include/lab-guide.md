@@ -52,13 +52,13 @@ This lab uses AWS to host the workloads and applications and takes advantage of 
 
 ## Overall Lab Content
 
-* [Part 1: Prepare infrastructure and application](#part-1:-prepare-infrastructure-and-application)
-* [Part 2: Implement security - Cisco Secure Access by Duo](#part-2:-cisco-implement-security-secure-access-by-duo)
-* [Part 3: Implement security - Cisco Secure Cloud Analytics](#part-3:-cisco-implement-security-secure-cloud-analytics)
-* [Part 4: Implement security - Cisco Secure Cloud Workload](#part-4:-cisco-implement-security-secure-cloud-workload)
+* [Part#1: Prepare infrastructure and application](#part#1:-prepare-infrastructure-and-application)
+* [Part#2: Implement security - Cisco Secure Access by Duo](#part#2:-cisco-implement-security-secure-access-by-duo)
+* [Part#3: Implement security - Cisco Secure Cloud Analytics](#part#3:-cisco-implement-security-secure-cloud-analytics)
+* [Part#4: Implement security - Cisco Secure Cloud Workload](#part#4:-cisco-implement-security-secure-cloud-workload)
 * [Wrap-Up](#wrap-up)
 
-## Part 1: Prepare infrastructure and application
+## Part#1: Prepare infrastructure and application
 
 This section of the lab will have you prepare the public cloud infrastructure and deploy a micro-services based cloud-native application. Throughout the steps, you'll be laying the groundwork to implement security in a later sections.
 
@@ -1936,6 +1936,7 @@ The Secure Cloud Analytics Cloud service can monitor network traffic between pod
 Now you can sleep more soundly knowing that Secure Cloud Analytics Cloud is providing public visibility and threat detection for your vibrant Sock Shop business.
 
 Secure Cloud Analytics Cloud is now consuming all sources of telemetry native to AWS, including Amazon Virtual Private Cloud (VPC) flow logs, and Kubernetes pod traffic to monitor all activity in the cloud without the need for software agents. Secure Cloud Analytics Cloud was deployed in these environments in a matter of minutes with no disruption to service availability. Secure Cloud Analytics Cloud uses this data to model the behavior of each cloud resource, a method called entity modeling. It is then able to detect and alert on sudden changes in behavior, malicious activity, and signs of compromise.
+
 
 ## Part 4: Implement security - Cisco Secure Cloud Workload
 
