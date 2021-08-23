@@ -1615,10 +1615,10 @@ You'll integration Secure Cloud Analytics Cloud with AWS and a Kubernetes cluste
 
 #### Steps
 
-* [Set Secure Cloud Analytics Cloud Credentials](#set-Secure Cloud Analytics-cloud-credentials)
-* [Give Secure Cloud Analytics Cloud access to AWS](#give-Secure Cloud Analytics-cloud-access-to-aws)
+* [Set Secure Cloud Analytics Credentials](#set-secure-cloud-analytics-credentials)
+* [Give Secure Cloud Analytics Cloud access to AWS](#give-secure-cloud-analytics-access-to-aws)
 * [Consume AWS Flow Logs in Secure Cloud Analytics Cloud](#consume-aws-flow-logs-in-Secure Cloud Analytics-cloud)
-* [Instrument Secure Cloud Analytics Cloud into Kubernetes](#instrument-Secure Cloud Analytics-cloud-into-kubernetes)
+* [Instrument Secure Cloud Analytics Cloud into Kubernetes](#instrument-secure-cloud-analytics-into-kubernetes)
 
 
 ##### Set Secure Cloud Analytics Cloud Credentials
@@ -1949,7 +1949,7 @@ Secure Cloud Analytics Cloud is now consuming all sources of telemetry native to
 
 ------
 
-## Part4: Implement security - CiscoSecure Cloud Workload
+## Part4: Implement security - Cisco Secure Cloud Workload
 
 ------
 
@@ -1976,8 +1976,8 @@ Secure Workload provides these core benefits:
 
 #### Steps
 
-* [Secure Workload integration with AWS](#Secure Workload-integration-with-aws)
-* [Secure Workload integration with Kubernetes](#Secure Workload-integration-with-kubernetes)
+* [Secure Workload integration with AWS](#secure-workload-integration-with-aws)
+* [Secure Workload integration with Kubernetes](#secure-workload-integration-with-kubernetes)
 * [Enforce application segmentation based on Kubernetes annotations](#enforce-application-segmentation-based-on-kubernetes-annotations)
 * [Simulate a breach and lateral movement](#simulate-a-breach-and-lateral-movement)
 * [Create a flow search](#create-a-flow-search)
