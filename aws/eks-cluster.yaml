@@ -3,8 +3,8 @@ kind: ClusterConfig
 metadata:
   name: app-first-sec
   region: ${AWS_REGION}
-  version: "1.20"
-  
+  version: "1.21"
+
 nodeGroups:
   - name: app-first-sec-prod-nodes
     instanceType: t2.medium
