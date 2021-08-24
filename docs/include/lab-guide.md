@@ -1196,6 +1196,7 @@ You'll instrument Duo MFA into the Sock Shop so that users of the application mu
   * [Validate authentication without MFA](#validate-authentication-without-mfa)
   * [Make Duo secrets available to Sock Shop](#make-duo-secrets-available-to-sock-shop)
   * [Update source with Duo MFA](#update-source-with-duo-mfa)
+  * [CI/CD pipeline automation](#ci/cd-pipeline-automation)
   * [Validate authentication with Duo MFA](#validate-authentication-with-duo-mfa)
 
 
@@ -1514,7 +1515,7 @@ The git push action in last section will trigger the CI/CD pipeline run. The pip
 
 
 
-###### Validate authentication with Duo MFA
+##### Validate authentication with Duo MFA
 
 1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
 
@@ -1604,14 +1605,14 @@ This section will help you do the following:
 2. Configure Kubernetes and Secure Cloud Analytics Cloud integration
 
 
-#### Overview
+### Overview
 
 Secure Cloud Analytics Cloud improves security and incident response across the distributed network, from the private network and branch office to the public cloud. This solution addresses the need for digital businesses to quickly identify threats posed by their network devices and cloud resources, and to do so with minimal management, oversight, and security manpower.
 
 You'll integration Secure Cloud Analytics Cloud with AWS and a Kubernetes cluster in this section.
 
 
-#### Steps
+### Steps
 
 * [Set Secure Cloud Analytics Credentials](#set-secure-cloud-analytics-credentials)
 * [Give Secure Cloud Analytics Cloud access to AWS](#give-secure-cloud-analytics-access-to-aws)
