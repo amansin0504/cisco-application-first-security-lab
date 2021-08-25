@@ -390,8 +390,8 @@ Once you have created a cluster using _eksctl_, you will find that cluster crede
     ```
     NAME             STATUS   AGE
     default          Active   3d2h
-		kube-node-lease  Active   3d2h
-		kube-public      Active   3d2h
+	kube-node-lease  Active   3d2h
+	kube-public      Active   3d2h
     kube-system      Active   3d2h
     ```
 
@@ -1218,15 +1218,7 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
     ```
     Image:      904585389016.dkr.ecr.us-west-2.amazonaws.com/sock-shop/front-end:bf7273021b5c70951bd0976ea04ce677842a102e
     ```
-
-    > **TIP**
-    >
-    > In our case, the Sock Shop Test application has only single container in a pod. If a pod has multiple containers, you can specifiy the container name as a cli flag to access the specific containers shell.
-    >
-    > ```
-    > kubectl exec -it my-pod --container main-app -- /bin/bash
-    > ```
-
+    
 ## Part2: Implement security - Cisco Secure Access by Duo
 
 <img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/arch2-duo-sdk.png" alt="arch2.png" />
