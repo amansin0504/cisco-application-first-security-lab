@@ -230,6 +230,14 @@ Resources:
       OwnerArn: !GetAtt ciscoAppFirstSecUser.Arn
       SubnetId: !Ref HubPublicSubnet
 
+  HubciscoAppFirstlabfiles:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
   HubciscoAppFirstSecFlowLogBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -623,6 +631,9 @@ Outputs:
   FlowLogBucket:
     Description: Cisco App-First Sec S3 Bucket Name for Flow Logs
     Value: !Ref HubciscoAppFirstSecFlowLogBucket
+  TetAgentBucket:
+    Description: Cisco App-First Sec S3 Bucket Name for Tetration agent
+    Value: !Ref HubciscoAppFirstlabfiles
   PodName:
     Description: Cisco App-First Sec name of pod
     Value: !Ref PodName

@@ -1026,7 +1026,7 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
 
 ##### Setup Private GitLab environment
 
-1. Login to the Private GitLab console and navigate to _New project > Create blank project_. Enter the project name _Sock-Shop-Front-End_ and create a new blank GitLab project.
+1. Login to the Private GitLab console and navigate to _New project > Create blank project_. Enter the project name _Sock-Shop-Front-End_, uncheck the _Initialize repository with a README_ box and, create a new blank GitLab project. We will initialize the project in next steps
 
     > [http://${AWS_GITLAB_FQDN}/projects/new#blank_project](http://${AWS_GITLAB_FQDN}/projects/new#blank_project)
 
@@ -1038,6 +1038,12 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
 
     ```
     ssh -i ~/.ssh/$AWS_KEYPAIR_NAME ubuntu@$AWS_GITLAB_IP 'sudo grep Password: /etc/gitlab/initial_root_password'
+    ```
+
+    ###### Output
+
+    ```
+    Password: 3BcXFt8tqtgsHJ0Gd/FY+V3qZMImmmpqOFkIm/44l1w=
     ```
 
 2. From the drop down menu on the top right corner, navigate to _Edit Profile > Access Tokens_ and create a personal access token with _write_repository_ and _api_ permissions. Export the token to an environment variable for later use. We will need this token to set up local git repository on Cloud9 host in the next step.
@@ -1062,6 +1068,21 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
     git config --global user.name "Administrator" && git config --global user.email "admin@cloudnativeapp.com"
     git remote rm origin && git remote add origin http://Administrator:$GITLAB_TOKEN@$AWS_GITLAB_FQDN/root/sock-shop-front-end.git
     git push -u origin --all
+    ```
+
+    ###### Output
+
+    ```
+    safe:~/environment/Sock-Shop-Front-End (main) $ git push -u origin --all
+    Enumerating objects: 968, done.
+    Counting objects: 100% (968/968), done.
+    Compressing objects: 100% (394/394), done.
+    Writing objects: 100% (968/968), 47.89 MiB | 33.94 MiB/s, done.
+    Total 968 (delta 518), reused 968 (delta 518)
+    remote: Resolving deltas: 100% (518/518), done.
+    To http://ec2-34-212-184-29.us-west-2.compute.amazonaws.com/root/sock-shop-front-end.git
+     * [new branch]      main -> main
+    Branch 'main' set up to track remote branch 'main' from 'origin'.
     ```
 
 ##### Setup CICD Pipeline
@@ -1119,23 +1140,41 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
     EOF
     ```
 
-4. Make a test change to ReadMe file in Sock-Shop-Front-End source. Push the local update to the remote repository _Sock-Shop-Front-End_ on your private GitLab instance.
-
-
-    ###### Command
+    ###### Output
 
     ```
-      cd $HOME/environment/Sock-Shop-Front-End
-      echo "test" >> README.md
-      git add README.md
-      git commit -m "Test change to README.md"
-      git push
+    Pseudo-terminal will not be allocated because stdin is not a terminal.
+    Welcome to Ubuntu 20.04.2 LTS (GNU/Linux 5.4.0-1045-aws x86_64)
+
+     * Documentation:  https://help.ubuntu.com
+     * Management:     https://landscape.canonical.com
+     * Support:        https://ubuntu.com/advantage
+
+      System information as of Tue Aug 24 16:32:36 UTC 2021
+
+      System load:  0.57              Processes:                242
+      Usage of /:   6.2% of 96.88GB   Users logged in:          0
+      Memory usage: 86%               IPv4 address for docker0: 172.17.0.1
+      Swap usage:   0%                IPv4 address for eth0:    10.10.10.176
+
+
+    115 updates can be applied immediately.
+    48 of these updates are standard security updates.
+    To see these additional updates run: apt list --upgradable
+
+
+    Runtime platform                                    arch=amd64 os=linux pid=23298 revision=58ba2b95 version=14.2.0
+    Running in system-mode.                            
+
+    Registering runner... succeeded                     runner=7VmAMr17
+    Runner registered successfully. Feel free to start it, but if it's running already the config should be automatically reloaded!
     ```
 
-5. Navigate to _Administrator/Sock-Shop-Front-End > CICD > Pipeline_ on GitLab console. A new pipeline run should be triggered. The pipeline will build a new Front End Sock Shop container image and push it to the AWS ECR registry. The pipeline will then pause at deployment stage for a manual input.
+4. Navigate to _Administrator/Sock-Shop-Front-End > CICD > Pipeline_ on GitLab console. A new pipeline run should be triggered. The pipeline will build a new Front End Sock Shop container image and push it to the AWS ECR registry. The pipeline will then pause at deployment stage for a manual input.
 
+    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)
 
-6. While the pipeline is running, review the _.gitlab-ci.yml_ file under the GitLab _Sock-Shop-Front-End_ project to see the tasks performed at various stages of pipeline.
+5. While the pipeline is running, review the _.gitlab-ci.yml_ file under the GitLab _Sock-Shop-Front-End_ project to see the tasks performed at various stages of pipeline.
 
     > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor)
 
@@ -1143,7 +1182,7 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
     >
     > The new Front End container image is essentially same image as the one we are already running in the EKS cluster because only made a change to the ReadMe file, no code changes were done
 
-7. Once the CI/CD pipeline run completes the testing stage, run the command below to see the newly pushed image to the private Elastic Container Repository(ECR).
+6. Once the CI/CD pipeline run completes the testing stage, run the command below to see the newly pushed image to the private Elastic Container Repository(ECR).
 
 
     ###### Command
@@ -1152,13 +1191,32 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
     aws ecr list-images --repository-name sock-shop/front-end
     ```
 
-8. Now, provide the manual input by clicking on play button on deployment stage to automatically deploy your newly built Front-End microservice container image to the Sock-Shop application running on the EKS cluster. Once the deployment stage is successful, run the CLI below to see the updated pod image on EKS cluster. The image name will match the name listed in the ECR registry in the last step.
+    ###### Output
+
+    ```
+    {
+    "imageIds": [
+        {
+            "imageDigest": "sha256:8870b47dfc6566f4a6b9272a308f03a5f7ec93891bb35291361250df603c8f72",
+            "imageTag": "bf7273021b5c70951bd0976ea04ce677842a102e"
+        }
+    ]
+    }
+    ```
+
+7. Now, provide the manual input by clicking on play button on deployment stage to automatically deploy your newly built Front-End microservice container image to the Sock-Shop application running on the EKS cluster. Once the deployment stage is successful, run the CLI below to see the updated pod image on EKS cluster. The image tag will match the tag name listed in the ECR registry in the last step.
 
 
     ###### Command
 
     ```
     kubectl describe deployment front-end -n sock-shop | grep Image:
+    ```
+
+    ###### Output
+
+    ```
+    Image:      904585389016.dkr.ecr.us-west-2.amazonaws.com/sock-shop/front-end:bf7273021b5c70951bd0976ea04ce677842a102e
     ```
 
     > **TIP**
@@ -1372,7 +1430,7 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     ###### Command
 
     ```
-    cd ${DOLLAR_SIGN}Sock-Shop-Front-End/
+    cd $HOME/environment/Sock-Shop-Front-End
     ```
 
 3. Copy the three source files in _${DOLLAR_SIGN}LAB/src/duo/_ that are already instrumented with a Duo MFA login process into the cloned front-end repository.
@@ -1447,15 +1505,8 @@ Docker can automatically build images by reading the instructions from a Dockerf
 
 The git push action in last section will trigger the CI/CD pipeline run. The pipeline will build a new Front-End container image using the dockerfile present in the repo and then, push the newly built image to the private registry in ECR.
 
-1. Change the working directory to the _front-end_ cloned repository.
 
-    ###### Command
-
-    ```
-    cd ${DOLLAR_SIGN}Sock-Shop-Front-End/
-    ```
-
-2. Review _${DOLLAR_SIGN}Sock-Shop-Front-End/Dockerfile_, which contains the instructions to build the front-end container image.
+1. Review _$HOME/environment/Sock-Shop-Front-End/Dockerfile_, which contains the instructions to build the front-end container image.
 
     The line _ENV PORT 8079_ defines an environment variable that the service will read when starting to define what TCP port to listen on. When running that container image in a future step, you will need to specify what port on the host to map to the container's internal port.
 
@@ -1463,19 +1514,21 @@ The git push action in last section will trigger the CI/CD pipeline run. The pip
     >
     > You'll also see _EXPOSE 8079_, which surprisingly does *not* expose that port to external connections. It functions as a type of documentation between the person who builds the image and the person who runs the container, about which ports are intended to be published.
 
-3. Go back to CI/CD pipeline on GitLab console. The pipeline should be running at this point. Click on _docker build_ stage and review the logs. The GitLab pipeline will use the dockerfile instructions to build a new container image and then push it to ECR repository in an automated manner.
+3. Go back to CI/CD pipeline on GitLab console. The pipeline should be running at this point. Click on _docker build_ stage and review the logs. The GitLab pipeline will use the Dockerfile instructions to build a new container image and then push it to ECR repository in an automated manner.
+
+    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)
 
     ###### Output
 
     ```
-    Sending build context to Docker daemon  102.9MB
-    Step 1/13 : FROM node:10-alpine
+    Status: Downloaded newer image for node:10-alpine
+    ---> aa67ba258e18
     ...
-    Successfully built 48237c37f9b9
-    Successfully tagged sock-shop/front-end:latest
+    Successfully built c943e92677c7
+    Successfully tagged 904585389016.dkr.ecr.us-west-2.amazonaws.com/sock-shop/front-end:2826b06c6d28b03e629c75d61e7a7024e807d38e
     ```
 
-    Each step in the output correlates to steps included in _${DOLLAR_SIGN}LAB/src/front-end/Dockerfile_ . In the _Successfully built_ line of output the value _48237c37f9b9_ is the container image ID that was created.
+    Each step in the output correlates to steps included in _${DOLLAR_SIGN}LAB/src/front-end/Dockerfile_. In the _Successfully built_ line of output the value _48237c37f9b9_ is the container image ID that was created.
 
     > **NOTE**
     >
@@ -1490,7 +1543,7 @@ The git push action in last section will trigger the CI/CD pipeline run. The pip
 
     > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)
 
-6. Ensure that the new front-end pod has started and is in a _Running_ status. You'll see that the _AGE_ will be different than the rest of the running pods. You can also verify the image name using _kubectl describe deployment front-end -n sock-shop | grep Image:_ command.
+6. Ensure that the new front-end pod has started and is in a _Running_ status. You'll see that the _AGE_ will be different than the rest of the running pods. You can also verify the image tag using _kubectl describe deployment front-end -n sock-shop | grep Image:_ command.
 
     ###### Command
 
@@ -1856,7 +1909,7 @@ The Secure Cloud Analytics Cloud service can monitor network traffic between pod
     ###### Command
 
     ```
-    kubectl create serviceaccount --generator=serviceaccount/v1 swc
+    kubectl create serviceaccount swc
     ```
 
     ###### Output
@@ -1971,15 +2024,15 @@ Secure Workload provides these core benefits:
 
 ### Steps
 
-* [Secure Workload integration with AWS](#secure-workload-integration-with-aws)
-* [Secure Workload integration with Kubernetes](#secure-workload-integration-with-kubernetes)
+* [Secure Workload orchestration with EKS](#secure-workload-orchestration-with-kubernetes)
+* [Integrate Secure Workload with EKS cluster](#integrate-secure-workload-with-eks-cluster)
 * [Enforce application segmentation based on Kubernetes annotations](#enforce-application-segmentation-based-on-kubernetes-annotations)
-* [Simulate a breach and lateral movement](#simulate-a-breach-and-lateral-movement)
-* [Create a flow search](#create-a-flow-search)
-* [Create invetory filters](#create-invetory-filters)
-* [Define application segmenation](#define-application-segmenation)
-* [Confirm lateral movement has been blocked](#confirm-lateral-movement-has-been-blocked)
-* [Confirm the application is working as expected](#confirm-the-application-is-working-as-expected)
+    * [Simulate a breach and lateral movement](#simulate-a-breach-and-lateral-movement)
+    * [Create a flow search](#create-a-flow-search)
+    * [Create invetory filters](#create-invetory-filters)
+    * [Define application segmenation](#define-application-segmenation)
+    * [Confirm lateral movement has been blocked](#confirm-lateral-movement-has-been-blocked)
+    * [Confirm the application is working as expected](#confirm-the-application-is-working-as-expected)
 
 > **WARNING**
 >
@@ -2008,7 +2061,7 @@ Since this is the first time you'll be accessing Secure Workload, you'll need to
     > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co)
 
 
-#### Secure Workload integration with AWS
+#### Secure Workload orchestration with EKS
 
 Create AWS IAM policy and user for Secure Workload with restrictive permissions using the AWS CLI.
 
@@ -2017,7 +2070,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     ###### Command
 
     ```
-    aws iam create-policy --policy-name Secure Workload-read-only --policy-document file://${DOLLAR_SIGN}LAB/Secure Workload/Secure Workload-aws-read-only-policy.json
+    aws iam create-policy --policy-name secure-workload-read-only --policy-document file://${DOLLAR_SIGN}LAB/tetration/tetration-aws-read-only-policy.json
     ```
 
     ###### Output
@@ -2025,9 +2078,9 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     ```
     {
        "Policy": {
-           "PolicyName": "Secure Workload-read-only",
+           "PolicyName": "secure-workload-read-onl",
            "PolicyId": "RFUWK63KANPA5WOZ4JBES",
-           "Arn": "arn:aws:iam::${AWS_ACCT_ID}:policy/Secure Workload-read-only",
+           "Arn": "arn:aws:iam::${AWS_ACCT_ID}:policy/secure-workload-read-onl",
            "Path": "/",
            "DefaultVersionId": "v1",
            "AttachmentCount": 0,
@@ -2046,7 +2099,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     ###### Command
 
     ```
-    aws iam create-user --user-name Secure Workload-read-only
+    aws iam create-user --user-name secure-workload-read-only
     ```
 
     ###### Output
@@ -2055,9 +2108,9 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     {
        "User": {
            "Path": "/",
-           "UserName": "Secure Workload-read-only",
+           "UserName": "secure-workload-read-only",
            "UserId": "WOZRFUAIDA5WDXCIN34YQ",
-           "Arn": "arn:aws:iam::${AWS_ACCT_ID}:user/Secure Workload-read-only2",
+           "Arn": "arn:aws:iam::${AWS_ACCT_ID}:user/secure-workload-read-only",
            "CreateDate": "2019-10-18T12:35:55Z"
        }
     }
@@ -2068,7 +2121,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     ###### Command
 
     ```
-    aws iam attach-user-policy --policy-arn arn:aws:iam::${AWS_ACCT_ID}:policy/Secure Workload-read-only --user-name Secure Workload-read-only
+    aws iam attach-user-policy --policy-arn arn:aws:iam::${AWS_ACCT_ID}:policy/secure-workload-read-only --user-name secure-workload-read-only
     ```
 
 4. Generate an access key for the _Secure Workload-read-only_ user.
@@ -2076,7 +2129,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     ###### Command
 
     ```
-    aws iam create-access-key --user-name Secure Workload-read-only
+    aws iam create-access-key --user-name secure-workload-read-only
     ```
 
     ###### Output
@@ -2084,7 +2137,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     ```
     {
        "AccessKey": {
-           "UserName": "Secure Workload-read-only",
+           "UserName": "secure-workload-read-only",
            "AccessKeyId": "AKIFUWHWXAQLFYA5WOZR",
            "Status": "Active",
            "SecretAccessKey": "AKIFUWHWXAQLFYA5WOZR/AKIFUWHWXAQLFYA5WOZR",
@@ -2095,36 +2148,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
 
     You'll use the _AccessKeyId_ and _SecretAccessKey_ values when you configure Secure Workload for AWS external orchestration integration.
 
-5. Return to the Secure Workload administrative interface to add the AWS IAM user credentials.
-
-    > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co/)
-
-    Login using the following values.
-
-    | Field                 | Value                                        |
-    | --------------------- | -------------------------------------------- |
-    | Email                 | ${DEVNET_EMAIL_ADDRESS}                      |
-    | Password              | ${POD_PASSWORD} (or password you set)        |
-
-6. Navigate to the _External Orchestrators_ page under _VISIBILITY_ in the left menu pane.
-
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018083122803.png" alt="image-20191018083122803" style="zoom:50%;" />
-
-7. Click the _Create New Configuration_ button.
-
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018083250277.png" alt="image-20191018083250277" style="zoom:50%;" />
-
-8. Set the values in the _Create External Orchestrator Configuration_ dialogue modal with the following values. Select _Type_ as Kubernetes and _K8s Manager Type_ as EKS. The _AWS Access Key Id_ and _AWS Secret Access Key_ correspond to the _AccessKeyId_ and _SecretAccessKey_ values in the output of the _aws iam create-access-key_ command in an earlier step.
-
-    | Field                 | Value                                                                 |
-    | --------------------- | ----------------------------------------------------------------------|
-    | Type                  | AWS                                                                   |
-    | Name                  | app-first-sec-aws                                                     |
-    | AWS Access Key Id     | [_AccessKeyId_ from _aws iam create-access-key_ in previous step]     |
-    | AWS Secret Access Key | [_SecretAccessKey_ from _aws iam create-access-key_ in previous step] |
-    | AWS Region            | ${AWS_REGION}                                                         |
-
-9. Retrieve the Kubernetes API hostname using the AWS CLI _eks describe-cluster_ command to use when entering the Kubernetes configuration into Secure Workload in future steps. Switch to Hosts List tab from vertical menu on the left-hand side and add API server endpoint address and port (TCP Port 443) details for the EKS cluster in the provided space.
+5. Retrieve the Kubernetes API hostname using the AWS CLI _eks describe-cluster_ command to use when entering the Kubernetes configuration into Secure Workload in future steps. Switch to Hosts List tab from vertical menu on the left-hand side and add API server endpoint address and port (TCP Port 443) details for the EKS cluster in the provided space.
 
     ###### Command
 
@@ -2138,29 +2162,207 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     40D7AAC6763809EAD50E.gr1.${AWS_REGION}.eks.amazonaws.com
     ```
 
-10. Click the _Create_ button. Once Secure Workload successfully connects to AWS it will display a _Connection Status_ of _Success_.
+6. Retrieve the CA certificate for the Kuberentes API using the AWS CLI eks describe-cluster command to use when entering the Kubernetes configuration into Tetration in future steps. There's nothing to do with the output for now other than confirm you have it ready.
+    
+    ###### Command
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022192046986.png" alt="image-20191022192046986" style="zoom:50%;" />
+    ```
+    aws eks describe-cluster --name app-first-sec | jq -r '.cluster.certificateAuthority.data' | base64 -d
+    ```
 
-    > **WARNING**
-    >
-    > The _Connection Status_ field will show a value of _Failure_ for the _app-first-sec-aws_ row before it has attempted to connect to AWS. Give it a minute to validate the configuration you just entered. Once the _Connection Status_ field value is set to _Success_ proceed to the next step.
+    ###### Output
 
-11. You can confirm that AWS annotations are available in Secure Workload by visiting _Inventory Search_ under _VISIBILITY_ in the left menu pane.
+    ```
+    -----BEGIN CERTIFICATE-----
+    MIICyDCCAbCgAwIBAgIBADANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDEwprdWJl
+    cm5ldGVzMB4XDTE5MTAxNDE1MTkxMloXDTI5MTAxMTE1MTkxMlowFTETMBEGA1UE
+    AxMKa3ViZXJuZXR35HJ+Ct47YrqYAucyg3JxT8TsNJGwZo6FWdMPN3tZ
+    7lWiZLROK4/X6fBv+glbdeDVXb/2cdc1UGKOqg+lKhm5+h2K2gtgUJKCEfHmJrgj
+    3Skp6m377bluY8IIibazuXdMMR1dNuRtwGWfMnu7dZeXKeOgIeKxDdVnHEFzwFan
+    Xfcm+jiPzVVjeO9PawX9bqXV7d9UuuPRRPKUkZW83qapQwaE2RGXeC7oSGiBbD1L
+    rdHkK5WjAdqvXuY5gUcCAwEAAaMjMCEwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB
+    /wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBABljEWtXrnINUNXgQWYkz6SjoHoO
+    CMA2/Zzunz/Vf64jlczCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALcI
+    pJx4sKDHM2OamvU/KC3y3aUFx5vy4DTabg4aliPRP07ar4UcMJ0T1OqYVK64OpZk
+    rlLkeh+YeHsPopbOzGQ6IMpLT1EUCDjzJtVhCoZH2PAEPf9UNIIupkmGD2p7pIZYQg=
+    -----END CERTIFICATE-----
+    ```
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022192311933.png" alt="image-20191022192311933" style="zoom:50%;" />
+7. If AssumeRole is not used, the user must be added to the “mapUsers” section of the aws-auth.yaml with appropriate group. Edit configmap 
 
-12. In the _Filters_ field, type _aws_ to show the annotations that are available from the external orchestration integration you completed. These annotations can be used when defining policy, searching for inventory and filtering flows.
+    ###### Command
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022192756143.png" alt="image-20191022192756143" style="zoom:50%;" />
+    ```
+    kubectl edit configmap -n kube-system aws-auth
+    ```
 
-    > **NOTE**
-    >
-    > It can take a minute or two for annotations to show up after the _Connection Status_ field value is set to _Success_.
+    ###### Output
+
+    ```
+    # Please edit the object below. Lines beginning with a '#' will be ignored,
+    # and an empty file will abort the edit. If an error occurs while saving this file will be
+    # reopened with the relevant failures.
+    #
+    apiVersion: v1
+    data:
+    mapRoles: |
+        - groups:
+        - system:bootstrappers
+        - system:nodes
+          rolearn: arn:aws:iam::904585389016:role/eksctl-app-first-sec-nodegroup-ap-NodeInstanceRole-FKVHO1VAOE06
+          username: system:node:{{EC2PrivateDNSName}}
+    mapUsers: |
+        - userarn: arn:aws:iam::904585389016:user/secure-workload-read-only
+          username: secure-workload-read-only
+          groups:
+            - system:masters
+    kind: ConfigMap
+    metadata:
+    creationTimestamp: "2021-08-24T16:11:35Z"
+    name: aws-auth
+    namespace: kube-system
+    resourceVersion: "101078"
+    uid: 9084f5e4-2b9e-4dae-9acb-9f49a46fa97d
+    ```
+
+8. Return to the Secure Workload administrative interface.
+
+    > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co/)
+
+    Login using the following values.
+
+    | Field                 | Value                                        |
+    | --------------------- | -------------------------------------------- |
+    | Email                 | ${DEVNET_EMAIL_ADDRESS}                      |
+    | Password              | ${POD_PASSWORD} (or password you set)        |
+
+9. Navigate to the _External Orchestrators_ page under _VISIBILITY_ in the left menu pane.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018083122803.png" alt="image-20191018083122803" style="zoom:50%;" />
+
+10. Click the _Create New Configuration_ button.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018083250277.png" alt="image-20191018083250277" style="zoom:50%;" />
+
+11. Set the values in the _Create External Orchestrator Configuration_ dialogue modal with the following values. Select _Type_ as Kubernetes and _K8s Manager Type_ as EKS. The _AWS Access Key Id_ and _AWS Secret Access Key_ correspond to the _AccessKeyId_ and _SecretAccessKey_ values in the output of the _aws iam create-access-key_ command in an earlier step.
+
+    | Field                 | Value                                                                 |
+    | --------------------- | ----------------------------------------------------------------------|
+    | Type                  | Kubernetes                                                            |
+    | K8s Manager Type      | EKS                                                                   |                 
+    | Name                  | app-first-sec                                                         |
+    | AWS Access Key Id     | [_AccessKeyId_ from _aws iam create-access-key_ in previous step]     |
+    | AWS Secret Access Key | [_SecretAccessKey_ from _aws iam create-access-key_ in previous step] |
+    | AWS Region            | ${AWS_REGION}                                                         |
+    | CA Certificate        | [Output from _aws eks describe-cluster_ in previous step]             |
+
+12. Click on _Hosts List_ in the dialogue modal menu on the left.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018093654679.png" alt="image-20191018093654679" style="zoom:50%;" />
+
+13. Click the _+_ button next to the _Hosts List_ label to provide the EKS Kubernetes API hostname and port number using the output from the _aws eks describe-cluster_ output from the earlier step. Set the values hor _host name_ and _port number_ with the following values.
+
+    | Field       | Value                                                       |
+    | ----------- | ----------------------------------------------------------- |
+    | host name   | [Output from _aws eks describe-cluster_ from previous step] |
+    | port number | 443                                                         |
+
+14. Click the _Create_ button. Once Tetration has successfully connected to the Kubernetes cluster, it will show a _Connection Status_ of _Success_.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022192939535.png" alt="image-20191022192939535" />
+
+    In the following section, you'll use this integration to define segmentation policy using Kubernetes annotations.
+
     > **WARNING**
     >
     > The _Connection Status_ field will show a value of _Failure_ for the _app-first-sec-k8s_ row before it has attempted to connect to Kubernetes. Give it a minute to validate the configuration you just entered. Once the _Connection Status_ field value is set to _Success_ proceed to the next step.
 
+#### Integrate Secure Workload with EKS cluster
+
+1. Visit the Tetration Software Agents Installer administrative page in your browser. Log in with the credentials that you set in the previous step.
+
+    > https://tet-pov-rtp1.cpoc.co/#/software-agents/installer
+
+2. Select _Auto-Install using Installers_ and click the _Next_ button.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200716014019.png" alt="image-20200716014019" style="zoom:50%;" />
+
+3. Ensure the following fields match the platform values and click the _Download Installer_ button. This will download an agent installation script specific to your Tetration tenant. The file name should look like _tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh_.
+
+    | Field                                                   | Value                                                        |
+    | --------------------------------------------------------| ------------------------------------------------------------ |
+    | Which platform is your agent going to be installed on?  | Kubernetes                                                   |
+    | Does your network require HTTP Proxy to reach internet? | No                                                           |
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200716014426.png" alt="image-20200716014426" style="zoom:50%;" />
+
+    > **NOTE**
+    >
+    > If your web browser throws an error stating that downloading the installer shell script could do harm to your computer, you can safely ignore it and keep the file.
+
+2. When you ran the CloudFormation template it created an S3 bucket with a policy that allows Cloud9 host to access objects in the bucket. You'll put the Tetration agent in that bucket so download it on Cloud9 host and install the tetration agent daemonset to EKS cluster. Access the S3 management console where you'll upload the Tetration agent installer.
+
+    > https://s3.console.aws.amazon.com/s3/buckets/${AWS_TET_AGENT_BUCKET}/?region=${AWS_REGION}
+
+3. Click the _Upload_ button.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200717103827.png" alt="image-20200717103827" style="zoom:50%;" />
+
+4. Click the _Add files_ button. Select the Tetration agent installer you downloaded in a previous step. It will be named similar to _tetration_installer_${POD_NAME}_enforcer_linux_tet-pov-rtp1.sh_.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200717104019.png" alt="image-20200717104019" style="zoom:50%;" />
+
+5. Click the _Upload_ button.
+
+    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200717104557.png" alt="image-20200717104557" style="zoom:50%;" />
+
+    > **NOTE**
+    >
+    > By selecting _Upload_ it will use the default settings for the file. The most important of those settings are the _Permissions_ settings. AWS sets the default permissions so that a file is not publicly accessible. This is extremely important to monitor with cloud-hosted files as a large number of well-publicized breaches were the result of incorrect bucket or object permissions.
+    >
+    > The bucket policy that was applied in the CloudFormation template you used at the start of this lab set access controls for all objects in this bucket to permit requests from your VPC's NAT gateway to download the objects.
+
+6. On cloud9 terminal run the command below to download the installer script.
+
+    ###### Command
+
+    ```
+    aws s3api get-object --bucket DOC-EXAMPLE-BUCKET1 --key _tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh_
+    ```
+
+    ###### Output
+
+    ```
+    aws s3api get-object --bucket ${AWS_TET_AGENT_BUCKET} --key tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh
+    ```
+
+5. Run the download bash script to install tetration daemonset objects on the EKS cluster
+
+    ###### Command
+
+    ```
+    bash tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh
+    ```
+
+    ###### Output
+
+    ```
+    bash tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh
+    ```
+
+6. Run the download bash script to install tetration daemonset objects on the EKS cluster
+
+    ###### Command
+
+    ```
+    kubectl get pods -n tetration
+    ```
+
+    ###### Output
+
+    ```
+    kubectl get pods -n tetration
+    ```
 
 
 #### Enforce application segmentation based on Kubernetes annotations
@@ -2174,8 +2376,7 @@ In our environment, we'll be using a zero trust policy specific to this lab that
 You'll use Ansible playbooks to configure and enforce the policy, which will protect against lateral movement between services.
 
 
-
-#### Simulate a breach and lateral movement
+##### Simulate a breach and lateral movement
 
 1. Simulate an attacker gaining shell access via the _front-end_ service by opening a shell on the _front-end_ pod. First we need to retrieve the _front-end_ pod name.
 
@@ -2252,7 +2453,7 @@ You'll use Ansible playbooks to configure and enforce the policy, which will pro
     > Although obvious, it's worth noting that it is not recommend to leave _netcat_ installed in a container image. In addition, it's recommended to run containers as immutable so that software can't be installed or built locally should an attacker gain access. As we all know, best practices are not always followed so this scenario is 100% valid and witnessed in production application deployments.
 
 
-#### Perform a flow search
+##### Perform a flow search
 
 The Flows option in the top-level menu takes you to the Flow Search page. This page provides the means for quickly filtering and drilling down into the flows corpus. The basic unit is a “Flow Observation” which is a per-minute aggregation of each unique flow. The two sides of the flow are called “Consumer” and “Provider”, the Consumer is the side that initiated the flow, and the Provider is responding to the Consumer (e.g. “Client” and “Server” respectively). Each observation tracks the number of packets, bytes, and other metrics in each direction for that flow for that minute interval.
 
@@ -2287,7 +2488,7 @@ You want to confirm that the software agent is sending flow data to Secure Workl
     <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018123212670.png" alt="image-20191018123212670" style="zoom:50%;" />
 
 
-#### Create an API Key to use with Ansible
+##### Create an API Key to use with Ansible
 
 Given the application dependencies and kubernetes environment are well understood, this is an ideal situation to leverage the power of infrastructure automation. In our case, you'll use open source [Secure Workload modules](https://github.com/CiscoDevNet/Secure Workload-ansible-playbooks) for Ansible along with Ansible playbooks that have already been created for your environment.
 
@@ -2327,7 +2528,7 @@ First you'll need to create a Secure Workload API Key that the modules will use 
 
 
 
-#### Create inventory filters using Ansible
+##### Create inventory filters using Ansible
 
 Now that we have an API Key we can configure Ansible to access Secure Workload and then run our playbooks to create inventory filters for all of the application, Kubernetes, AWS, and external inventory.
 
@@ -2419,7 +2620,7 @@ Now that we have an API Key we can configure Ansible to access Secure Workload a
 > You might notice that the inventory filter you created for the front-end pods has changed. The playbook added the Kubernetes namespace to the query details to make the filters more precise and created an additional filter for the front-end service.
 
 
-#### Define application segmentation using Ansible
+##### Define application segmentation using Ansible
 
 Network security policies are the building block for many powerful features of Cisco Secure Workload. They provide a simple and intuitive mechanism for both application owners and security teams to define the necessary intents to secure assets and applications within data centers.
 
@@ -2440,7 +2641,7 @@ In an earlier step, you configured policy filters. Now we'll use Ansible to appl
     ###### Command
 
     ```
-    cd ${DOLLAR_SIGN}LAB/Secure Workload/ansible
+    cd ${DOLLAR_SIGN}LAB/tetration/ansible
     ```
 
 3. You should have already provided the Secure Workload *API Key* and *API Secret* using the helper script *tetansconf*, in a previous step. You can confirm values are set for *api_key* and *api_secret* in *${DOLLAR_SIGN}LAB/Secure Workload/ansible/host_vars/Secure Workload.yaml*.
@@ -2448,7 +2649,7 @@ In an earlier step, you configured policy filters. Now we'll use Ansible to appl
     ###### Command
 
     ```
-    cat ${DOLLAR_SIGN}LAB/Secure Workload/ansible/host_vars/Secure Workload.yaml
+    cat ${DOLLAR_SIGN}LAB/tetration/ansible/host_vars/tetration.yaml
     ```
 
     ###### Output
@@ -2513,7 +2714,7 @@ In an earlier step, you configured policy filters. Now we'll use Ansible to appl
 
 
 
-#### Confirm lateral movement has been blocked
+##### Confirm lateral movement has been blocked
 
 These are the same steps that you did earlier, but this time the attempt to simulate a breach and lateral  movement from the _front-end_ pod to the _payment_ service will fail.
 
@@ -2587,7 +2788,7 @@ These are the same steps that you did earlier, but this time the attempt to simu
 
 
 
-#### Confirm the application is working as expected
+##### Confirm the application is working as expected
 
 Negative impacts of enforced security policy is a large concern for application owners and DevOps teams. In some cases, they will avoid engaging with security teams altogether to avoid the risk of security "breaking" their applicaiton. It's important to be able to show that the application continues to work after enforcing our security policy.
 

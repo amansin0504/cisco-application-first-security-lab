@@ -89,6 +89,7 @@ echo "export VPC_PUB_SUBNET_1_ID=`aws ec2 describe-subnets --filters 'Name=tag:N
 echo "export VPC_PUB_SUBNET_2_ID=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values='${AWS_ENV_NAME}' Spoke Public Subnet AZ2' | jq -r '.Subnets[0].SubnetId'`" >> $BASHRC_LAB #UPDATE
 echo "export VPC_PUB_SUBNET_3_ID=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values='${AWS_ENV_NAME}' Spoke Public Subnet AZ3' | jq -r '.Subnets[0].SubnetId'`" >> $BASHRC_LAB #UPDATE
 echo "export AWS_ACCT_ID=`aws sts get-caller-identity | jq -r '.Account'`" >> $BASHRC_LAB
+echo "export AWS_TET_AGENT_BUCKET='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="TetAgentBucket").OutputValue'`'" >> $BASHRC_LAB
 echo "export AWS_FLOW_LOG_BUCKET='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="FlowLogBucket").OutputValue'`'" >> $BASHRC_LAB
 echo "export CLOUD9_IP_ADDRESS='`hostname -i`'" >> $BASHRC_LAB
 echo "export AWS_REGION='`aws configure get region`'" >> $BASHRC_LAB

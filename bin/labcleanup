@@ -35,11 +35,12 @@ then
     exit 0
 fi
 
-echo "Lab cleanup: Delete S3 flow log bucket"
+echo "Lab cleanup: Delete S3 bucket objects"
 aws s3 rb s3://${AWS_FLOW_LOG_BUCKET} --force
+aws s3 rb s3://${AWS_TET_AGENT_BUCKET} --force
 
 echo "Lab cleanup: Delete Key Pair"
-aws ec2 delete-key-pair --key-name ${AWS_KEYPAIR_NAME}
+#aws ec2 delete-key-pair --key-name ${AWS_KEYPAIR_NAME}
 
 echo "Lab cleanup: Delete EKS Cluster"
 kubectl delete ns sock-shop
@@ -47,6 +48,8 @@ eksctl delete cluster --name app-first-sec
 
 echo "Lab cleanup: Delete ECR Registry"
 aws ecr delete-repository --repository-name sock-shop/front-end --force
+
+#delete swc role, policy
 
 echo "Lab cleanup: Delete Cloudformation Stack"
 aws cloudformation delete-stack --stack-name ${AWS_CF_STACK_NAME}
