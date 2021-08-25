@@ -2070,7 +2070,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     ###### Command
 
     ```
-    aws iam create-policy --policy-name secure-workload-read-only --policy-document file://${DOLLAR_SIGN}LAB/tetration/tetration-aws-read-only-policy.json
+    aws iam create-policy --policy-name secure-workload-read-only --policy-document file://${DOLLAR_SIGN}LAB/tetration/tetration-k8s-read-only.json
     ```
 
     ###### Output
@@ -2078,7 +2078,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     ```
     {
        "Policy": {
-           "PolicyName": "secure-workload-read-onl",
+           "PolicyName": "secure-workload-read-only",
            "PolicyId": "RFUWK63KANPA5WOZ4JBES",
            "Arn": "arn:aws:iam::${AWS_ACCT_ID}:policy/secure-workload-read-onl",
            "Path": "/",
@@ -2244,17 +2244,20 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
 
     <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018083250277.png" alt="image-20191018083250277" style="zoom:50%;" />
 
-11. Set the values in the _Create External Orchestrator Configuration_ dialogue modal with the following values. Select _Type_ as Kubernetes and _K8s Manager Type_ as EKS. The _AWS Access Key Id_ and _AWS Secret Access Key_ correspond to the _AccessKeyId_ and _SecretAccessKey_ values in the output of the _aws iam create-access-key_ command in an earlier step.
+11. Set the values in the _Create External Orchestrator Configuration_ dialogue modal with the following values. Select _Type_ as Kubernetes and _K8s Manager Type_ as EKS. The _AWS Access Key Id_ and _AWS Secret Access Key_ correspond to the _AccessKeyId_ and _SecretAccessKey_ values in the output of the _aws iam create-access-key_ command in an earlier step. Also, uncheck the _Secure Connector Tunnel_ option at the bottom.
 
     | Field                 | Value                                                                 |
     | --------------------- | ----------------------------------------------------------------------|
     | Type                  | Kubernetes                                                            |
     | K8s Manager Type      | EKS                                                                   |                 
     | Name                  | app-first-sec                                                         |
+    | Description           | app-first-sec                                                         |
+    | AWS Cluster Name      | app-first-sec                                                         |
     | AWS Access Key Id     | [_AccessKeyId_ from _aws iam create-access-key_ in previous step]     |
     | AWS Secret Access Key | [_SecretAccessKey_ from _aws iam create-access-key_ in previous step] |
     | AWS Region            | ${AWS_REGION}                                                         |
     | CA Certificate        | [Output from _aws eks describe-cluster_ in previous step]             |
+
 
 12. Click on _Hosts List_ in the dialogue modal menu on the left.
 
@@ -2327,13 +2330,13 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     ###### Command
 
     ```
-    aws s3api get-object --bucket DOC-EXAMPLE-BUCKET1 --key _tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh_
+    aws s3 cp s3://${AWS_TET_AGENT_BUCKET}/tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh
     ```
 
     ###### Output
 
     ```
-    aws s3api get-object --bucket ${AWS_TET_AGENT_BUCKET} --key tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh
+    download: s3://cisco-app-first-sec-hubciscoappfirstlabfiles-ek1ixry827uz/tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh to ./tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh
     ```
 
 5. Run the download bash script to install tetration daemonset objects on the EKS cluster
@@ -2347,10 +2350,26 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     ###### Output
 
     ```
-    bash tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh
+    -------------------------------------------------------------
+    Starting Tetration Analytics Installer for Kubernetes install
+    -------------------------------------------------------------
+    tar: installer.sh: implausibly old time stamp 1970-01-01 00:00:00
+    tar: chart.tgz: implausibly old time stamp 1970-01-01 00:00:00
+    tar: uninstall_cleanup_ds.yaml: implausibly old time stamp 1970-01-01 00:00:00
+    tar: helm: implausibly old time stamp 1970-01-01 00:00:00
+    tar: kubectl: implausibly old time stamp 1970-01-01 00:00:00
+    Location of Kubernetes credentials file is /home/ec2-user/.kube/config
+    The following Helm Chart will be installed
+    apiVersion: v2
+    appVersion: 3.5.1-23-enforcer
+    description: Tetration Enforcer Agent
+    name: tetration-agent
+    type: application
+    version: 3.5.1-23-enforcer
+    Release "tetration-agent" does not exist. Installing it now.
     ```
 
-6. Run the download bash script to install tetration daemonset objects on the EKS cluster
+6. Verify the installation
 
     ###### Command
 
@@ -2361,7 +2380,10 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     ###### Output
 
     ```
-    kubectl get pods -n tetration
+    NAME                    READY   STATUS                  RESTARTS   AGE
+    tetration-agent-m8m24   1/1     Running                 0          4m29s
+    tetration-agent-md8zw   1/1     Running                 0          4m29s
+    tetration-agent-vbql4   1/1     Running                 0          4m29s
     ```
 
 
