@@ -12,7 +12,7 @@
    - See the License for the specific language governing permissions and
    - limitations under the License. -->
 
-<img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/cisco-logo-transparent-20191112121340271.png" alt="Image result for cisco logo" style="zoom:10%;" />
+<img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/cisco-logo-transparent-20191112121340271.png" alt="Image result for cisco logo" style="zoom:10%;" />
 
 <!--
 
@@ -24,13 +24,13 @@ WARNING: This file is intended to be used within Cloud9 in preview mode for the 
 
 You're about to start on a doozy of lab that covers a lot of ground in a short time. Buckle in and get ready to secure a cloud-native application and public cloud infrastructure using Cisco Products: Tetration, Secure Cloud Analytics Cloud, and Duo. You'll stage the infrastructure, modify and deploy the application, instrument the security products into the environment. In the process, you'll get your hands dirty with products and technologies including git, Kubernetes, GitHub, Docker, AWS and others.
 
-<img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/arch2.png" alt="arch2.png" />
+<img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/arch2.png" alt="arch2.png" />
 
 > **TIP**
 >
 > You can expand the lab guide into a dedicated browser tab by clicking on arrow icon in the top right corner of the viewer pane in the Cloud9 IDE.
 >
-> <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191023063905369.png" alt="image-20191023063905369" style="zoom:33%;" />
+> <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191023063905369.png" alt="image-20191023063905369" style="zoom:33%;" />
 
 ## Overview of Cisco Application-First Security
 
@@ -41,21 +41,21 @@ You're about to start on a doozy of lab that covers a lot of ground in a short t
 * _Adaptive to application dependencies_: Security designed to adapt to your application so it can give you granular control and reduce risk by detecting and preventing threats based on overall understanding of your environment.
 
 
-<img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/afs.png" alt="afs.png" />
+<img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/afs.png" alt="afs.png" />
 
 ## AWS Public Cloud
 
 This lab uses AWS to host the workloads and applications and takes advantage of many of their native services. This diagram shows how the different components are logically connected.
 
-<img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/AppFirst-Lab-Diagram.png" alt="image-AppFirst_Lab_Diagram" style="zoom:50%;" />
+<img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/AppFirstLab.png" alt="image-AppFirst_Lab_Diagram" style="zoom:50%;" />
 
 
 ## Overall Lab Content
 
 * [Part1: Prepare infrastructure and application](#part1:-prepare-infrastructure-and-application)
-* [Part2: Implement security - Cisco Secure Access by Duo](#part2:-cisco-implement-security-secure-access-by-duo)
-* [Part3: Implement security - Cisco Secure Cloud Analytics](#part3:-cisco-implement-security-secure-cloud-analytics)
-* [Part4: Implement security - Cisco Secure Cloud Workload](#part4:-cisco-implement-security-secure-cloud-workload)
+* [Part2: Implement security - Cisco Secure Access by Duo](#part2:-implement-security-cisco-secure-access-by-duo)
+* [Part3: Implement security - Cisco Secure Cloud Analytics](#part3:-implement-security-cisco-secure-cloud-analytics)
+* [Part4: Implement security - Cisco Secure Cloud Workload](#part4:-implement-security-cisco-secure-cloud-workload)
 * [Wrap-Up](#wrap-up)
 
 ## Part1: Prepare infrastructure and application
@@ -63,6 +63,7 @@ This lab uses AWS to host the workloads and applications and takes advantage of 
 This section of the lab will have you prepare the public cloud infrastructure and deploy a micro-services based cloud-native application. Throughout the steps, you'll be laying the groundwork to implement security in a later sections.
 
 * [Management interfaces](#management-interfaces)
+* [Credentials](#credentials)
 * [Access the lab environment](#access-the-lab-environment)
 * [Create a Kubernetes cluster](#create-a-kuberenetes-cluster)
 * [Deploy applications on Kubernetes](#deploy-applications-on-kubernetes)
@@ -90,7 +91,7 @@ There are five management interfaces that you will need to access to complete th
 
 ------
 
-The details below will be used for credentials unless you decide to use different passwords than what's recommended. In the relevant sections, you'll be instructed to set passwords where necessary.
+The details below will be used for credentials unless you decide to use different passwords than what's recommended. In the relevant sections, you'll be instructed to set passwords where necessary. You will be instructed to retrieve private GitLab console credentials in the relevant section.
 
 | Product                                                               | Username / Email            | Password                      |
 | ----------------------------------------------------------------------| --------------------------- | ----------------------------- |
@@ -116,7 +117,7 @@ The lab is intended to be driven from the Cloud9 environment that will already s
 >
 > You can expand this lab guide into a dedicated browser tab by clicking on arrow icon in the top right corner of the viewer pane in the Cloud9 IDE.
 >
-> <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191023063905369.png" alt="image-20191023063905369" style="zoom:33%;" />
+> <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191023063905369.png" alt="image-20191023063905369" style="zoom:33%;" />
 
 
 #### Steps
@@ -127,7 +128,7 @@ The lab is intended to be driven from the Cloud9 environment that will already s
 
 Most of the lab will be driven from this AWS Cloud9 environment. Let's get familiar with this interface.
 
-<img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191016154841243.png" alt="image-20191016154841243" style="zoom: 25%;" />
+<img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191016154841243.png" alt="image-20191016154841243" style="zoom: 25%;" />
 
 1. Make sure the _lab_ directory is expanded in the file tree in the left pane. These are the files you'll use throughout the lab.
 
@@ -158,12 +159,12 @@ Most of the lab will be driven from this AWS Cloud9 environment. Let's get famil
 
 ------
 
-<img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/arch2-aws-k8s.png" alt="arch2.png" />
+<img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/arch2-aws-k8s.png" alt="arch2.png" />
 
 This section will help you do the following:
 
 1. Understand tagging of VPC resources in AWS
-2. Understand AWS IAM, User policies and AWS CLI profile
+2. Understand AWS IAM, user policies and AWS CLI profile
 3. Create an EKS Kubernetes cluster using eksctl
 4. Basics of kubectl
 
@@ -175,7 +176,7 @@ Kubernetes targets the management of elastic applications that consist of multip
 
 The Kubernetes master node is responsible for the management of Kubernetes cluster. This is the entry point of all administrative tasks. The master node is the one taking care of orchestrating the worker nodes, where the actual services are running. The worker nodes run the pods, so it contains all the necessary services to manage the networking between the containers, communicate with the master node, and assign resources to the containers scheduled.
 
-<img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/o7leok.png" alt="img"  />
+<img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/o7leok.png" alt="img"  />
 
 Self-managing production large-scale Kubernetes is really challenging and many organizations are looking to managed Kubernetes from AWS, GCP and Azure to alleviate the that burden. You'll be using AWS EKS for this lab.
 
@@ -190,9 +191,9 @@ Self-managing production large-scale Kubernetes is really challenging and many o
 
 ##### Review subnet tags required by EKS
 
-When you create your Amazon EKS cluster, it has [requirements](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html) for the VPC networking to function properly. For this lab, we've already setup all the requirements for the public and private subnets, NAT gateway, and route tables. EKS requires _tags_ to be applied to the VPC and subnets to enable Kubernetes to discover them.
-
 AWS allows customers to assign metadata to their AWS resources in the form of tags. Each tag is a simple label consisting of a customer-defined key and an optional value that can make it easier to manage, search for, and filter resources.
+
+When you create your Amazon EKS cluster, it has [requirements](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html) for the VPC networking to function properly. For this lab, we've already setup all the tagging requirements for the public and private subnets. EKS requires _tags_ to be applied to the subnets to enable Kubernetes to discover them.
 
 1. Navigate to the VPC console and open _Subnets_ from the menu in the left pane and select the subnet with the _Name_ starting with _Cisco-App-First-Sec Spoke Private Subnet_ or use the provided link and select any subnet.
 
@@ -207,13 +208,13 @@ AWS allows customers to assign metadata to their AWS resources in the form of ta
     | kubernetes.io/cluster/app-first-sec | shared |
     | kubernetes.io/role/internal-elb     | 1      |
 
-4. Now, select any subnet starting with _Name_ as _Cisco-App-First-Sec Spoke Public Subnet_ or use the provided link.
+4. Now, select any subnet starting with _Name_ as _Cisco-App-First-Sec Spoke Public Subnet_ or use the provided link and select any subnet.
 
     > [https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}#subnets:SubnetId=${VPC_PUB_SUBNET_1_ID},${VPC_PUB_SUBNET_2_ID},${VPC_PUB_SUBNET_3_ID}](https://console.aws.amazon.com/vpc/home?region=${AWS_REGION}#subnets:SubnetId=${VPC_PUB_SUBNET_1_ID},${VPC_PUB_SUBNET_2_ID},${VPC_PUB_SUBNET_3_ID})
 
 5. Click on the _Tags_ tab in the lower left pane
 
-6. Review the the following tag keys and values. Ignore any other tags that are already present. Setting the _kubernetes.io/role/internal-elb_ tag tells EKS that it can use this subnet to create external load balancers.
+6. Review the the following tag keys and values. Ignore any other tags that are already present. Setting the _kubernetes.io/role/elb_ tag tells EKS that it can use this subnet to create external load balancers.
 
     | Key                                 | Value  |
     | ----------------------------------- | ------ |
@@ -225,7 +226,7 @@ AWS allows customers to assign metadata to their AWS resources in the form of ta
 
 It's important to understand how authentication of IAM users to EKS managed Kubernetes differs from self-managed deployments. EKS uses IAM to provide authentication to your Kubernetes cluster (through the _aws eks get-token_ command, available in version 1.16.232 or greater of the AWS CLI, or the AWS IAM Authenticator for Kubernetes), but it still relies on native Kubernetes Role Based Access Control (RBAC) for authorization. This means that IAM is only used for authentication of valid IAM entities. All permissions for interacting with your Amazon EKS cluster’s Kubernetes API is managed through the native Kubernetes RBAC system.
 
-We have already associated the required permissions to your IAM user. Follow the steps below to review the permissions.
+It's important to create the cluster using an AWS profile that has restricted permissions within your AWS org, which in this case is done by setting IAM permissions. We have already associated the required permissions to your IAM user. Follow the steps below to review the permissions.
 
 1. Navigate IAM console to review the _AppFirstUserPolicy_ policy attached to your IAM user under _Permissions_ tab.
 
@@ -265,7 +266,7 @@ There are three ways to create an EKS-managed Kubernetes cluster: eksctl CLI, ma
        publicKeyName: ${AWS_KEYPAIR_NAME}
     ```
 
-    You'll also notice the _vpc_ portion references the _private subnets_ created under Spoke VPC.
+    You'll also notice the _vpc_ portion references the _private subnets_ created under Spoke VPC. The cluster nodes will be provisioned in these subnets.
 
     ```
     vpc:
@@ -281,7 +282,7 @@ There are three ways to create an EKS-managed Kubernetes cluster: eksctl CLI, ma
     > It's also worth noting that the EC2 instance type specified as _t2.medium_. Compute types smaller than that will quickly pose problems for even for non-production deployments of Kubernetes and small applications.
 
 
-3. Start the process of creating the EKS cluster from the Cloud9 bottom right pane within a terminal. It's important to create the cluster using an AWS profile that has restricted permissions within your AWS org, which in this case is done by setting a temporary env variable that was setup at the beginning of the lab.
+3. Start the process of creating the EKS cluster on Cloud9 terminal using eksctl utility.
 
     ###### Command
 
@@ -289,7 +290,7 @@ There are three ways to create an EKS-managed Kubernetes cluster: eksctl CLI, ma
     eksctl create cluster -f ${DOLLAR_SIGN}LAB/aws/eks-cluster.yaml
     ```
 
-    This single command begins a complex process driven through CloudFormation that will take approximately 15 minutes to complete given the shear number of steps to prepare all of the AWS services.
+    This single command begins a complex process driven through CloudFormation that will take approximately 25 minutes to complete given the shear number of steps to prepare all of the AWS services.
 
     > **WARNING**
     >
@@ -304,13 +305,13 @@ There are three ways to create an EKS-managed Kubernetes cluster: eksctl CLI, ma
 
 5. Click on the _Stack name_ listed as _eksctl-app-first-sec-cluster_.
 
-6. Select the _Events_ tab in the right pane. You can periodically refresh the events using the <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017091146525.png" alt="image-20191017091146525" style="zoom:50%;" /> button
+6. Select the _Events_ tab in the right pane. You can periodically refresh the events using the <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191017091146525.png" alt="image-20191017091146525" style="zoom:50%;" /> button
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022190239285.png" alt="image-20191022190239285" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191022190239285.png" alt="image-20191022190239285" style="zoom:50%;" />
 
 7. When eksctl completes both the _eksctl-app-first-sec-cluster_ and _eksctl-app-first-sec-nodegroup-app-first-sec_ stacks will show _CREATE\_COMPLETE_ to the left of the _Events_ listing.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022190152523.png" alt="image-20191022190152523" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191022190152523.png" alt="image-20191022190152523" style="zoom:50%;" />
 
     You can also return to the Cloud9 IDE terminal to check on the output of _eksctl_, which should state that the cluster is ready.
 
@@ -325,7 +326,13 @@ There are three ways to create an EKS-managed Kubernetes cluster: eksctl CLI, ma
     ```
 
     > **NOTE**
-    > Wait the approximately 15 minutes for eksctl to complete, proceed to the next section below once the cluster is ready based on the output of _eksctl_.
+    >
+    > Given how long this process takes, you can move forward to and finish the section [Setup development environment](#setup-development-environment) and return back to this point and proceed to the next section below once the cluster is ready based on the output of _eksctl_.
+    >
+    > If you prefer to wait the approxiamtely 25 minutes for eksctl to complete, proceed to the next section below once the cluster is ready based on the output of _eksctl_.
+    > **WARNING**
+    >
+    > If you proceed to the next steps before _eksctl_ has completed, you will receive errors and have difficulty completing the lab successfully.
 
 ##### Explore Kubernetes using kubectl
 
@@ -432,7 +439,7 @@ Once you have created a cluster using _eksctl_, you will find that cluster crede
 
 ------
 
-<img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/arch2-app.png" alt="arch2.png" />
+<img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/arch2-app.png" alt="arch2.png" />
 
 This section will help you do the following:
 
@@ -663,7 +670,7 @@ Deployments define how a replicaset of pods are to be deployed. Services define 
 
 5. You've just launched your very own Sock Shop. Visit the DNS A record in the _EXTERNAL-IP_ field from kubectl or the _DNS name_ field from the AWS management console in a web browser. Congrats on starting your new business!
 
-    ![image-20191017190954174](https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017190954174.png)
+    ![image-20191017190954174](https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191017190954174.png)
 
     > **NOTE**
     >
@@ -685,7 +692,7 @@ While there are numerous benefits to Kubernetes orchestration of containers, the
 
 2. Open a new terminal tab in the bottom right pane in the Cloud9 IDE. This tab will be used for monitoring of the _front-end_ service.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
 
 3. In the new terminal tab, start monitoring the _front-end_ service.
 
@@ -1009,9 +1016,9 @@ It's essential to be able to access these logs and often view the output in real
 
 #### Overview
 
-In software development lifecycle, an application goes through a series of stages to be finally available to an end user to consume. These series of stages, once a developer pushes the changes from their local environment to a remote repository, would typically include building an image, testing it and eventually merging the code to the main branch of source code management system. Once the changes are merged, the new version of app is released to the repository. The final stage is when this newly released application is deployed and made available to the end users.
+In software development lifecycle, an application goes through a series of stages to be finally available to an end user to consume. These series of stages, once a developer merges the code to the main branch of source code management system, would typically include building an image, testing it and then releasing the new version of app to the repository. The final stage is when this newly released image is deployed and made available to the end users.
 
-In this section, you will create a project for Front-End microservice of Sock Shop application on your private GitLab Instance. You will then set up your local environment on Cloud9 IDE and configure the git client to point to your private Front-End project GitLab Instance. We have already hosted a private Gitlab instance ins AWS Hub VPC.
+In this section, you will create a project for Front-End microservice of Sock Shop application on your private GitLab Instance. You will then set up your local environment on Cloud9 IDE and configure the git client to point to your private Front-End project GitLab Instance. We have already hosted a private Gitlab instance in AWS Hub VPC.
 
 After the local and remote repositories are set up, you will set up a CI/CD pipeline for your _Sock-Shop-Front-End_ GitLab project and automate the testing, building and deployment of the Front End microservice to EKS cluster.
 
@@ -1021,18 +1028,14 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
 * [Setup Private GitLab environment](#setup-private-gitlab-environment)
 * [Setup CICD Pipeline](#setup-cicd-pipeline)
 
-
-
-
 ##### Setup Private GitLab environment
 
-1. Login to the Private GitLab console and navigate to _New project > Create blank project_. Enter the project name _Sock-Shop-Front-End_, uncheck the _Initialize repository with a README_ box and, create a new blank GitLab project. We will initialize the project in next steps
+1. Login to the Private GitLab console and navigate to _New project > Create blank project_ or use the link below. Enter the project name _Sock-Shop-Front-End_, uncheck the _Initialize repository with a README_ box and, create a new blank GitLab project. We will initialize the project in the next steps.
 
     > [http://${AWS_GITLAB_FQDN}/projects/new#blank_project](http://${AWS_GITLAB_FQDN}/projects/new#blank_project)
 
-  Username: root
-  Run the command below to retrieve the password
-
+    Username: root
+    Run the command below on Cloud9 terminal to retrieve the GitLab console password
 
     ###### Command
 
@@ -1046,7 +1049,7 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
     Password: 3BcXFt8tqtgsHJ0Gd/FY+V3qZMImmmpqOFkIm/44l1w=
     ```
 
-2. From the drop down menu on the top right corner, navigate to _Edit Profile > Access Tokens_ and create a personal access token with _write_repository_ and _api_ permissions. Export the token to an environment variable for later use. We will need this token to set up local git repository on Cloud9 host in the next step.
+2. From the drop down menu on the top right corner, navigate to _Edit Profile > Access Tokens_ or or use the link below. Create a personal access token with _write_repository_ and _api_ permissions. Export the token to an environment variable for later use. We will need this token to set up local git repository on Cloud9 host in the next step.
 
     > [http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens](http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens)
 
@@ -1057,7 +1060,7 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
     export GITLAB_TOKEN=<personal-access-token>
     ```
 
-3. Switch back to Cloud9 host terminal and set up a local git repository pointing to your private GitLab instance.
+3. Switch back to Cloud9 host terminal. Clone and set up a local git repository pointing to your private GitLab instance.
 
 
     ###### Command
@@ -1073,7 +1076,7 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
     ###### Output
 
     ```
-    safe:~/environment/Sock-Shop-Front-End (main) $ git push -u origin --all
+    app-sec-pod16:~/environment/Sock-Shop-Front-End (main) $ git push -u origin --all
     Enumerating objects: 968, done.
     Counting objects: 100% (968/968), done.
     Compressing objects: 100% (394/394), done.
@@ -1087,11 +1090,15 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
 
 ##### Setup CICD Pipeline
 
-In this section, you will set up a CI/CD pipeline for your newly created GitLab project _Sock-Shop-Front-End_.
+In this section, you will set up a CI/CD pipeline for your newly created GitLab project _Sock-Shop-Front-End_. To use GitLab CI/CD, you need a file called .gitlab-ci.yml in the root of your repository, which contains the CI/CD configuration. In the .gitlab-ci.yml file, you can define the scripts and the commands that you want to run. The scripts are grouped into jobs, and jobs run as part of a larger pipeline. You can group multiple independent jobs into stages that run in a defined order. You should organize your jobs in a sequence that suits your application and is in accordance with the tests you wish to perform. To visualize the process, imagine the scripts you add to jobs are the same as CLI commands you run on your computer to build, test and deploy your application.
 
-[GitLab Runners](https://docs.gitlab.com/runner/) is an application that works with GitLab CI/CD to run jobs in a pipeline. An AWS Elastic Container Registry is already set up as part of initial lab set up, you will use this registry to push container images that you will build during the course of this lab.
+When you add a _.gitlab-ci.yml_ file to your repository, GitLab detects it and an application called [GitLab Runner](https://docs.gitlab.com/runner/) runs the scripts or jobs defined in the pipeline configuration. 
 
-1. Navigate to _Administrator/Sock-Shop-Front-End > Settings > CI/CD_, expand the _Variables_ section add the following key-value pairs as environment variables.
+In this section of the lab, you will set up the GitLab runner application to run your Front-End project pipeline. The .gitlab-ci.yml containing the pipeline configuration is already provided, you will review the pipeline configuration and deploy the front-end sock shop image using the CI/CD pipeline automation.
+
+An AWS Elastic Container Registry (ECR) is already set up as part of initial lab set up, pipeline will use this registry to push container images that will be build as part of the CI/CD pipeline workflow. You will then deploy the pushed ECR image to update your Sock Shop application running on EKS cluster.
+
+1. Navigate to _Administrator/Sock-Shop-Front-End > Settings > CI/CD_ or use the link below. Expand the _Variables_ section add the following key-value pairs as environment variables.
 
     > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd)
 
@@ -1105,12 +1112,12 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
 
 
     > **TIP**
-    >
-    > For ease of use, we are displaying the AWS Secret Key in this guide, this is not recommended in a real world environment because of security reasons. We will delete these keys as part of lab clean up at the end of this lab.
+    > We need these variables to allow CI/CD pipeline jobs to push the container images to the private elastic container registry.
+    > For ease of use, we are displaying the AWS Secret Key (for your lab IAM user account) in this guide. However, this is not recommended in a real world environment because of security reasons. We will delete these keys as part of lab clean up exercise at the end of this lab.
     >
 
 
-2. Navigate to _Administrator/Sock-Shop-Front-End > Settings > CI/CD_, expand the _Runners_ section and copy the registration token and export it as environment variable.
+2. Navigate to _Administrator/Sock-Shop-Front-End > Settings > CI/CD_ or use the link below. Expand the _Runners_ section and copy the registration token and export it as environment variable.
 
     > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd)
 
@@ -1121,8 +1128,7 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
     export RUNNER_TOKEN=<registration-token>
     ```
 
-3. On the Cloud9 host terminal, run the command below to register a GitLab runner to the GitLab project.
-
+3. On the Cloud9 host terminal, register the GitLab runner to your private _Front-End-Sock-Shop_ GitLab project. We use the registration token that you retrieved in the previous step.
 
     ###### Command
 
@@ -1170,7 +1176,7 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
     Runner registered successfully. Feel free to start it, but if it's running already the config should be automatically reloaded!
     ```
 
-4. Navigate to _Administrator/Sock-Shop-Front-End > CICD > Pipeline_ on GitLab console. A new pipeline run should be triggered. The pipeline will build a new Front End Sock Shop container image and push it to the AWS ECR registry. The pipeline will then pause at deployment stage for a manual input.
+4. Navigate to _Administrator/Sock-Shop-Front-End > CICD > Pipeline_ on GitLab console or use the link below. A new pipeline run should be triggered.
 
     > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)
 
@@ -1178,12 +1184,32 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
 
     > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor)
 
-    > **NOTE**
-    >
-    > The new Front End container image is essentially same image as the one we are already running in the EKS cluster because only made a change to the ReadMe file, no code changes were done
+    You'll see the _Building_ stage, the pipeline will build a new Front End Sock Shop container image and push it to the AWS ECR registry at this stage.
 
-6. Once the CI/CD pipeline run completes the testing stage, run the command below to see the newly pushed image to the private Elastic Container Repository(ECR).
+    ```
+    ssh:
+       allow: true
+       publicKeyName: ${AWS_KEYPAIR_NAME}
+    ```
 
+    You'll see the _Deployment_ stage, the pipeline will pause at deployment stage for a manual input. Once the manual input is provided, pipeline updated the Sock Shop frontend microservice to run the new image from ECR.
+
+    ```
+    deploy:
+    stage: deployment
+    image: alpine/k8s:1.16.15
+    tags:
+        - docker
+    before_script:
+        - aws eks update-kubeconfig --name app-first-sec
+        - kubectl version
+    script:
+        - kubectl set image deployment/front-end front-end=$IMAGE_TAG -n sock-shop
+    when: manual
+    ```
+6. Return to CI/CD pipeline run. Once the testing stage completes, run the command below to see the newly pushed image to the private registry.
+
+    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)
 
     ###### Command
 
@@ -1204,7 +1230,7 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
     }
     ```
 
-7. Now, provide the manual input by clicking on play button on deployment stage to automatically deploy your newly built Front-End microservice container image to the Sock-Shop application running on the EKS cluster. Once the deployment stage is successful, run the CLI below to see the updated pod image on EKS cluster. The image tag will match the tag name listed in the ECR registry in the last step.
+7. When pipeline workflow reaches _Deployment_ stage, provide the manual input by clicking on play button on deployment stage to automatically deploy your newly built Front End microservice container image to the Sock-Shop application running on the EKS cluster. Once the deployment stage is successful, verify the updated pod image on EKS cluster. The image tag (value after _front-end:_) will match the _imageTag_ value from _aws ecr list-images_ output in the previous step.
 
 
     ###### Command
@@ -1218,10 +1244,14 @@ In this section, you will set up a CI/CD pipeline for your newly created GitLab 
     ```
     Image:      904585389016.dkr.ecr.us-west-2.amazonaws.com/sock-shop/front-end:bf7273021b5c70951bd0976ea04ce677842a102e
     ```
+
+    > **NOTE**
+    >
+    > The new Front End container image is essentially same image as the one we are already running in the EKS cluster. We will make changes to the source code in the later sections of this lab and use CI/CD pipeline automation to deploy the new image.
     
 ## Part2: Implement security - Cisco Secure Access by Duo
 
-<img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/arch2-duo-sdk.png" alt="arch2.png" />
+<img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/arch2-duo-sdk.png" alt="arch2.png" />
 
 This section will help you do the following:
 
@@ -1291,7 +1321,7 @@ You'll test the current login process, update the source code of the Sock Shop, 
 
 1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
 
 2. Retrieve the EC2 Load Balancer DNS A record that has been allocated to the _front-end_ service using kubectl.
 
@@ -1346,11 +1376,11 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
 
 3. Select your application name _${POD_NAME}-sock-shop_ from the list to view it's configuration.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022122800995.png" alt="image-20191022122800995" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191022122800995.png" alt="image-20191022122800995" style="zoom:50%;" />
 
 4. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
 
 5. Use the _duosecrets_ helper script to create a Kubernetes secret object with the values from the Duo Web SDK Application you opened in a previous step. You'll need to move back and forth between the Duo administrative portal and the Cloud9 IDE terminal as you copy and paste values.
 
@@ -1415,7 +1445,7 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
 
 1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
 
 2. Change the working directory to work on the source for the Sock Shop front-end service.
 
@@ -1564,7 +1594,7 @@ The git push action in last section will trigger the CI/CD pipeline run. The pip
 
 1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
 
 2. Retrieve the EC2 Load Balancer DNS A record that has been allocated to the _front-end_ service using kubectl.
 
@@ -1599,7 +1629,7 @@ The git push action in last section will trigger the CI/CD pipeline run. The pip
 
 4. You will be redirected to the Duo self enrollment dialogue after a succesfull authentication.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022183024378.png" alt="image-20191022183024378" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191022183024378.png" alt="image-20191022183024378" style="zoom:50%;" />
 
 5. When prompted to select what device you are adding, use _Tablet_ and click _Continue_.
 
@@ -1607,31 +1637,31 @@ The git push action in last section will trigger the CI/CD pipeline run. The pip
     >
     > Even though you might have installed the Duo app on your mobile phone, you can select _Tablet_. This avoids having to provide your mobile phone number, which isn't necessary for this lab.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022183515433.png" alt="image-20191022183515433" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191022183515433.png" alt="image-20191022183515433" style="zoom:50%;" />
 
 6. When prompted for the type of tablet, select the appropriate OS based on your mobile device.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022183930111.png" alt="image-20191022183930111" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191022183930111.png" alt="image-20191022183930111" style="zoom:50%;" />
 
 7. You should already have installed the Duo mobile app. If you haven't, install it now. Then click _I have Duo Mobile installed_.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022184041137.png" alt="image-20191022184041137" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191022184041137.png" alt="image-20191022184041137" style="zoom:50%;" />
 
 8. When prompted to activate _Duo Mobile_, open the Duo app and tap the _+_ button at the top. Scan the displayed QR code.
 
 9. Once there's a green check in the center of the QR code, click _Continue_.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022184259668.png" alt="image-20191022184259668" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191022184259668.png" alt="image-20191022184259668" style="zoom:50%;" />
 
 10. When prompted for device settings, select _Automatically send this device a Duo Push_ and click the _Continue to Login_ button.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022184434050.png" alt="image-20191022184434050" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191022184434050.png" alt="image-20191022184434050" style="zoom:50%;" />
 
 11. You will receive a notification in the Duo app that there is a login request. If you select that notifcation, you'll be prompt to _Approve_ or _Deny_ the request. Tap _Approve_.
 
 12. Back in your web broswer, the Duo authentication prompt will have automatically redirected you back to the Sock Shop app. In the top right corner of the site, you will show as logged in.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022185118929.png" alt="image-20191022185118929" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191022185118929.png" alt="image-20191022185118929" style="zoom:50%;" />
 
 
 ### Duo Summary
@@ -1642,7 +1672,7 @@ Duo is providing self-managed MFA for a custom web application using the Duo Web
 
 ## Part3: Implement Security - Cisco Secure Cloud Analytics
 
-<img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/arch2-swc.png" alt="arch2.png" />
+<img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/arch2-swc.png" alt="arch2.png" />
 
 This section will help you do the following:
 
@@ -1690,7 +1720,7 @@ Secure Cloud Analytics Cloud consumes VPC flow logs directly from your AWS accou
 
 1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
 
 2. Create an IAM role that allows SWC to access configuration and flow logs
 
@@ -1829,7 +1859,7 @@ It's worth taking some time to review the CloudFormation template _${DOLLAR_SIGN
 
 1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
 
 2. Update the S3 flow log bucket policy to permit the *swc-role* to list and retrieve files. Take a minute to review the contents of the new policy at *${DOLLAR_SIGN}LAB/swc/swc-flowlogs-bucket-policy.json*. There will be no output from the command unless there's an error.
 
@@ -1853,7 +1883,7 @@ It's worth taking some time to review the CloudFormation template _${DOLLAR_SIGN
 
     > [https://cisco-${POD_NAME}.obsrvbl.com/sensors/list/](https://cisco-${POD_NAME}.obsrvbl.com/sensors/list/)
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191021172621979.png" alt="image-20191021172621979" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191021172621979.png" alt="image-20191021172621979" style="zoom:50%;" />
 
 
 #### Instrument Secure Cloud Analytics Cloud into Kubernetes
@@ -1872,7 +1902,7 @@ The Secure Cloud Analytics Cloud service can monitor network traffic between pod
 
 1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
 
 2. Change the current context for _kubectl_ to ensure that the Kubernetes objects that you're going to create are in the _default_ namesapce.
 
@@ -1965,7 +1995,7 @@ The Secure Cloud Analytics Cloud service can monitor network traffic between pod
 
     > [https://cisco-${POD_NAME}.obsrvbl.com/sensors/list/](https://cisco-${POD_NAME}.obsrvbl.com/sensors/list/)
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022200716161.png" alt="image-20191022200716161" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191022200716161.png" alt="image-20191022200716161" style="zoom:50%;" />
 
 9. Return to the Cloud9 IDE terminal that you were just using.
 
@@ -1993,7 +2023,7 @@ Secure Cloud Analytics Cloud is now consuming all sources of telemetry native to
 
 ## Part4: Implement security - Cisco Secure Cloud Workload
 
-<img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/arch2-tet.png" alt="arch2.png" />
+<img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/arch2-tet.png" alt="arch2.png" />
 
 This section will help you do the following:
 
@@ -2040,7 +2070,7 @@ Since this is the first time you'll be accessing Secure Workload, you'll need to
 
 2. Enter _${DEVNET_EMAIL_ADDRESS}_, which is the email address associated with your DevNet account when you reserved the sandbox for this lab. Click the _Send password reset link_ button.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200715054416.png" alt="image-20200715054416" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200715054416.png" alt="image-20200715054416" style="zoom:50%;" />
 
 4. Check your for the password reset email and follow the steps in the email to set a new password for your account
 
@@ -2230,11 +2260,11 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
 
 9. Navigate to the _External Orchestrators_ page under _VISIBILITY_ in the left menu pane.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018083122803.png" alt="image-20191018083122803" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018083122803.png" alt="image-20191018083122803" style="zoom:50%;" />
 
 10. Click the _Create New Configuration_ button.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018083250277.png" alt="image-20191018083250277" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018083250277.png" alt="image-20191018083250277" style="zoom:50%;" />
 
 11. Set the values in the _Create External Orchestrator Configuration_ dialogue modal with the following values. Select _Type_ as Kubernetes and _K8s Manager Type_ as EKS. The _AWS Access Key Id_ and _AWS Secret Access Key_ correspond to the _AccessKeyId_ and _SecretAccessKey_ values in the output of the _aws iam create-access-key_ command in an earlier step. Also, uncheck the _Secure Connector Tunnel_ option at the bottom.
 
@@ -2253,7 +2283,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
 
 12. Click on _Hosts List_ in the dialogue modal menu on the left.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018093654679.png" alt="image-20191018093654679" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018093654679.png" alt="image-20191018093654679" style="zoom:50%;" />
 
 13. Click the _+_ button next to the _Hosts List_ label to provide the EKS Kubernetes API hostname and port number using the output from the _aws eks describe-cluster_ output from the earlier step. Set the values hor _host name_ and _port number_ with the following values.
 
@@ -2264,7 +2294,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
 
 14. Click the _Create_ button. Once Tetration has successfully connected to the Kubernetes cluster, it will show a _Connection Status_ of _Success_.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191022192939535.png" alt="image-20191022192939535" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191022192939535.png" alt="image-20191022192939535" />
 
     In the following section, you'll use this integration to define segmentation policy using Kubernetes annotations.
 
@@ -2280,7 +2310,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
 
 2. Select _Auto-Install using Installers_ and click the _Next_ button.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200716014019.png" alt="image-20200716014019" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200716014019.png" alt="image-20200716014019" style="zoom:50%;" />
 
 3. Ensure the following fields match the platform values and click the _Download Installer_ button. This will download an agent installation script specific to your Tetration tenant. The file name should look like _tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh_.
 
@@ -2289,7 +2319,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     | Which platform is your agent going to be installed on?  | Kubernetes                                                   |
     | Does your network require HTTP Proxy to reach internet? | No                                                           |
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200716014426.png" alt="image-20200716014426" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200716014426.png" alt="image-20200716014426" style="zoom:50%;" />
 
     > **NOTE**
     >
@@ -2301,15 +2331,15 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
 
 3. Click the _Upload_ button.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200717103827.png" alt="image-20200717103827" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200717103827.png" alt="image-20200717103827" style="zoom:50%;" />
 
 4. Click the _Add files_ button. Select the Tetration agent installer you downloaded in a previous step. It will be named similar to _tetration_installer_${POD_NAME}_enforcer_linux_tet-pov-rtp1.sh_.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200717104019.png" alt="image-20200717104019" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200717104019.png" alt="image-20200717104019" style="zoom:50%;" />
 
 5. Click the _Upload_ button.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200717104557.png" alt="image-20200717104557" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200717104557.png" alt="image-20200717104557" style="zoom:50%;" />
 
     > **NOTE**
     >
@@ -2475,13 +2505,13 @@ You want to confirm that the software agent is sending flow data to Secure Workl
 
 1. Within the Secure Workload administrative interface navigate to _Flow Search_ under _VISIBILITY_ in the navigation menu on the left side.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018122327038.png" alt="image-20191018122327038" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018122327038.png" alt="image-20191018122327038" style="zoom:50%;" />
 
 2. Specify a _Filter_ to search for flows that were destined to the Sock Shop _front-end_ pods.
 
     Type _name_ in the _Filters_ field. Select _* Provider Orchestrator name_ from the drop-down options provided.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018122810702.png" alt="image-20191018122810702" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018122810702.png" alt="image-20191018122810702" style="zoom:50%;" />
 
     > **NOTE**
     >
@@ -2489,17 +2519,17 @@ You want to confirm that the software agent is sending flow data to Secure Workl
 
     Select _=_ from the drop-down options provided.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018122953224.png" alt="image-20191018122953224" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018122953224.png" alt="image-20191018122953224" style="zoom:50%;" />
 
     Type _front-end_ and press _return_ or _Enter_.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018123045876.png" alt="image-20191018123045876" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018123045876.png" alt="image-20191018123045876" style="zoom:50%;" />
 
     Click on the _Filter Flows_ button.
 
     It will take some time for the flows to be filtered and then displayed at the bottom of the window.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018123212670.png" alt="image-20191018123212670" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018123212670.png" alt="image-20191018123212670" style="zoom:50%;" />
 
 
 ##### Create an API Key to use with Ansible
@@ -2514,17 +2544,17 @@ First you'll need to create a Secure Workload API Key that the modules will use 
 
 2. Click the gears icon in the upper right-hand corner and then select *API Keys*.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200721073604.png" alt="image-20200721073604" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200721073604.png" alt="image-20200721073604" style="zoom:50%;" />
 
 3. Click on the *Create API Key* button in the upper right-hand corner.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200306142231868.png" alt="image-20200306142231868" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200306142231868.png" alt="image-20200306142231868" style="zoom:50%;" />
 
 4. Type *Ansible* in the *Description* field.
 
 5. Check the box for *Applications and policy management: API to manage applications and enforce policies*
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200306142555651.png" alt="image-20200306142555651" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200306142555651.png" alt="image-20200306142555651" style="zoom:50%;" />
 
     > **NOTE**
     >
@@ -2538,7 +2568,7 @@ First you'll need to create a Secure Workload API Key that the modules will use 
     >
     > Either leave the *API Key* and *Secret* pop-up accessible or download them so you can copy and paste the values into a configuration file in the Cloud9 terminal. If you close this pop-up, you'll need to delete this key and create a new one as there isn't a way to retrieve the *Secret* again.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200306154917232.png" alt="image-20200306154917232" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200306154917232.png" alt="image-20200306154917232" style="zoom:50%;" />
 
 
 
@@ -2548,7 +2578,7 @@ Now that we have an API Key we can configure Ansible to access Secure Workload a
 
 1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
 
 2. Change the directory to the Secure Workload Ansible playbooks
 
@@ -2623,11 +2653,11 @@ Now that we have an API Key we can configure Ansible to access Secure Workload a
 
 6. Select _Inventory Filters_ under _VISIBILITY_ in the navigation menu in the left pane.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018124622764.png" alt="image-20191018124622764" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018124622764.png" alt="image-20191018124622764" style="zoom:50%;" />
 
 7. Confirm that there are additional filters beyond what you had already created manually.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200306161527737.png" alt="image-20200306161527737" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200306161527737.png" alt="image-20200306161527737" style="zoom:50%;" />
 
 > **NOTE**
 >
@@ -2648,7 +2678,7 @@ In an earlier step, you configured policy filters. Now we'll use Ansible to appl
 
 1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
 
 2. Change the directory to the Secure Workload Ansible playbooks
 
@@ -2716,15 +2746,15 @@ In an earlier step, you configured policy filters. Now we'll use Ansible to appl
 
 6. Select _SEGMENTATION_ in the navigation menu in the left pane.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018125829189.png" alt="image-20191018125829189" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018125829189.png" alt="image-20191018125829189" style="zoom:50%;" />
 
 7. You should be taken back to the *Sock Shop* application workspace that you created in a previous step. If that's not the case, click _Switch Application_. Then select the *Sock Shop* application workspace.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191018130105438.png" alt="image-20191018130105438" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018130105438.png" alt="image-20191018130105438" style="zoom:50%;" />
 
 8. Confirm that there are additional policies beyond what you had already created manually.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20200306182347896.png" alt="image-20200306182347896" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200306182347896.png" alt="image-20200306182347896" style="zoom:50%;" />
 
 
 
@@ -2812,7 +2842,7 @@ Negative impacts of enforced security policy is a large concern for application 
 
 1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
 
-    <img src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
 
 2. Create your lab user for the Sock Shop application using a helper script.
 
@@ -2859,7 +2889,7 @@ Negative impacts of enforced security policy is a large concern for application 
 
 8. Click _Proceed to checkout_. This will complete the order and a new row will be added to the _My orders_ page.
 
-    ![image-20191021025811246](https://app-first-sec.s3.amazonaws.com/lab-guide.assets/image-20191021025811246.png)
+    ![image-20191021025811246](https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191021025811246.png)
 
 
 ### Secure Workload summary
