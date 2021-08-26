@@ -58,6 +58,10 @@ This lab uses AWS to host the workloads and applications and takes advantage of 
 * [Part4: Implement security - Cisco Secure Cloud Workload](#part4:-implement-security-cisco-secure-cloud-workload)
 * [Wrap-Up](#wrap-up)
 
+> **NOTE**
+>
+> If you want to skip the [Part1: Prepare infrastructure and application](#part1:-prepare-infrastructure-and-application) and directly jump to implementing security, please run the command _part1solution_ to fast forward setting up infrastructure and application. Once the set up completes, you can proceed with any of the three implement secutiry section - [Part2: Implement security - Cisco Secure Access by Duo](#part2:-implement-security-cisco-secure-access-by-duo), [Part3: Implement security - Cisco Secure Cloud Analytics](#part3:-implement-security-cisco-secure-cloud-analytics), [Part4: Implement security - Cisco Secure Cloud Workload](#part4:-implement-security-cisco-secure-cloud-workload)
+
 ## Part1: Prepare infrastructure and application
 
 This section of the lab will have you prepare the public cloud infrastructure and deploy a micro-services based cloud-native application. Throughout the steps, you'll be laying the groundwork to implement security in a later sections.
@@ -68,7 +72,6 @@ This section of the lab will have you prepare the public cloud infrastructure an
 * [Create a Kubernetes cluster](#create-a-kuberenetes-cluster)
 * [Deploy applications on Kubernetes](#deploy-applications-on-kubernetes)
 * [Setup development environment](#setup-development-environment)
-
 
 > **NOTE**
 >
@@ -155,7 +158,7 @@ Most of the lab will be driven from this AWS Cloud9 environment. Let's get famil
     ./.c9/out_of_memory
     ```
 
-### Create a Kuberenetes cluster
+### Create a Kubernetes cluster
 
 ------
 
