@@ -52,10 +52,10 @@ This lab uses AWS to host the workloads and applications and takes advantage of 
 
 ## Overall Lab Content
 
-* [Part1: Prepare infrastructure and application](#part1:-prepare-infrastructure-and-application)
-* [Part2: Implement security - Cisco Secure Access by Duo](#part2:-implement-security-cisco-secure-access-by-duo)
-* [Part3: Implement security - Cisco Secure Cloud Analytics](#part3:-implement-security-cisco-secure-cloud-analytics)
-* [Part4: Implement security - Cisco Secure Cloud Workload](#part4:-implement-security-cisco-secure-cloud-workload)
+* [Part1: Prepare infrastructure and application](#part1-prepare-infrastructure-and-application)
+* [Part2: Implement security - Cisco Secure Access by Duo](#part2-implement-security---cisco-secure-access-by-duo)
+* [Part3: Implement security - Cisco Secure Cloud Analytics](#part3-implement-security---cisco-secure-cloud-analytics)
+* [Part4: Implement security - Cisco Secure Cloud Workload](#part4-implement-security---cisco-secure-cloud-workload)
 * [Wrap-Up](#wrap-up)
 
 > **NOTE**
