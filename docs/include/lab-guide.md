@@ -187,7 +187,7 @@ Self-managing production large-scale Kubernetes is really challenging and many o
 #### Steps
 
 * [Review subnet tags required by EKS](#review-subnet-tags-required-by-eks)
-* [Verify IAM user permissions](#verify-iam-user-permissions)
+* [Set up cloud9 with EKS administrative permissions](#set-up-cloud9-with-eks-administrative-permissions)
 * [Create an EKS cluster](#create-an-eks-cluster)
 * [Explore Kubernetes using kubectl](#explore-kubernetes-using-kubectl)
 
@@ -225,55 +225,17 @@ When you create your Amazon EKS cluster, it has [requirements](https://docs.aws.
     | kubernetes.io/role/elb              | 1      |
 
 
-##### Give an IAM user EKS administrative permissions
+##### Set up cloud9 with EKS administrative permissions
 
-It's important to understand how authentication of IAM users to EKS managed Kubernetes differs from self-managed deployments. EKS uses IAM to provide authentication to your Kubernetes cluster (through the _aws eks get-token_ command, available in version 1.16.232 or greater of the AWS CLI, or the AWS IAM Authenticator for Kubernetes), but it still relies on native Kubernetes Role Based Access Control (RBAC) for authorization. This means that IAM is only used for authentication of valid IAM entities. All permissions for interacting with your Amazon EKS cluster’s Kubernetes API is managed through the native Kubernetes RBAC system.
+Your user account is attached to an IAM user group with administrative permissions. You will now disable temporary AWS credentials for cloud9 environment and configure the programmatic access using your own user account. This will allow you to provision AWS resources like EKS cluster from cloud9 terminal.
 
-Your user account is attached to an IAM user group. We will create a policy with EKS administrative permissions and attach it to your user group. We will then enable programmatic access on your user account.
+1. Use the link below and Select the _Security credentials_ tab on the IAM management console.
 
-1. The first step is to create a policy that can be used to provide permissions to an IAM group, role, or user.
+    > https://console.aws.amazon.com/iam/home?region=$AWS_REGION#/users/${POD_NAME}
 
-    ###### Command
+3. Click the _Create access key_ button
 
-    ```
-    aws iam create-policy --policy-name _eks-admin-policy_ --policy-document ${DOLLAR_SIGN}LAB/aws/eks-admin-policy.json
-    ```
-
-    > **TIP**
-    >
-    > It's worth reviewing the contents of this policy that will be attached to a user to control the _Effect_ of an _Action_ they take against a _Resource_. [Policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html) are a critical part of access control within AWS.
-
-
-2. Now we'll attach the policy to your user group. Multiple users that will be managing EKS and Kubernetes can be added to this group. 
-
-
-    ###### Command
-
-    ```
-    aws iam attach-group-policy --group-name AppFirstUserGroup --policy-arn arn:aws:iam::${AWS_ACCT_ID}:policy/eks-admin-policy
-    ```
-
-3. Now you'll enable programmatic access for your user that will be used to create and manage EKS and the Kubernetes cluster. The generated access key will have the EKS administrative permissions derived from the policy attached to the user group.
-
-    ###### Command
-
-    ```
-    aws iam create-access-key --user-name ${POD_NAME} 
-    ```
-
-    ###### Output
-
-    ```
-    {
-       "AccessKey": {
-           "UserName": "${POD_NAME} ",
-           "AccessKeyId": "AKIFUWHWXAQLFYA5WOZR",
-           "Status": "Active",
-           "SecretAccessKey": "AKIFUWHWXAQLFYA5WOZR/AKIFUWHWXAQLFYA5WOZR",
-           "CreateDate": "2019-10-18T12:42:58Z"
-       }
-    }
-    ```
+3. Leave the _Success_ pop-up open so that you can return to copy the _Access key ID_ and _Secret access key_ for the following steps
 
     > **NOTE**
     >
@@ -285,7 +247,7 @@ Your user account is attached to an IAM user group. We will create a policy with
     >
     > If you turn off AWS managed temporary credentials, by default the environment cannot access any AWS services, regardless of the AWS entity who makes the request.
 
-5. Configure an AWS CLI profile. When prompted for the _AWS Access key ID_, _AWS Secret Access Key_, copy the values from step 2. 
+5. Configure an AWS CLI profile. When prompted for the _AWS Access key ID_, _AWS Secret Access Key_, copy the values from step 3. 
 
     ###### Command
 
@@ -2123,8 +2085,8 @@ Secure Cloud Analytics Cloud is now consuming all sources of telemetry native to
 
 This section will help you do the following:
 
-1. Learn the basics of Cisco Secure Workload external integrations and policy
-2. Create Kubernetes service accounts
+1. Learn the basics of Cisco Secure Workload external integrations
+2. Create RBAC access on EKS
 3. Understand attack lateral movement in Kubernetes
 
 ### Overview
@@ -2181,6 +2143,8 @@ Since this is the first time you'll be accessing Secure Workload, you'll need to
 
 #### Secure Workload orchestration with EKS
 
+It's important to understand how authentication of IAM users to EKS managed Kubernetes differs from self-managed deployments. AWS uses IAM to provide authentication to your Kubernetes cluster (through the _aws eks get-token_ command, available in version 1.16.232 or greater of the AWS CLI, or the AWS IAM Authenticator for Kubernetes), but it still relies on native Kubernetes Role Based Access Control (RBAC) for authorization. This means that IAM is only used for authentication of valid IAM entities. All permissions for interacting with your Amazon EKS cluster’s Kubernetes API is managed through the native Kubernetes RBAC system.
+
 Create AWS IAM policy and user for Secure Workload with restrictive permissions using the AWS CLI.
 
 1. Create AWS IAM policy with access to resources and actions that Secure Workload needs.
@@ -2196,9 +2160,9 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     ```
     {
        "Policy": {
-           "PolicyName": "secure-workload-read-only",
+           "PolicyName": "tetration-read-only",
            "PolicyId": "RFUWK63KANPA5WOZ4JBES",
-           "Arn": "arn:aws:iam::${AWS_ACCT_ID}:policy/secure-workload-read-onl",
+           "Arn": "arn:aws:iam::${AWS_ACCT_ID}:policy/tetration-read-only",
            "Path": "/",
            "DefaultVersionId": "v1",
            "AttachmentCount": 0,
@@ -2210,7 +2174,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     }
     ```
 
-    If you review the policy applied to the _Secure Workload-read-only_ IAM user in _${DOLLAR_SIGN}LAB/Secure Workload/Secure Workload-aws-read-only-policy.json_, you'll notice that it explicitly specifies read-only _Actions_.
+    If you review the policy applied to the _Secure Workload-read-only_ IAM user in _${DOLLAR_SIGN}LAB/Secure Workload/tetration-read-only-policy.json_, you'll notice that it explicitly specifies read-only _Actions_.
 
 2. Create AWS IAM user for Secure Workload to use.
 
@@ -2342,6 +2306,8 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     resourceVersion: "101078"
     uid: 9084f5e4-2b9e-4dae-9acb-9f49a46fa97d
     ```
+
+8. Enable K8s RBAC policies for secure-workload-read-only user.
 
 8. Return to the Secure Workload administrative interface.
 
