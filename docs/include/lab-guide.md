@@ -229,7 +229,7 @@ When you create your Amazon EKS cluster, it has [requirements](https://docs.aws.
 
 It's important to understand how authentication of IAM users to EKS managed Kubernetes differs from self-managed deployments. EKS uses IAM to provide authentication to your Kubernetes cluster (through the _aws eks get-token_ command, available in version 1.16.232 or greater of the AWS CLI, or the AWS IAM Authenticator for Kubernetes), but it still relies on native Kubernetes Role Based Access Control (RBAC) for authorization. This means that IAM is only used for authentication of valid IAM entities. All permissions for interacting with your Amazon EKS cluster’s Kubernetes API is managed through the native Kubernetes RBAC system.
 
-You user account is attached to an IAM user group. We will create a policy with EKS administrative permissions and attach it to your user group.
+Your user account is attached to an IAM user group. We will create a policy with EKS administrative permissions and attach it to your user group. We will then enable programmatic access on your user account.
 
 1. The first step is to create a policy that can be used to provide permissions to an IAM group, role, or user.
 
