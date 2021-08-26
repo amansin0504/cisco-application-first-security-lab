@@ -60,7 +60,7 @@ This lab uses AWS to host the workloads and applications and takes advantage of 
 
 > **NOTE**
 >
-> If you want to skip the [Part1: Prepare infrastructure and application](#part1:-prepare-infrastructure-and-application) and directly jump to implementing security, please run the command _part1solution_ to fast forward setting up infrastructure and application. Once the set up completes, you can proceed with any of the three implement secutiry section - [Part2: Implement security - Cisco Secure Access by Duo](#part2:-implement-security-cisco-secure-access-by-duo), [Part3: Implement security - Cisco Secure Cloud Analytics](#part3:-implement-security-cisco-secure-cloud-analytics), [Part4: Implement security - Cisco Secure Cloud Workload](#part4:-implement-security-cisco-secure-cloud-workload)
+> If you want to skip the [Part1: Prepare infrastructure and application](#part1:-prepare-infrastructure-and-application) and directly jump to implementing security, run the command _solvepart1forme_ to fast forward setting up infrastructure and Sock Shop application. Once the script completes, you can proceed with any of the three implement security section - [Part2: Implement security - Cisco Secure Access by Duo](#part2:-implement-security-cisco-secure-access-by-duo), [Part3: Implement security - Cisco Secure Cloud Analytics](#part3:-implement-security-cisco-secure-cloud-analytics) or [Part4: Implement security - Cisco Secure Cloud Workload](#part4:-implement-security-cisco-secure-cloud-workload).
 
 ## Part1: Prepare infrastructure and application
 
@@ -330,9 +330,9 @@ There are three ways to create an EKS-managed Kubernetes cluster: eksctl CLI, ma
 
     > **NOTE**
     >
-    > Given how long this process takes, you can move forward to and finish the section [Setup development environment](#setup-development-environment) and return back to this point and proceed to the next section below once the cluster is ready based on the output of _eksctl_.
+    > Given how long this process takes, you can jump ahead and finish the section - [Setup development environment](#setup-development-environment). Return back to this point once done and proceed to the next steps below once the cluster is ready based on the output of _eksctl_.
     >
-    > If you prefer to wait the approxiamtely 25 minutes for eksctl to complete, proceed to the next section below once the cluster is ready based on the output of _eksctl_.
+    > If you prefer to wait for approximately 25 minutes for eksctl to complete, proceed as normal to the rest of the lab below once the cluster is ready based on the output of _eksctl_.
     > **WARNING**
     >
     > If you proceed to the next steps before _eksctl_ has completed, you will receive errors and have difficulty completing the lab successfully.
