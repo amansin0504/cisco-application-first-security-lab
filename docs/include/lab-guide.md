@@ -225,17 +225,84 @@ When you create your Amazon EKS cluster, it has [requirements](https://docs.aws.
     | kubernetes.io/role/elb              | 1      |
 
 
-##### Verify IAM user permissions
+##### Give an IAM user EKS administrative permissions
 
 It's important to understand how authentication of IAM users to EKS managed Kubernetes differs from self-managed deployments. EKS uses IAM to provide authentication to your Kubernetes cluster (through the _aws eks get-token_ command, available in version 1.16.232 or greater of the AWS CLI, or the AWS IAM Authenticator for Kubernetes), but it still relies on native Kubernetes Role Based Access Control (RBAC) for authorization. This means that IAM is only used for authentication of valid IAM entities. All permissions for interacting with your Amazon EKS cluster’s Kubernetes API is managed through the native Kubernetes RBAC system.
 
-It's important to create the cluster using an AWS profile that has restricted permissions within your AWS org, which in this case is done by setting IAM permissions. We have already associated the required permissions to your IAM user. Follow the steps below to review the permissions.
+You user account is attached to an IAM user group. We will create a policy with EKS administrative permissions and attach it to your user group.
 
-1. Navigate IAM console to review the _AppFirstUserPolicy_ policy attached to your IAM user under _Permissions_ tab.
+1. The first step is to create a policy that can be used to provide permissions to an IAM group, role, or user.
 
-    > [https://console.aws.amazon.com/iam/home#/users/${POD_NAME}](https://console.aws.amazon.com/iam/home#/users/${POD_NAME})
+    ###### Command
 
-2. Verify that the AWS CLI profile is configured correctly by ensuring that the _Arn_ key's value ends with _user/${POD_NAME}_.
+    ```
+    aws iam create-policy --policy-name _eks-admin-policy_ --policy-document ${DOLLAR_SIGN}LAB/aws/eks-admin-policy.json
+    ```
+
+    > **TIP**
+    >
+    > It's worth reviewing the contents of this policy that will be attached to a user to control the _Effect_ of an _Action_ they take against a _Resource_. [Policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html) are a critical part of access control within AWS.
+
+
+2. Now we'll attach the policy to your user group. Multiple users that will be managing EKS and Kubernetes can be added to this group. 
+
+
+    ###### Command
+
+    ```
+    aws iam attach-group-policy --group-name AppFirstUserGroup --policy-arn arn:aws:iam::${AWS_ACCT_ID}:policy/eks-admin-policy
+    ```
+
+3. Now you'll enable programmatic access for your user that will be used to create and manage EKS and the Kubernetes cluster. The generated access key will have the EKS administrative permissions derived from the policy attached to the user group.
+
+    ###### Command
+
+    ```
+    aws iam create-access-key --user-name ${POD_NAME} 
+    ```
+
+    ###### Output
+
+    ```
+    {
+       "AccessKey": {
+           "UserName": "${POD_NAME} ",
+           "AccessKeyId": "AKIFUWHWXAQLFYA5WOZR",
+           "Status": "Active",
+           "SecretAccessKey": "AKIFUWHWXAQLFYA5WOZR/AKIFUWHWXAQLFYA5WOZR",
+           "CreateDate": "2019-10-18T12:42:58Z"
+       }
+    }
+    ```
+
+    > **NOTE**
+    >
+    > This is the only time that the secret access keys can be viewed or downloaded. You cannot recover them later. However, you can create new access keys at any time.
+
+4. In order to use this user for managing the EKS Kubernetes cluster, you need to create a profile for AWS CLI, eksctl and kubectl to leverage. Return to the Cloud9 environment and on the menu bar choose _AWS Cloud9_ symbol, _Preferences_. In the _Preferences_ tab, in the navigation pane, choose _AWS Settings_, _Credentials_. Turn off _AWS managed temporary credentials_.
+
+    > **NOTE**
+    >
+    > If you turn off AWS managed temporary credentials, by default the environment cannot access any AWS services, regardless of the AWS entity who makes the request.
+
+5. Configure an AWS CLI profile. When prompted for the _AWS Access key ID_, _AWS Secret Access Key_, copy the values from step 2. 
+
+    ###### Command
+
+    ```
+    aws configure
+    ```
+
+    ###### Output
+
+    ```
+    AWS Access Key ID [None]: AKIFUWHWXAQLFYA5WOZR
+    AWS Secret Access Key [None]: AKIFUWHWXAQLFYA5WOZR/AKIFUWHWXAQLFYA5WOZR
+    Default region name [None]: ${AWS_REGION}
+    Default output format [None]: json
+    ```
+
+6. Verify that the profile is configured correctly by ensuring that the _Arn_ key's value ends with _user/${POD_NAME}_.
 
     ###### Command
 
@@ -251,6 +318,20 @@ It's important to create the cluster using an AWS profile that has restricted pe
        "Account": "${AWS_ACCT_ID}",
        "Arn": "arn:aws:iam::${AWS_ACCT_ID}:user/${POD_NAME}"
     }
+    ```
+
+7. In order to manage the EKS Kubernetes cluster, you need to validate that the AWS profile you're using has access to EKS using _eksctl_.
+
+     ###### Command
+
+    ```
+    eksctl get clusters
+    ```
+
+    ###### Output
+
+    ```
+    No clusters found
     ```
 
 ##### Create an EKS cluster

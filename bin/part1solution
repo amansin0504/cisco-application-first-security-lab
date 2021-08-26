@@ -1,5 +1,19 @@
 #!/bin/bash
 
+# Disable Cloud9 Credentials
+echo "Disable cloud9 credentials by clicking on AWS Cloud9 symbol and navigating to Preferences>AWS Settings>Credentials."
+read -p "Turn off AWS managed temporary credentials. Done? " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    aws iam create-access-key --user-name ${POD_NAME} > secrets
+    aws configure set aws_access_key_id $(cat secrets | jq '.AccessKey.AccessKeyId')
+    aws configure set aws_secret_access_key $(cat secrets | jq '.AccessKey.SecretAccessKey')
+    aws configure set default.region ${AWS_REGION}
+    rm secrets
+fi
+exit 1
+
 #create EKS cluster and deploy sockshop
 eksctl get clusters app-first-sec &> /dev/null
 if [ $? -eq 0 ]; then
@@ -9,19 +23,19 @@ if [ $? -eq 0 ]; then
     echo "EKS Cluster with Sock Shop Application exists"
     echo "-----------------------------------------------"
 else
-    eksctl create cluster --config-file /home/ec2-user/environment/lab/aws/eks-cluster.yaml
+    eksctl create cluster --config-file $HOME/environment/lab/aws/eks-cluster.yaml
     echo " "
     echo "-----------------------------------------------"
     echo "EKS Cluster with Sock Shop Application Created"
     echo "-----------------------------------------------"
 fi
-kubectl apply -f /home/ec2-user/environment/lab/sock-shop/sock-shop.yaml
+kubectl apply -f $HOME/environment/lab/sock-shop/sock-shop.yaml
 
 # Mark your EKS cluster private and Allow SG communitcation from outside
 # read answer
 # if yes move forward else go back
 
-#PROMPT: login to Gitlab UI and Create Personal Access Token for api/git calls
+#Login to Gitlab UI and Create Personal Access Token for api/git calls
 echo " "
 echo "####################################"
 echo "=======GitLab Credentials======="
@@ -66,8 +80,8 @@ echo "----------------------------------"
 #Add AWS environment variables for pipeline
 echo " "
 echo "####################################"
-#export AWS_ACCESS_KEY=$(grep aws_access_key_id ~/.aws/credentials | awk '{ print $3 }')
-#export AWS_SECRET_ACCESS=$(grep aws_secret_access_key ~/.aws/credentials | awk '{ print $3 }')
+export AWS_ACCESS_KEY=$(grep aws_access_key_id ~/.aws/credentials | awk '{ print $3 }')
+export AWS_SECRET_ACCESS=$(grep aws_secret_access_key ~/.aws/credentials | awk '{ print $3 }')
 curl --request POST  --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "http://$AWS_GITLAB_FQDN/api/v4/projects/2/variables" --form "key=AWS_ACCESS_KEY_ID" --form "value=$AWS_ACCESS_KEY"
 curl --request POST  --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "http://$AWS_GITLAB_FQDN/api/v4/projects/2/variables" --form "key=AWS_SECRET_ACCESS_KEY" --form "value=$AWS_SECRET_ACCESS"
 curl --request POST  --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "http://$AWS_GITLAB_FQDN/api/v4/projects/2/variables" --form "key=AWS_DEFAULT_REGION" --form "value=$AWS_REGION"
