@@ -1184,15 +1184,26 @@ An AWS Elastic Container Registry (ECR) is already set up as part of initial lab
 
     > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor)
 
-    You'll see the _Building_ stage, the pipeline will build a new Front End Sock Shop container image and push it to the AWS ECR registry at this stage.
+    Under the _script_ section of the _Building_ stage, the pipeline will build a new Front End Sock Shop container image and push it to the AWS ECR registry.
 
     ```
-    ssh:
-       allow: true
-       publicKeyName: ${AWS_KEYPAIR_NAME}
+    docker-build:
+    image: docker:latest
+    stage: building
+    tags:
+        - docker
+    services:
+        - docker:dind
+    before_script:
+        - apk add --no-cache curl jq python3 py3-pip
+        - pip install awscli
+        - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $DOCKER_REGISTRY
+    script:
+        - docker build -t $IMAGE_TAG .
+        - docker push $IMAGE_TAG
     ```
 
-    You'll see the _Deployment_ stage, the pipeline will pause at deployment stage for a manual input. Once the manual input is provided, pipeline updated the Sock Shop frontend microservice to run the new image from ECR.
+    For the _Deployment_ stage, the pipeline will pause for a manual input. Once the manual input is provided, pipeline updates the Sock Shop frontend microservice to run the new image from ECR (tagged and pushed in previous stage).
 
     ```
     deploy:
@@ -1207,7 +1218,8 @@ An AWS Elastic Container Registry (ECR) is already set up as part of initial lab
         - kubectl set image deployment/front-end front-end=$IMAGE_TAG -n sock-shop
     when: manual
     ```
-6. Return to CI/CD pipeline run. Once the testing stage completes, run the command below to see the newly pushed image to the private registry.
+
+6. Return to CI/CD pipeline run. Once the testing stage completes, verify the newly pushed image to the private registry.
 
     > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)
 
