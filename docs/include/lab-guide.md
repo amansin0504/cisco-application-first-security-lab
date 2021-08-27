@@ -249,7 +249,7 @@ Your user account is attached to an IAM user group with administrative permissio
 
 7. In order to manage the EKS Kubernetes cluster, you need to validate that the AWS profile you're using has access to EKS using _eksctl_.
 
-     ###### Command
+    ###### Command
 
     ```
     eksctl get clusters
