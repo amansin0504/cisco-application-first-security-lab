@@ -9,13 +9,13 @@ if [ $? -eq 0 ]; then
     echo "EKS Cluster with Sock Shop Application exists"
     echo "-----------------------------------------------"
 else
-    eksctl create cluster --config-file $HOME/environment/lab/aws/eks-cluster.yaml
+    #eksctl create cluster --config-file $HOME/environment/lab/aws/eks-cluster.yaml
     echo " "
     echo "-----------------------------------------------"
     echo "EKS Cluster with Sock Shop Application Created"
     echo "-----------------------------------------------"
 fi
-kubectl apply -f $HOME/environment/lab/sock-shop/sock-shop.yaml
+#kubectl apply -f $HOME/environment/lab/sock-shop/sock-shop-elb.yaml
 
 # Mark your EKS cluster private and Allow SG communitcation from outside
 # read answer
@@ -29,7 +29,8 @@ echo "Username: root"
 echo "$(ssh -i ~/.ssh/$AWS_KEYPAIR_NAME ubuntu@$AWS_GITLAB_IP 'sudo grep Password: /etc/gitlab/initial_root_password')"
 echo "=======GitLab Credentials======="
 echo "Use the credentials above to login to Gitlab UI at ${AWS_GITLAB_FQDN}"
-echo "Generate a Private Access Token by navigating to Preferences>Access Tokens by adding api and write_repository permissions"
+echo "Generate a Private Access Token by adding api and write_repository permissions"
+echo "Go to link http://$AWS_GITLAB_FQDN/-/profile/personal_access_tokens"
 echo "Enter the Private Access Token:"
 read GITLAB_TOKEN
 #Create the Gitlab project
@@ -42,7 +43,7 @@ echo "----------------------------------"
 # PROMPT: login to Gitlab UI and grab registration token
 echo " "
 echo "####################################"
-echo "Go back to Gitlab UI home page and navigate to Front-End>Settings>CI/CD"
+echo "Go to link http://$AWS_GITLAB_FQDN/root/Front-End/-/settings/ci_cd"
 echo "Expand the Runners section and copy the registration token"
 echo "Enter the Gitlab Runner Registration token:"
 read RUNNER_TOKEN
@@ -53,10 +54,11 @@ sudo gitlab-runner register \
 --url "http://$AWS_GITLAB_FQDN/" \
 --registration-token $RUNNER_TOKEN \
 --executor "docker" \
---docker-image alpine:latest \
+--docker-image alpine:3.14.0 \
 --description "docker-runner" \
 --docker-privileged \
---tag-list "docker,aws"
+--docker-volumes "/var/run/docker.sock:/var/run/docker.sock" \
+--tag-list "docker"
 EOF
 echo " "
 echo "----------------------------------"
@@ -81,7 +83,7 @@ echo "------------------------------------------------------"
 echo " "
 echo "####################################"
 cd /home/ec2-user/environment
-git clone https://github.com/amansin0504/front-end.git && cd front-end
+git clone https://github.com/amansin0504/front-end.git Sock-Shop-Front-End && cd Sock-Shop-Front-End
 git config --global user.name "Administrator" && git config --global user.email "admin@cloudnativeapp.com"
 git remote rm origin && git remote add origin http://Administrator:$GITLAB_TOKEN@$AWS_GITLAB_FQDN/root/front-end.git
 git push -u origin --all
@@ -89,3 +91,10 @@ echo " "
 echo "------------------------------------------------------"
 echo "Front-End Repo is ready on Gitlab instance"
 echo "------------------------------------------------------"
+
+echo " "
+echo "####################################"
+addshopuser
+echo "export SOCK_SHOP_ELB=`kubectl get service front-end -n sock-shop -o json | jq -r '.status.loadBalancer.ingress[0].hostname'`" >> ~/.bashrc_lab ; source ~/.bashrc
+echo "Sock Shop Access:"
+echo $SOCK_SHOP_ELB

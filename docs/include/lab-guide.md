@@ -1150,10 +1150,11 @@ An AWS Elastic Container Registry (ECR) is already set up as part of initial lab
     --url "http://${AWS_GITLAB_FQDN}/" \
     --registration-token $RUNNER_TOKEN \
     --executor "docker" \
-    --docker-image alpine:latest \
+    --docker-image alpine:3.14.0 \
     --description "docker-runner" \
     --docker-privileged \
-    --tag-list "docker,aws"
+    --docker-volumes "/var/run/docker.sock:/var/run/docker.sock" \
+    --tag-list "docker"
     EOF
     ```
 
