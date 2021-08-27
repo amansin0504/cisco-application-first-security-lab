@@ -187,7 +187,7 @@ Self-managing production large-scale Kubernetes is really challenging and many o
 #### Steps
 
 * [Review subnet tags required by EKS](#review-subnet-tags-required-by-eks)
-* [Set up cloud9 with EKS administrative permissions](#set-up-cloud9-with-eks-administrative-permissions)
+* [Verify cloud9 credentials](#verify-cloud9-credentials)
 * [Create an EKS cluster](#create-an-eks-cluster)
 * [Explore Kubernetes using kubectl](#explore-kubernetes-using-kubectl)
 
@@ -225,46 +225,11 @@ When you create your Amazon EKS cluster, it has [requirements](https://docs.aws.
     | kubernetes.io/role/elb              | 1      |
 
 
-##### Set up cloud9 with EKS administrative permissions
+##### Verify cloud9 credentials
 
-Your user account is attached to an IAM user group with administrative permissions. You will now disable temporary AWS credentials for cloud9 environment and configure the programmatic access using your own user account. This will allow you to provision AWS resources like EKS cluster from cloud9 terminal.
+Your user account is attached to an IAM user group with administrative permissions. You disabled temporary AWS cloud9 credentials and configured the programmatic access using your own user account as part of initial lab set up. This will allow you to provision AWS resources like EKS cluster from Cloud9 terminal itself.
 
-1. Use the link below and Select the _Security credentials_ tab on the IAM management console.
-
-    > https://console.aws.amazon.com/iam/home?region=$AWS_REGION#/users/${POD_NAME}
-
-3. Click the _Create access key_ button
-
-3. Leave the _Success_ pop-up open so that you can return to copy the _Access key ID_ and _Secret access key_ for the following steps
-
-    > **NOTE**
-    >
-    > This is the only time that the secret access keys can be viewed or downloaded. You cannot recover them later. However, you can create new access keys at any time.
-
-4. In order to use this user for managing the EKS Kubernetes cluster, you need to create a profile for AWS CLI, eksctl and kubectl to leverage. Return to the Cloud9 environment and on the menu bar choose _AWS Cloud9_ symbol, _Preferences_. In the _Preferences_ tab, in the navigation pane, choose _AWS Settings_, _Credentials_. Turn off _AWS managed temporary credentials_.
-
-    > **NOTE**
-    >
-    > If you turn off AWS managed temporary credentials, by default the environment cannot access any AWS services, regardless of the AWS entity who makes the request.
-
-5. Configure an AWS CLI profile. When prompted for the _AWS Access key ID_, _AWS Secret Access Key_, copy the values from step 3. 
-
-    ###### Command
-
-    ```
-    aws configure
-    ```
-
-    ###### Output
-
-    ```
-    AWS Access Key ID [None]: AKIFUWHWXAQLFYA5WOZR
-    AWS Secret Access Key [None]: AKIFUWHWXAQLFYA5WOZR/AKIFUWHWXAQLFYA5WOZR
-    Default region name [None]: ${AWS_REGION}
-    Default output format [None]: json
-    ```
-
-6. Verify that the profile is configured correctly by ensuring that the _Arn_ key's value ends with _user/${POD_NAME}_.
+1. Verify that the profile is configured correctly by ensuring that the _Arn_ key's value ends with _user/${POD_NAME}_.
 
     ###### Command
 

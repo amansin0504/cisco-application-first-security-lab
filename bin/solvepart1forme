@@ -1,23 +1,5 @@
 #!/bin/bash
 
-# Disable Cloud9 Credentials
-aws iam create-policy --policy-name _eks-admin-policy_ --policy-document ${DOLLAR_SIGN}LAB/aws/eks-admin-policy.json
-aws iam attach-group-policy --group-name AppFirstUserGroup --policy-arn arn:aws:iam::${AWS_ACCT_ID}:policy/eks-admin-policy
-aws iam create-access-key --user-name ${POD_NAME} > secrets
-echo "Disable cloud9 credentials by clicking on AWS Cloud9 symbol and navigating to Preferences>AWS Settings>Credentials."
-read -p "Turn off AWS managed temporary credentials. Done? " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-  aws configure set aws_access_key_id $(cat secrets | jq '.AccessKey.AccessKeyId')
-  aws configure set aws_secret_access_key $(cat secrets | jq '.AccessKey.SecretAccessKey')
-  aws configure set default.region ${AWS_REGION}
-  rm secrets
-else
-  rm secrets
-  exit 1
-fi
-
 #create EKS cluster and deploy sockshop
 eksctl get clusters app-first-sec &> /dev/null
 if [ $? -eq 0 ]; then

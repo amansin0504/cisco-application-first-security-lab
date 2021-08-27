@@ -72,6 +72,8 @@ if ! grep -q "source $BASHRC_LAB" $BASHRC; then
 fi
 export AWS_ENV_NAME=`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Parameters[] | select(.ParameterKey=="EnvironmentName").ParameterValue'` #UPDATE
 echo -n "" > $BASHRC_LAB
+echo "export AWS_ACCESS_KEY=$(grep aws_access_key_id ~/.aws/credentials | awk '{ print $3 }')" >> $BASHRC_LAB  #UPDATE
+echo "export AWS_SECRET_ACCESS=$(grep aws_secret_access_key ~/.aws/credentials | awk '{ print $3 }')" >> $BASHRC_LAB  #UPDATE
 echo "export AWS_CF_STACK_NAME='${AWS_CF_STACK_NAME}'" >> $BASHRC_LAB
 echo "export AWS_KEYPAIR_NAME='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Parameters[] | select(.ParameterKey=="keyPairName").ParameterValue'`'" >> $BASHRC_LAB #UPDATE
 echo "export AWS_GITLAB_IP='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="GitLabRunnerIP").OutputValue'`'" >> $BASHRC_LAB #UPDATE

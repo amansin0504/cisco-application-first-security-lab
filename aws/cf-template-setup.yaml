@@ -15,80 +15,30 @@ Mappings:
 
 Parameters:
   PodName:
-    Description: "Name of Pod. *Must* use value provided in DevNet Sandbox email."
+    Description: Name of Pod. *Must* use value provided in DevNet Sandbox email.
     Type: String
-    Default: safe
   PodPassword:
-    Description: "Password for Pod. User defined or use value provided in DevNet Sandbox email."
+    Description: Password for Pod. User defined or use value provided in DevNet Sandbox email.
     Type: String
-    Default: 0e63a6aa91470478e$
   DuoSecret:
-    Description: "Secret used to configure Duo. *Must* use value provided in DevNet Sandbox email."
+    Description: Secret used to configure Duo. *Must* use value provided in DevNet Sandbox email.
     Type: String
-    Default: safe
   SwcSecret:
-    Description: "Secret used for Stealthwatch Cloud Kubernetes agents. *Must* use value provided in DevNet Sandbox email."
+    Description: Secret used for Stealthwatch Cloud Kubernetes agents. *Must* use value provided in DevNet Sandbox email.
     Type: String
-    Default: safe
   DevNetEmail:
-    Description: "Email used with your DevNet account. *Must* use value provided in DevNet Sandbox email."
+    Description: Email used with your DevNet account. *Must* use value provided in DevNet Sandbox email.
     Type: String
-    Default: safe
-
   EnvironmentName:
     Description: An environment name that is prefixed to resource names
     Type: String
     Default: Cisco-App-First-Sec
   AwsRegion:
-    Description: aws region
+    Description: AWS region. Example- us-west-2
     Type: String
-    Default: us-west-2
   keyPairName:
     Description: Key pair name (Create a new key pair prior to deploying this template)
     Type: String
-    Default: devnet
-
-  HubVpcCIDR:
-    Description: Please enter the IP range (CIDR notation) for hub VPC
-    Type: String
-    Default: 10.10.0.0/16
-  HubPublicSubnetCIDR:
-    Description: Please enter the public subnet in the first Availability Zone in hub VPC
-    Type: String
-    Default: 10.10.10.0/24
-  HubPrivateSubnetCIDR:
-    Description: Please enter the private subnet in the first Availability Zone in hub VPC
-    Type: String
-    Default: 10.10.20.0/24
-
-  SpokeVpcCIDR:
-    Description: Please enter the IP range (CIDR notation) for spoke VPC
-    Type: String
-    Default: 10.20.0.0/16
-  SpokePublicSubnet1CIDR:
-    Description: Please enter the public subnet in the first Availability Zone in Spoke VPC
-    Type: String
-    Default: 10.20.10.0/24
-  SpokePublicSubnet2CIDR:
-    Description: Please enter the public subnet in the second Availability Zone in Spoke VPC
-    Type: String
-    Default: 10.20.11.0/24
-  SpokePublicSubnet3CIDR:
-    Description: Please enter the public subnet in the third Availability Zone in Spoke VPC
-    Type: String
-    Default: 10.20.12.0/24
-  SpokePrivateSubnet1CIDR:
-    Description: Please enter the private subnet in the first Availability Zone in Spoke VPC
-    Type: String
-    Default: 10.20.20.0/24
-  SpokePrivateSubnet2CIDR:
-    Description: Please enter the private subnet in the second Availability Zone in Spoke VPC
-    Type: String
-    Default: 10.20.21.0/24
-  SpokePrivateSubnet3CIDR:
-    Description: Please enter the the private subnet in the third Availability Zone in Spoke VPC
-    Type: String
-    Default: 10.20.22.0/24
 
 Resources:
 #################################################
@@ -97,7 +47,7 @@ Resources:
   HubVPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: !Ref HubVpcCIDR
+      CidrBlock: "10.10.0.0/16"
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
@@ -121,7 +71,7 @@ Resources:
     Properties:
       VpcId: !Ref HubVPC
       AvailabilityZone: !Select [ 0, !GetAZs '' ]
-      CidrBlock: !Ref HubPublicSubnetCIDR
+      CidrBlock: "10.10.10.0/24"
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
@@ -131,7 +81,7 @@ Resources:
     Properties:
       VpcId: !Ref HubVPC
       AvailabilityZone: !Select [ 0, !GetAZs  '' ]
-      CidrBlock: !Ref HubPrivateSubnetCIDR
+      CidrBlock: "10.10.20.0/24"
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
@@ -227,7 +177,6 @@ Resources:
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
-
   HubciscoAppFirstSecFlowLogBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -252,7 +201,7 @@ Resources:
   SpokeVPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: !Ref SpokeVpcCIDR
+      CidrBlock: "10.20.0.0/16"
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
@@ -276,7 +225,7 @@ Resources:
     Properties:
       VpcId: !Ref SpokeVPC
       AvailabilityZone: !Select [ 0, !GetAZs '' ]
-      CidrBlock: !Ref SpokePublicSubnet1CIDR
+      CidrBlock: "10.20.10.0/24"
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
@@ -290,7 +239,7 @@ Resources:
     Properties:
       VpcId: !Ref SpokeVPC
       AvailabilityZone: !Select [ 1, !GetAZs  '' ]
-      CidrBlock: !Ref SpokePublicSubnet2CIDR
+      CidrBlock: "10.20.11.0/24"
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
@@ -304,7 +253,7 @@ Resources:
     Properties:
       VpcId: !Ref SpokeVPC
       AvailabilityZone: !Select [ 2, !GetAZs  '' ]
-      CidrBlock: !Ref SpokePublicSubnet3CIDR
+      CidrBlock: "10.20.12.0/24"
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
@@ -318,7 +267,7 @@ Resources:
     Properties:
       VpcId: !Ref SpokeVPC
       AvailabilityZone: !Select [ 0, !GetAZs  '' ]
-      CidrBlock: !Ref SpokePrivateSubnet1CIDR
+      CidrBlock: "10.20.20.0/24"
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
@@ -332,7 +281,7 @@ Resources:
     Properties:
       VpcId: !Ref SpokeVPC
       AvailabilityZone: !Select [ 1, !GetAZs  '' ]
-      CidrBlock: !Ref SpokePrivateSubnet2CIDR
+      CidrBlock: "10.20.21.0/24"
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
@@ -346,7 +295,7 @@ Resources:
     Properties:
       VpcId: !Ref SpokeVPC
       AvailabilityZone: !Select [ 2, !GetAZs  '' ]
-      CidrBlock: !Ref SpokePrivateSubnet3CIDR
+      CidrBlock: "10.20.22.0/24"
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
