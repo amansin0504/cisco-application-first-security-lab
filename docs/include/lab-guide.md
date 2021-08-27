@@ -1375,7 +1375,7 @@ You'll test the current login process, update the source code of the Sock Shop, 
 
 		> **NOTE**
 		>
-		> If your login is unsuccessful, you might have missed the step where you created this user. Execute the command _addshopuser_ in a Cloud9 terminal and try to login to the Sock Shop again.
+		> If your login is unsuccessful, you might have missed the step where you created this user. Execute the command addshopuser in a Cloud9 terminal and try to login to the Sock Shop again.
 
 5. Once you've confirmed the login was successful, click on the _Logout_ link in the top right.
 
