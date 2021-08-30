@@ -48,10 +48,10 @@ sudo yum -y install epel-release
 sudo yum -y update
 sudo yum -y install gettext httping
 
-curl -O https://bootstrap.pypa.io/get-pip.py
-python3 get-pip.py --user > /dev/null
-export PATH=~/.local/bin:$PATH
-rm get-pip.py
+curl -O https://bootstrap.pypa.io/get-pip.py  #UPDATE
+python3 get-pip.py --user > /dev/null #UPDATE
+export PATH=~/.local/bin:$PATH #UPDATE
+rm get-pip.py #UPDATE
 pip install ansible tetpyclient phonenumbers
 
 # change dir to where we expect files to live
