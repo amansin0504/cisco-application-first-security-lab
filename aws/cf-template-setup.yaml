@@ -17,15 +17,19 @@ Parameters:
   PodName:
     Description: Name of Pod. *Must* use value provided in DevNet Sandbox email.
     Type: String
+    Default: AppFirstSecPod
   PodPassword:
     Description: Password for Pod. User defined or use value provided in DevNet Sandbox email.
     Type: String
+    Default: 3d5c68bab01f3496$
   DuoSecret:
     Description: Secret used to configure Duo. *Must* use value provided in DevNet Sandbox email.
     Type: String
+    Default: 3d5c68bab01f3496$
   SwcSecret:
     Description: Secret used for Stealthwatch Cloud Kubernetes agents. *Must* use value provided in DevNet Sandbox email.
     Type: String
+    Default: 3d5c68bab01f3496$
   DevNetEmail:
     Description: Email used with your DevNet account. *Must* use value provided in DevNet Sandbox email.
     Type: String
@@ -36,9 +40,11 @@ Parameters:
   AwsRegion:
     Description: AWS region. Example- us-west-2
     Type: String
+    Default: us-west-2
   keyPairName:
     Description: Key pair name (Create a new key pair prior to deploying this template)
     Type: String
+    Default: devnet
 
 Resources:
 #################################################
