@@ -20,20 +20,24 @@ if [ $? -eq 0 ]; then
     echo $(eksctl get clusters app-first-sec)
     echo " "
     echo "-----------------------------------------------"
-    echo "EKS Cluster with Sock Shop Application exists"
+    echo "EKS Cluster is already provisioned"
     echo "-----------------------------------------------"
 else
-    #eksctl create cluster --config-file $HOME/environment/lab/aws/eks-cluster.yaml
+    eksctl create cluster --config-file $HOME/environment/lab/aws/eks-cluster.yaml
     echo " "
     echo "-----------------------------------------------"
-    echo "EKS Cluster with Sock Shop Application Created"
+    echo "EKS Cluster is created."
     echo "-----------------------------------------------"
 fi
 
 #Deploy Sock Shop application
-#kubectl apply -f $HOME/environment/lab/sock-shop/sock-shop-elb.yaml
+kubectl apply -f $HOME/environment/lab/sock-shop/sock-shop-elb.yaml
+echo " "
+echo "-----------------------------------------------"
+echo "Sock Shop demo application is deployed on EKS Cluster."
+echo "-----------------------------------------------"
 
-# Mark your EKS cluster private and Allow SG communitcation from outside
+# Mark your EKS cluster private and Allow SG communitcation from outside (TBD)
 # read answer
 # if yes move forward else go back
 
@@ -43,19 +47,24 @@ echo "####################################"
 echo "=======GitLab Credentials======="
 echo "Username: root"
 echo "$(ssh -i ~/.ssh/$AWS_KEYPAIR_NAME ubuntu@$AWS_GITLAB_IP 'sudo grep Password: /etc/gitlab/initial_root_password')"
-echo "=======GitLab Credentials======="
+echo "================================"
 echo "Go to link http://$AWS_GITLAB_FQDN/-/profile/personal_access_tokens (Use the credentials above to login)"
 echo "Generate a Private Access Token by adding api and write_repository permissions"
 echo "Enter the Private Access Token:"
 read GITLAB_TOKEN
 
 #Create the Gitlab project
-curl --header "Private-Token: $GITLAB_TOKEN" -X POST "http://$AWS_GITLAB_FQDN/api/v4/projects?name=Front-End" > /dev/null
-echo " "
-echo "----------------------------------"
-echo "Created Gitlab Project - Front-End"
-echo "----------------------------------"
-echo " "
+res = $(curl --write-out "%{http_code}\n" --header "Private-Token: $GITLAB_TOKEN" -X POST "http://$AWS_GITLAB_FQDN/api/v4/projects?name=Front-End" --output /dev/null --silent)
+if [ $res1 == "200" ]; then
+  echo " "
+  echo "----------------------------------"
+  echo "Created Gitlab Project - Front-End"
+  echo "----------------------------------"
+  echo " "
+else
+  echo "Failed to create Sock-Shop Project"
+  exit 1
+fi
 
 # Use Gitlab runner registration token to register a runner
 echo "####################################"
@@ -78,23 +87,48 @@ sudo gitlab-runner register \
 --tag-list "docker"
 EOF
 echo " "
-echo "----------------------------------"
-echo "Gitlab Runner for CI/CD pipeline is registered now!"
-echo "----------------------------------"
+echo "------------------------------------------------------"
+echo "Gitlab Runner for CI/CD pipeline should be registered now!"
+echo "------------------------------------------------------"
 echo " "
 
 #Add AWS environment variables for pipeline
 echo "####################################"
 export AWS_ACCESS_KEY=$(grep aws_access_key_id ~/.aws/credentials | awk '{ print $3 }')
 export AWS_SECRET_ACCESS=$(grep aws_secret_access_key ~/.aws/credentials | awk '{ print $3 }')
-curl --request POST  --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "http://$AWS_GITLAB_FQDN/api/v4/projects/2/variables" --form "key=AWS_ACCESS_KEY_ID" --form "value=$AWS_ACCESS_KEY" > /dev/null
-curl --request POST  --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "http://$AWS_GITLAB_FQDN/api/v4/projects/2/variables" --form "key=AWS_SECRET_ACCESS_KEY" --form "value=$AWS_SECRET_ACCESS" > /dev/null
-curl --request POST  --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "http://$AWS_GITLAB_FQDN/api/v4/projects/2/variables" --form "key=AWS_DEFAULT_REGION" --form "value=$AWS_REGION" > /dev/null
-curl --request POST  --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "http://$AWS_GITLAB_FQDN/api/v4/projects/2/variables" --form "key=DOCKER_REGISTRY" --form "value=$DOCKER_REGISTRY" > /dev/null
+
+res1=$(curl --write-out "%{http_code}\n" --request POST  --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "http://$AWS_GITLAB_FQDN/api/v4/projects/2/variables" --form "key=AWS_ACCESS_KEY_ID" --form "value=$AWS_ACCESS_KEY" --output /dev/null --silent)
+if [ $res1 == "200" ]; then
+  echo "Added CI/CD variable - AWS_ACCESS_KEY "
+else
+  echo "Failed to add CI/CD variable - AWS_ACCESS_KEY"
+fi
+
+res2=$(curl --write-out "%{http_code}\n" --request POST  --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "http://$AWS_GITLAB_FQDN/api/v4/projects/2/variables" --form "key=AWS_SECRET_ACCESS_KEY" --form "value=$AWS_SECRET_ACCESS" --output /dev/null --silent)
+if [ $res2 == "200" ]; then
+  echo "Added CI/CD variable - AWS_SECRET_ACCESS"
+else
+  echo "Failed to add CI/CD variable - AWS_SECRET_ACCESS"
+fi
+
+res3=$(curl --write-out "%{http_code}\n" --request POST  --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "http://$AWS_GITLAB_FQDN/api/v4/projects/2/variables" --form "key=AWS_DEFAULT_REGION" --form "value=$AWS_REGION" --output /dev/null --silent)
+if [ $res3 == "200" ]; then
+  echo "Added CI/CD variable - AWS_REGION"
+else
+  echo "Failed to add CI/CD variable - AWS_REGION"
+fi
+
+res4=$(curl --write-out "%{http_code}\n" --request POST  --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "http://$AWS_GITLAB_FQDN/api/v4/projects/2/variables" --form "key=DOCKER_REGISTRY" --form "value=$DOCKER_REGISTRY" --output /dev/null --silent)
+if [ $res4 == "200" ]; then
+  echo "Added CI/CD variable - DOCKER_REGISTRY"
+else
+  echo "Failed to add CI/CD variable - DOCKER_REGISTRY"
+fi
+
 echo " "
-echo "------------------------------------------------------"
-echo "Added the AWS environment variables (AWS_ACCESS_KEY, AWS_SECRET_ACCESS, AWS_DEFAULT_REGION, DOCKER_REGISTRY) for CI/CD Pipeline"
-echo "------------------------------------------------------"
+echo "---------------------------------------------------"
+echo "Added the environment variables for CI/CD Pipeline"
+echo "----------------------------------------------------"
 echo " "
 
 #Set up the private Git Client Repo
@@ -105,14 +139,16 @@ git config --global user.name "Administrator" && git config --global user.email 
 git remote rm origin && git remote add origin http://Administrator:$GITLAB_TOKEN@$AWS_GITLAB_FQDN/root/front-end.git
 git push -u origin --all
 echo " "
-echo "------------------------------------------------------"
+echo "---------------------------------------------------------------------"
 echo "Front-End local and remote repo (on private GitLab Instance) created"
-echo "------------------------------------------------------"
+echo "---------------------------------------------------------------------"
 echo " "
 
 #Add the Sock Shop credentials and displace the access link
 echo "####################################"
 addshopuser
 echo "export SOCK_SHOP_ELB=`kubectl get service front-end -n sock-shop -o json | jq -r '.status.loadBalancer.ingress[0].hostname'`" >> ~/.bashrc_lab ; source ~/.bashrc
+echo "---------------------------------------------------------------------"
 echo "Sock Shop Access:"
 echo $SOCK_SHOP_ELB
+echo "---------------------------------------------------------------------"

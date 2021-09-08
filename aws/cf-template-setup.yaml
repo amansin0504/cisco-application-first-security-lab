@@ -15,35 +15,32 @@ Mappings:
 
 Parameters:
   PodName:
-    Description: Name of Pod. *Must* use value provided in DevNet Sandbox email.
+    Description: "Name of Pod. *Must* use value provided in DevNet Sandbox email."
     Type: String
-    Default: AppFirstSecPod
+    Default: AppFirstSecUser
   PodPassword:
-    Description: Password for Pod. User defined or use value provided in DevNet Sandbox email.
+    Description: "Password for Pod. User defined or use value provided in DevNet Sandbox email."
     Type: String
     Default: 3d5c68bab01f3496$
   DuoSecret:
-    Description: Secret used to configure Duo. *Must* use value provided in DevNet Sandbox email.
+    Description: "Secret used to configure Duo. *Must* use value provided in DevNet Sandbox email."
     Type: String
     Default: 3d5c68bab01f3496$
   SwcSecret:
-    Description: Secret used for Stealthwatch Cloud Kubernetes agents. *Must* use value provided in DevNet Sandbox email.
+    Description: "Secret used for Stealthwatch Cloud Kubernetes agents. *Must* use value provided in DevNet Sandbox email."
     Type: String
     Default: 3d5c68bab01f3496$
   DevNetEmail:
-    Description: Email used with your DevNet account. *Must* use value provided in DevNet Sandbox email.
+    Description: "Email used with your DevNet account. *Must* use value provided in DevNet Sandbox email."
     Type: String
+    Default: amansin3@cisco.com
   EnvironmentName:
-    Description: An environment name that is prefixed to resource names
+    Description: "An environment name that is prefixed to resource names"
     Type: String
     Default: Cisco-App-First-Sec
-  AwsRegion:
-    Description: AWS region. Example- us-west-2
-    Type: String
-    Default: us-west-2
   keyPairName:
-    Description: Key pair name (Create a new key pair prior to deploying this template)
-    Type: String
+    Description: "Key pair name (Create a new key pair prior to deploying this template)"
+    Type: AWS::EC2::KeyPair::KeyName
     Default: devnet
 
 Resources:
@@ -120,7 +117,7 @@ Resources:
     DependsOn: HubInternetGatewayAttachment
     Properties:
       RouteTableId: !Ref HubPublicRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
+      DestinationCidrBlock: "0.0.0.0/0"
       GatewayId: !Ref HubInternetGateway
   HubPublicSubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -139,7 +136,7 @@ Resources:
     Type: AWS::EC2::Route
     Properties:
       RouteTableId: !Ref HubPrivateRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
+      DestinationCidrBlock: "0.0.0.0/0"
       NatGatewayId: !Ref HubNatGateway
   HubPrivateSubnet1RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -166,16 +163,17 @@ Resources:
       GroupName: AppFirstUserGroup
       Users: [!Ref PodName]
 
-  HubSafeCloud9IDE:
+  HubCloud9IDE:
     Type: AWS::Cloud9::EnvironmentEC2
+    DependsOn: [ciscoAppFirstSecUser,ciscoAppFirstSecUserGroup]
     Properties:
       AutomaticStopTimeMinutes: 30
       InstanceType: t2.micro
-      Name: safe-cloud9-ide
+      Name: appfirst-cloud9-ide
       OwnerArn: !GetAtt ciscoAppFirstSecUser.Arn
       SubnetId: !Ref HubPublicSubnet
 
-  HubciscoAppFirstlabfilesBucket:
+  HubciscoAppFirstSeclabfilesBucket:
     Type: AWS::S3::Bucket
     Properties:
       PublicAccessBlockConfiguration:
@@ -306,7 +304,7 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName} Spoke Private Subnet AZ3
-        - Key: kubernetes.io/cluster/production-eks
+        - Key: kubernetes.io/cluster/app-first-sec
           Value: shared
         - Key: kubernetes.io/role/internal-elb
           Value: 1
@@ -366,7 +364,7 @@ Resources:
     DependsOn: SpokeInternetGatewayAttachment
     Properties:
       RouteTableId: !Ref SpokePublicRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
+      DestinationCidrBlock: "0.0.0.0/0"
       GatewayId: !Ref SpokeInternetGateway
   SpokePublicSubnet1RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -395,7 +393,7 @@ Resources:
     Type: AWS::EC2::Route
     Properties:
       RouteTableId: !Ref SpokePrivateRouteTable1
-      DestinationCidrBlock: 0.0.0.0/0
+      DestinationCidrBlock: "0.0.0.0/0"
       NatGatewayId: !Ref SpokeNatGateway1
   SpokePrivateSubnet1RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -414,7 +412,7 @@ Resources:
     Type: AWS::EC2::Route
     Properties:
       RouteTableId: !Ref SpokePrivateRouteTable2
-      DestinationCidrBlock: 0.0.0.0/0
+      DestinationCidrBlock: "0.0.0.0/0"
       NatGatewayId: !Ref SpokeNatGateway2
   SpokePrivateSubnet2RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -433,7 +431,7 @@ Resources:
     Type: AWS::EC2::Route
     Properties:
       RouteTableId: !Ref SpokePrivateRouteTable3
-      DestinationCidrBlock: 0.0.0.0/0
+      DestinationCidrBlock: "0.0.0.0/0"
       NatGatewayId: !Ref SpokeNatGateway3
   SpokePrivateSubnet3RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -455,15 +453,15 @@ Resources:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: 0.0.0.0/0
+          CidrIp: "0.0.0.0/0"
         - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
-          CidrIp: 0.0.0.0/0
+          CidrIp: "0.0.0.0/0"
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          CidrIp: 0.0.0.0/0
+          CidrIp: "0.0.0.0/0"
 
   GitLabInstance:
     Type: AWS::EC2::Instance
@@ -533,14 +531,14 @@ Resources:
     DependsOn: [peeringHubSpokeVPC]
     Properties:
       RouteTableId: !Ref HubPrivateRouteTable
-      DestinationCidrBlock: 10.20.0.0/16
+      DestinationCidrBlock: "10.20.0.0/16"
       VpcPeeringConnectionId: !Ref peeringHubSpokeVPC
   peerRoute2HubVPC:
     Type: AWS::EC2::Route
     DependsOn: [peeringHubSpokeVPC]
     Properties:
       RouteTableId: !Ref HubPublicRouteTable
-      DestinationCidrBlock: 10.20.0.0/16
+      DestinationCidrBlock: "10.20.0.0/16"
       VpcPeeringConnectionId: !Ref peeringHubSpokeVPC
 
   peerRoute1SpokeVPC:
@@ -548,29 +546,33 @@ Resources:
     DependsOn: [peeringHubSpokeVPC]
     Properties:
       RouteTableId: !Ref SpokePrivateRouteTable1
-      DestinationCidrBlock: 10.10.0.0/16
+      DestinationCidrBlock: "10.10.0.0/16"
       VpcPeeringConnectionId: !Ref peeringHubSpokeVPC
   peerRoute2SpokeVPC:
     Type: AWS::EC2::Route
     DependsOn: [peeringHubSpokeVPC]
     Properties:
       RouteTableId: !Ref SpokePrivateRouteTable2
-      DestinationCidrBlock: 10.10.0.0/16
+      DestinationCidrBlock: "10.10.0.0/16"
       VpcPeeringConnectionId: !Ref peeringHubSpokeVPC
   peerRoute3SpokeVPC:
     Type: AWS::EC2::Route
     DependsOn: [peeringHubSpokeVPC]
     Properties:
       RouteTableId: !Ref SpokePrivateRouteTable3
-      DestinationCidrBlock: 10.10.0.0/16
+      DestinationCidrBlock: "10.10.0.0/16"
       VpcPeeringConnectionId: !Ref peeringHubSpokeVPC
   peerRoute4SpokeVPC:
     Type: AWS::EC2::Route
     DependsOn: [peeringHubSpokeVPC]
     Properties:
       RouteTableId: !Ref SpokePublicRouteTable
-      DestinationCidrBlock: 10.10.0.0/16
+      DestinationCidrBlock: "10.10.0.0/16"
       VpcPeeringConnectionId: !Ref peeringHubSpokeVPC
+
+#################################################
+# Outputs
+#################################################
 
 Outputs:
   FlowLogBucket:
@@ -578,7 +580,7 @@ Outputs:
     Value: !Ref HubciscoAppFirstSecFlowLogBucket
   TetAgentBucket:
     Description: Cisco App-First Sec S3 Bucket Name for Tetration agent
-    Value: !Ref HubciscoAppFirstlabfilesBucket
+    Value: !Ref HubciscoAppFirstSeclabfilesBucket
   PodName:
     Description: Cisco App-First Sec name of pod
     Value: !Ref PodName

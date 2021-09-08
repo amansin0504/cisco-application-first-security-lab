@@ -60,7 +60,7 @@ This lab uses AWS to host the workloads and applications and takes advantage of 
 
 > **NOTE**
 >
-> If you want to skip the [Part1: Prepare infrastructure and application](#part1:-prepare-infrastructure-and-application) and directly jump to implementing security, run the command _solvepart1forme_ to fast forward setting up infrastructure and Sock Shop application. Once the script completes, you can proceed with any of the three implement security section - [Part2: Implement security - Cisco Secure Access by Duo](#part2-implement-security---cisco-secure-access-by-duo), [Part3: Implement security - Cisco Secure Cloud Analytics](#part3-implement-security---cisco-secure-cloud-analytics) or [Part4: Implement security - Cisco Secure Cloud Workload](#part4-implement-security---cisco-secure-cloud-workload).
+> If you want to skip the [Part1: Prepare infrastructure and application](#part1:-prepare-infrastructure-and-application) and directly jump to implementing security, run the command _solvepart1forme_ to fast forward setting up infrastructure and Sock Shop application. Once the script completes, you can proceed with any of the three _implement security_ sections - [Part2: Implement security - Cisco Secure Access by Duo](#part2-implement-security---cisco-secure-access-by-duo), [Part3: Implement security - Cisco Secure Cloud Analytics](#part3-implement-security---cisco-secure-cloud-analytics) or [Part4: Implement security - Cisco Secure Cloud Workload](#part4-implement-security---cisco-secure-cloud-workload).
 
 ## Part1: Prepare infrastructure and application
 
@@ -1103,7 +1103,7 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
 
 In this section, you will set up a CI/CD pipeline for your newly created GitLab project _Sock-Shop-Front-End_. To use GitLab CI/CD, you need a file called .gitlab-ci.yml in the root of your repository, which contains the CI/CD configuration. In the .gitlab-ci.yml file, you can define the scripts and the commands that you want to run. The scripts are grouped into jobs, and jobs run as part of a larger pipeline. You can group multiple independent jobs into stages that run in a defined order. You should organize your jobs in a sequence that suits your application and is in accordance with the tests you wish to perform. To visualize the process, imagine the scripts you add to jobs are the same as CLI commands you run on your computer to build, test and deploy your application.
 
-When you add a _.gitlab-ci.yml_ file to your repository, GitLab detects it and an application called [GitLab Runner](https://docs.gitlab.com/runner/) runs the scripts or jobs defined in the pipeline configuration. 
+When you add a _.gitlab-ci.yml_ file to your repository, GitLab detects it and an application called [GitLab Runner](https://docs.gitlab.com/runner/) runs the scripts or jobs defined in the pipeline configuration.
 
 In this section of the lab, you will set up the GitLab runner application to run your Front-End project pipeline. The .gitlab-ci.yml containing the pipeline configuration is already provided, you will review the pipeline configuration and deploy the front-end sock shop image using the CI/CD pipeline automation.
 
@@ -1272,7 +1272,7 @@ An AWS Elastic Container Registry (ECR) is already set up as part of initial lab
     > **NOTE**
     >
     > The new Front End container image is essentially same image as the one we are already running in the EKS cluster. We will make changes to the source code in the later sections of this lab and use CI/CD pipeline automation to deploy the new image.
-    
+
 ## Part2: Implement security - Cisco Secure Access by Duo
 
 <img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/arch2-duo-sdk.png" alt="arch2.png" />
@@ -2211,7 +2211,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     ```
 
 6. Retrieve the CA certificate for the Kuberentes API using the AWS CLI eks describe-cluster command to use when entering the Kubernetes configuration into Tetration in future steps. There's nothing to do with the output for now other than confirm you have it ready.
-    
+
     ###### Command
 
     ```
@@ -2236,7 +2236,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     -----END CERTIFICATE-----
     ```
 
-7. If AssumeRole is not used, the user must be added to the “mapUsers” section of the aws-auth.yaml with appropriate group. Edit configmap 
+7. If AssumeRole is not used, the user must be added to the “mapUsers” section of the aws-auth.yaml with appropriate group. Edit configmap
 
     ###### Command
 
