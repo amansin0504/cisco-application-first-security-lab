@@ -15,6 +15,7 @@
 # limitations under the License.
 
 #create EKS cluster
+echo " "
 echo "###########################################################################"
 echo "## Step1: We will create an EKS cluster in the Spoke VPC now."
 echo "###########################################################################"
@@ -32,9 +33,10 @@ else
     eksctl create cluster --config-file $HOME/environment/lab/aws/eks-cluster.yaml
     echo " "
     echo "-----------------------------------------------"
-    echo "EKS Cluster is created."
+    echo "EKS Cluster is created!"
     echo "-----------------------------------------------"
 fi
+echo " "
 
 #Deploy Sock Shop application
 echo "###########################################################################"
@@ -42,9 +44,9 @@ echo "## Step2: Now, we will deploy the Sock Shop application to the EKS cluster
 echo "###########################################################################"
 kubectl apply -f $HOME/environment/lab/sock-shop/sock-shop-elb.yaml
 echo " "
-echo "--------------------------------------------------------"
-echo "Sock Shop demo application is deployed on EKS Cluster."
-echo "--------------------------------------------------------"
+echo "---------------------------------------------------------"
+echo "Sock Shop demo application is deployed to the EKS Cluster."
+echo "---------------------------------------------------------"
 echo " "
 
 # Mark your EKS cluster private and Allow SG communitcation from outside (TBD)
@@ -55,14 +57,14 @@ echo " "
 echo "###########################################################################"
 echo "## Step3: Create Front End microservice project on the private GitLab Instance"
 echo "###########################################################################"
-echo "=======GitLab Credentials======="
+echo "--------------------------GitLab Credentials-------------------------------"
 echo "Username: root"
 echo "$(ssh -i ~/.ssh/$AWS_KEYPAIR_NAME ubuntu@$AWS_GITLAB_IP 'sudo grep Password: /etc/gitlab/initial_root_password')"
-echo "================================"
+echo "---------------------------------------------------------------------------"
 echo "Go to link http://$AWS_GITLAB_FQDN/-/profile/personal_access_tokens (Use the credentials above to login)"
 echo "Generate a Private Access Token by adding api and write_repository permissions."
 echo "We need this token to authenticate to private GitLab Instance for creating the project."
-echo "--------------------------------------------------------------------------------------------------"
+echo "---------------------------------------------------------------------------------------"
 echo "Enter the Private Access Token:"
 read GITLAB_TOKEN
 
@@ -70,9 +72,9 @@ read GITLAB_TOKEN
 res=$(curl --write-out "%{http_code}\n" --header "Private-Token: $GITLAB_TOKEN" -X POST "http://$AWS_GITLAB_FQDN/api/v4/projects?name=Front-End" --output /dev/null --silent)
 if [ $res1=="201" ]; then
   echo " "
-  echo "-----------------------------------"
-  echo "Created Gitlab Project - Front-End"
-  echo "-----------------------------------"
+  echo "--------------------------------------"
+  echo "Gitlab Project - Front-End is created "
+  echo "--------------------------------------"
   echo " "
 else
   echo "Failed to create Sock-Shop Project"
@@ -85,7 +87,7 @@ echo "##########################################################################
 echo "## Step4: Register the GitLab Runner to the Front End Gitlab project."
 echo "###########################################################################"
 echo "Go to link http://$AWS_GITLAB_FQDN/root/Front-End/-/settings/ci_cd"
-echo "Expand the Runners section and copy the registration token"
+echo "Expand the Runners section and copy the registration token."
 echo "We will now register a Runner to your private GitLab instance to run the CI/CD pipeline jobs."
 echo "--------------------------------------------------------------------------------------------------"
 echo "Enter the Gitlab Runner Registration token:"
@@ -154,7 +156,7 @@ fi
 
 echo " "
 echo "---------------------------------------------------"
-echo "Added the environment variables for CI/CD Pipeline"
+echo "Added the environment variables for CI/CD Pipeline."
 echo "---------------------------------------------------"
 echo " "
 
@@ -184,9 +186,10 @@ echo " "
 
 #Add the Sock Shop credentials and displace the access link
 echo "###########################################################################"
-echo "## Step6: Sock Shop Access"
+echo "## Step6: Access the Sock Shop application on EKS"
 echo "###########################################################################"
 echo "export SOCK_SHOP_ELB=`kubectl get service front-end -n sock-shop -o json | jq -r '.status.loadBalancer.ingress[0].hostname'`" >> ~/.bashrc_lab ; source ~/.bashrc
 echo "---------------------------------------------------------------------"
 echo $SOCK_SHOP_ELB
 echo "---------------------------------------------------------------------"
+echo " "
