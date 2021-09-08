@@ -16,7 +16,7 @@
 
 #create EKS cluster
 echo "####################################"
-echo "We create an EKS cluster in the Spoke VPC now."
+echo "We will create an EKS cluster in the Spoke VPC now."
 eksctl get clusters app-first-sec &> /dev/null
 if [ $? -eq 0 ]; then
     echo $(eksctl get clusters app-first-sec)
@@ -27,6 +27,7 @@ if [ $? -eq 0 ]; then
 else
     echo "This single step begins a complex process driven through CloudFormation."
     echo "This will take approximately 25 minutes to complete given the shear number of steps to prepare all of the AWS services."
+    echo "-----------------------------------------------------------------------------------------------------------------------"
     eksctl create cluster --config-file $HOME/environment/lab/aws/eks-cluster.yaml
     echo " "
     echo "-----------------------------------------------"
@@ -36,12 +37,12 @@ fi
 
 #Deploy Sock Shop application
 echo "####################################"
-echo "Now, we will deploy the Sock Shop application on the EKS cluster."
+echo "Now, we will deploy the Sock Shop application to the EKS cluster."
 kubectl apply -f $HOME/environment/lab/sock-shop/sock-shop-elb.yaml
 echo " "
-echo "-----------------------------------------------"
+echo "--------------------------------------------------------"
 echo "Sock Shop demo application is deployed on EKS Cluster."
-echo "-----------------------------------------------"
+echo "--------------------------------------------------------"
 
 # Mark your EKS cluster private and Allow SG communitcation from outside (TBD)
 # read answer
@@ -64,9 +65,9 @@ read GITLAB_TOKEN
 res=$(curl --write-out "%{http_code}\n" --header "Private-Token: $GITLAB_TOKEN" -X POST "http://$AWS_GITLAB_FQDN/api/v4/projects?name=Front-End" --output /dev/null --silent)
 if [ $res1=="201" ]; then
   echo " "
-  echo "----------------------------------"
+  echo "-----------------------------------"
   echo "Created Gitlab Project - Front-End"
-  echo "----------------------------------"
+  echo "-----------------------------------"
   echo " "
 else
   echo "Failed to create Sock-Shop Project"
@@ -95,9 +96,9 @@ sudo gitlab-runner register \
 --tag-list "docker"
 EOF
 echo " "
-echo "------------------------------------------------------"
+echo "------------------------------------------------------------"
 echo "Gitlab Runner for CI/CD pipeline should be registered now!"
-echo "------------------------------------------------------"
+echo "------------------------------------------------------------"
 echo " "
 
 #Add AWS environment variables for pipeline
