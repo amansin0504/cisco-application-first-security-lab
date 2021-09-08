@@ -162,7 +162,7 @@ echo " "
 
 #Set up the private Git Client Repo
 echo "###########################################################################"
-echo "## Step5: Set up your local repo on cloud9 instance and point it to your private Front End GitLab project"
+echo "## Step6: Set up your local repo on cloud9 instance and point it to your private Front End GitLab project"
 echo "###########################################################################"
 echo "-------------------------------------------------------------------------------------------------------"
 cd /home/ec2-user/environment
@@ -186,7 +186,7 @@ echo " "
 
 #Add the Sock Shop credentials and displace the access link
 echo "###########################################################################"
-echo "## Step6: Access the Sock Shop application on EKS"
+echo "## Step7: Access the Sock Shop application on EKS"
 echo "###########################################################################"
 echo "export SOCK_SHOP_ELB=`kubectl get service front-end -n sock-shop -o json | jq -r '.status.loadBalancer.ingress[0].hostname'`" >> ~/.bashrc_lab ; source ~/.bashrc
 echo "---------------------------------------------------------------------"
