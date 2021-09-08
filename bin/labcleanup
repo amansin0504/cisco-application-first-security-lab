@@ -52,7 +52,7 @@ aws ecr delete-repository --repository-name sock-shop/front-end --region ${AWS_R
 #echo "Lab cleanup: Delete Key Pair" or do we need to delet key pair, deleting IAM user as part of stack deletion should take care of this?
 #aws ec2 delete-key-pair --key-name ${AWS_KEYPAIR_NAME}
 
-#echo "Lab cleanup: Delete Cloudformation Stack"
+#echo "Lab cleanup: Delete Cloudformation Stack" this doesn't work in some situations when CFM deletes the IAM admin user earlier and then tries to delete other resources.
 #aws cloudformation delete-stack --stack-name ${AWS_CF_STACK_NAME}
 
 echo "Log out and log back in as your regular AWS admin user and navigate to CloudFormation AWS Console"
