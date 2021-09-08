@@ -15,8 +15,9 @@
 # limitations under the License.
 
 #create EKS cluster
-echo "####################################"
-echo "We will create an EKS cluster in the Spoke VPC now."
+echo "###########################################################################"
+echo "## Step1: We will create an EKS cluster in the Spoke VPC now."
+echo "###########################################################################"
 eksctl get clusters app-first-sec &> /dev/null
 if [ $? -eq 0 ]; then
     echo $(eksctl get clusters app-first-sec)
@@ -36,28 +37,32 @@ else
 fi
 
 #Deploy Sock Shop application
-echo "####################################"
-echo "Now, we will deploy the Sock Shop application to the EKS cluster."
+echo "###########################################################################"
+echo "## Step2: Now, we will deploy the Sock Shop application to the EKS cluster."
+echo "###########################################################################"
 kubectl apply -f $HOME/environment/lab/sock-shop/sock-shop-elb.yaml
 echo " "
 echo "--------------------------------------------------------"
 echo "Sock Shop demo application is deployed on EKS Cluster."
 echo "--------------------------------------------------------"
+echo " "
 
 # Mark your EKS cluster private and Allow SG communitcation from outside (TBD)
 # read answer
 # if yes move forward else go back
 
 #Login to Gitlab UI and Create Personal Access Token for api/git calls
-echo " "
-echo "####################################"
+echo "###########################################################################"
+echo "## Step3: Create Front End microservice project on the private GitLab Instance"
+echo "###########################################################################"
 echo "=======GitLab Credentials======="
 echo "Username: root"
 echo "$(ssh -i ~/.ssh/$AWS_KEYPAIR_NAME ubuntu@$AWS_GITLAB_IP 'sudo grep Password: /etc/gitlab/initial_root_password')"
 echo "================================"
 echo "Go to link http://$AWS_GITLAB_FQDN/-/profile/personal_access_tokens (Use the credentials above to login)"
-echo "Generate a Private Access Token by adding api and write_repository permissions"
-echo "We need this token to set up the Front End microservice project on your private GitLab Instance."
+echo "Generate a Private Access Token by adding api and write_repository permissions."
+echo "We need this token to authenticate to private GitLab Instance for creating the project."
+echo "--------------------------------------------------------------------------------------------------"
 echo "Enter the Private Access Token:"
 read GITLAB_TOKEN
 
@@ -73,12 +78,16 @@ else
   echo "Failed to create Sock-Shop Project"
   exit 1
 fi
+echo " "
 
 # Use Gitlab runner registration token to register a runner
-echo "####################################"
+echo "###########################################################################"
+echo "## Step4: Register the GitLab Runner to the Front End Gitlab project."
+echo "###########################################################################"
 echo "Go to link http://$AWS_GITLAB_FQDN/root/Front-End/-/settings/ci_cd"
 echo "Expand the Runners section and copy the registration token"
 echo "We will now register a Runner to your private GitLab instance to run the CI/CD pipeline jobs."
+echo "--------------------------------------------------------------------------------------------------"
 echo "Enter the Gitlab Runner Registration token:"
 read RUNNER_TOKEN
 
@@ -102,9 +111,12 @@ echo "------------------------------------------------------------"
 echo " "
 
 #Add AWS environment variables for pipeline
-echo "####################################"
+echo "###########################################################################"
+echo "## Step5: Add CI/CD environment variables to the Front End Gitlab project."
+echo "###########################################################################"
 echo "Now we need to add some CI/CD variables to be used by CI/CD pipeline jobs."
-echo "Gitlab will use these variable to pushthe new container images to ECR repository and then deploy them to EKS cluster."
+echo "Gitlab will use these variable to push the new container images to ECR repository and then deploy them to EKS cluster."
+echo "----------------------------------------------------------------------------------------------------------------------"
 export AWS_ACCESS_KEY=$(grep aws_access_key_id ~/.aws/credentials | awk '{ print $3 }')
 export AWS_SECRET_ACCESS=$(grep aws_secret_access_key ~/.aws/credentials | awk '{ print $3 }')
 
@@ -147,8 +159,10 @@ echo "---------------------------------------------------"
 echo " "
 
 #Set up the private Git Client Repo
-echo "####################################"
-echo "We will set up your local repo on cloud9 instance and point it to your private Front End GitLab project"
+echo "###########################################################################"
+echo "## Step5: Set up your local repo on cloud9 instance and point it to your private Front End GitLab project"
+echo "###########################################################################"
+echo "-------------------------------------------------------------------------------------------------------"
 cd /home/ec2-user/environment
 git clone https://github.com/amansin0504/front-end.git Sock-Shop-Front-End
 success=$?
@@ -166,16 +180,13 @@ then
 else
     echo "Something went wrong with cloning sock shop repo or it already exists!"
 fi
+echo " "
 
 #Add the Sock Shop credentials and displace the access link
-echo "####################################"
+echo "###########################################################################"
+echo "## Step6: Sock Shop Access"
+echo "###########################################################################"
 echo "export SOCK_SHOP_ELB=`kubectl get service front-end -n sock-shop -o json | jq -r '.status.loadBalancer.ingress[0].hostname'`" >> ~/.bashrc_lab ; source ~/.bashrc
-addshopuser > /tmp/addinguser.log
 echo "---------------------------------------------------------------------"
-echo "Sock Shop Access:"
 echo $SOCK_SHOP_ELB
-echo "---------------------------------------------------------------------"
-echo "Sock Shop Credentials:"
-echo "User: $POD_NAME"
-echo "Password: $POD_NAME"
 echo "---------------------------------------------------------------------"
