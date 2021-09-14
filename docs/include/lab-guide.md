@@ -52,17 +52,17 @@ This lab uses AWS to host the workloads and applications and takes advantage of 
 
 ## Overall Lab Content
 
-* [Part1: Prepare infrastructure and application](#part1-prepare-infrastructure-and-application)
-* [Part2: Implement security - Cisco Secure Access by Duo](#part2-implement-security---cisco-secure-access-by-duo)
-* [Part3: Implement security - Cisco Secure Cloud Analytics](#part3-implement-security---cisco-secure-cloud-analytics)
-* [Part4: Implement security - Cisco Secure Cloud Workload](#part4-implement-security---cisco-secure-cloud-workload)
+* [Prepare infrastructure and application](#prepare-infrastructure-and-application)
+* [Option 1: Implement security - Cisco Secure Access by Duo](#option-1-implement-security---cisco-secure-access-by-duo)
+* [Option 2: Implement security - Cisco Secure Cloud Analytics](#option-2-implement-security---cisco-secure-cloud-analytics)
+* [Option 3: Implement security - Cisco Secure Cloud Workload](#option-3-implement-security---cisco-secure-cloud-workload)
 * [Wrap-Up](#wrap-up)
 
 > **NOTE**
 >
-> If you want to skip the [Part1: Prepare infrastructure and application](#part1:-prepare-infrastructure-and-application) and directly jump to implementing security, run the command _solvepart1forme_ to fast forward setting up infrastructure and Sock Shop application. Once the script completes, you can proceed with any of the three _implement security_ sections - [Part2: Implement security - Cisco Secure Access by Duo](#part2-implement-security---cisco-secure-access-by-duo), [Part3: Implement security - Cisco Secure Cloud Analytics](#part3-implement-security---cisco-secure-cloud-analytics) or [Part4: Implement security - Cisco Secure Cloud Workload](#part4-implement-security---cisco-secure-cloud-workload).
+> If you want to skip the section - [Prepare infrastructure and application](#prepare-infrastructure-and-application), and directly jump to implementing security, run the command _solvepart1forme_ to fast forward setting up infrastructure and Sock Shop application. Once the script completes, you can proceed with any of the three _implement security_ sections - [Option 1: Implement security - Cisco Secure Access by Duo](#option-1-implement-security---cisco-secure-access-by-duo), [Option 2: Implement security - Cisco Secure Cloud Analytics](#option-2-implement-security---cisco-secure-cloud-analytics) or [Option 3: Implement security - Cisco Secure Cloud Workload](#option-3-implement-security---cisco-secure-cloud-workload).
 
-## Part1: Prepare infrastructure and application
+## Prepare infrastructure and application
 
 This section of the lab will have you prepare the public cloud infrastructure and deploy a micro-services based cloud-native application. Throughout the steps, you'll be laying the groundwork to implement security in a later sections.
 
@@ -1273,7 +1273,7 @@ An AWS Elastic Container Registry (ECR) is already set up as part of initial lab
     >
     > The new Front End container image is essentially same image as the one we are already running in the EKS cluster. We will make changes to the source code in the later sections of this lab and use CI/CD pipeline automation to deploy the new image.
 
-## Part2: Implement security - Cisco Secure Access by Duo
+## Option 1: Implement security - Cisco Secure Access by Duo
 
 <img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/arch2-duo-sdk.png" alt="arch2.png" />
 
@@ -1694,7 +1694,7 @@ You can rest easy knowing access to your lucrative Sock Shop has MFA enabled for
 
 Duo is providing self-managed MFA for a custom web application using the Duo Web SDK. Additional configuration in Duo could further protect those resources by setting device restrictions using Duo Beyond.
 
-## Part3: Implement Security - Cisco Secure Cloud Analytics
+## Option 2: Implement Security - Cisco Secure Cloud Analytics
 
 <img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/arch2-swc.png" alt="arch2.png" />
 
@@ -2045,7 +2045,7 @@ Now you can sleep more soundly knowing that Secure Cloud Analytics Cloud is prov
 
 Secure Cloud Analytics Cloud is now consuming all sources of telemetry native to AWS, including Amazon Virtual Private Cloud (VPC) flow logs, and Kubernetes pod traffic to monitor all activity in the cloud without the need for software agents. Secure Cloud Analytics Cloud was deployed in these environments in a matter of minutes with no disruption to service availability. Secure Cloud Analytics Cloud uses this data to model the behavior of each cloud resource, a method called entity modeling. It is then able to detect and alert on sudden changes in behavior, malicious activity, and signs of compromise.
 
-## Part4: Implement security - Cisco Secure Cloud Workload
+## Option 3: Implement security - Cisco Secure Cloud Workload
 
 <img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/arch2-tet.png" alt="arch2.png" />
 
