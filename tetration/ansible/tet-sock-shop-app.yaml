@@ -1,5 +1,5 @@
 ---
-- name: Configure Sock Shop Filters
+- name: Configure Sock Shop Policies
   hosts: tetration
   connection: local
 
@@ -11,7 +11,7 @@
           api_key: "{{ api_key }}"
           api_secret: "{{ api_secret }}"
         app_name: Sock Shop
-        app_scope_name: "{{ app_scope_name }}"
+        app_scope_id: "{{ app_scope_id }}"
         description: A Cloud Native Microservices App
         primary: yes
         state: present
@@ -82,14 +82,14 @@
         policy_id: "{{ elb_health_monitor_kube_nodes_policy.object.id if elb_health_monitor_kube_nodes_policy else None }}"
         version: v0
         proto_name: TCP
-        start_port: "{{ port }}"
-        end_port: "{{ port }}"
+        start_port: "{{ item.port1 }}"
+        end_port: "{{ item.port2 }}"
         state: present
     loop:
-      - ${ELB_HEALTH_MONITOR_PORT}
+      - { port1: '30000', port2: '32767' }
     loop_control:
-      loop_var: port
-      label: "Adding port {{ port }} to Sock Shop Policy"
+      label: "Adding ports to Sock Shop Policy"
+    ignore_errors: yes
 
   - name: Add Policy cloud9 to kube-nodes
     tetration_application_policy:

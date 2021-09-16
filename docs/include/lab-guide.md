@@ -2273,8 +2273,6 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     uid: 9084f5e4-2b9e-4dae-9acb-9f49a46fa97d
     ```
 
-8. Enable K8s RBAC policies for secure-workload-read-only user.
-
 8. Return to the Secure Workload administrative interface.
 
     > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co/)
@@ -2300,7 +2298,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     | --------------------- | ----------------------------------------------------------------------|
     | Type                  | Kubernetes                                                            |
     | K8s Manager Type      | EKS                                                                   |                 
-    | Name                  | app-first-sec                                                         |
+    | Name                  | app-first-sec-k8s                                                         |
     | Description           | app-first-sec                                                         |
     | AWS Cluster Name      | app-first-sec                                                         |
     | AWS Access Key Id     | [_AccessKeyId_ from _aws iam create-access-key_ in previous step]     |
@@ -2347,7 +2345,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     | Which platform is your agent going to be installed on?  | Kubernetes                                                   |
     | Does your network require HTTP Proxy to reach internet? | No                                                           |
 
-    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200716014426.png" alt="image-20200716014426" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-step3.png" alt="image-20200716014426" style="zoom:50%;" />
 
     > **NOTE**
     >
@@ -2417,6 +2415,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     type: application
     version: 3.5.1-23-enforcer
     Release "tetration-agent" does not exist. Installing it now.
+    <output skipped>
     ```
 
 6. Verify the installation
@@ -2455,7 +2454,7 @@ You'll use Ansible playbooks to configure and enforce the policy, which will pro
     ###### Command
 
     ```
-    kubectl get pods
+    kubectl get pods -n sock-shop
     ```
 
     ###### Output
@@ -2471,7 +2470,7 @@ You'll use Ansible playbooks to configure and enforce the policy, which will pro
     ###### Command
 
     ```
-    kubectl exec -it <front-end pod name from previous command> -- /bin/sh
+    kubectl exec -it <front-end pod name from previous command> -n sock-shop -- /bin/sh
     ```
 
     ###### Output
@@ -2613,7 +2612,7 @@ Now that we have an API Key we can configure Ansible to access Secure Workload a
     ###### Command
 
     ```
-    cd ${DOLLAR_SIGN}LAB/Secure Workload/ansible
+    cd ${DOLLAR_SIGN}LAB/tetration/ansible
     ```
 
 3. Provide the Secure Workload *API Key* and *API Secret* using the helper script *tetansconf*, which will add the values to the host configuration file *${DOLLAR_SIGN}LAB/Secure Workload/ansible/host_vars/Secure Workload.yaml* and confgure the inventory filters (*${DOLLAR_SIGN}LAB/Secure Workload/ansible/tet-sock-shop-filters.yaml*) and segmentation policy (*${DOLLAR_SIGN}LAB/Secure Workload/ansible/tet-sock-shop-app.yaml*).
