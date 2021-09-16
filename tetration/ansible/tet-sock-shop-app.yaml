@@ -4,6 +4,16 @@
   connection: local
 
   tasks:
+  - name: get app_scope_id
+    tetration_scope:
+      scope_name: "{{ scope_name }}"
+      state: query
+      provider:
+        server_endpoint: "{{ tetration_url }}"
+        api_key: "{{ api_key }}"
+        api_secret: "{{ api_secret }}"
+    register: scope_details
+
   - name: Create Application
     tetration_application:
         provider:
@@ -11,7 +21,7 @@
           api_key: "{{ api_key }}"
           api_secret: "{{ api_secret }}"
         app_name: Sock Shop
-        app_scope_id: "{{ app_scope_id }}"
+        app_scope_id: "{{ scope_details.object.id }}"
         description: A Cloud Native Microservices App
         primary: yes
         state: present

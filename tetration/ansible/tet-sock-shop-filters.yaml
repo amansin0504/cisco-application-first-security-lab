@@ -4,13 +4,23 @@
   connection: local
 
   tasks:
+  - name: get app_scope_id
+    tetration_scope:
+      scope_name: "{{ scope_name }}"
+      state: query
+      provider:
+        server_endpoint: "{{ tetration_url }}"
+        api_key: "{{ api_key }}"
+        api_secret: "{{ api_secret }}"
+    register: scope_details
+
   - name: Sock Shop Tetration add cloud9
     tetration_inventory_filter:
       provider:
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: cloud9
       query:
@@ -25,7 +35,7 @@
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: all-addresses
       query:
@@ -43,7 +53,7 @@
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: instance-metadata
       query:
@@ -58,7 +68,7 @@
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: k8s-control-plane-private
       query:
@@ -71,7 +81,7 @@ ${K8S_CONTROL_PRIVATE_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: elb-health-monitor
       query:
@@ -84,7 +94,7 @@ ${ELB_HEALTH_MONITOR_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: k8s-api
       query:
@@ -97,7 +107,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: ntp.ubuntu.com
       query:
@@ -121,7 +131,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: api.snapcraft.io
       query:
@@ -145,7 +155,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: vpc-private-gws
       query:
@@ -169,7 +179,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: aws-subnets
       query:
@@ -187,7 +197,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: vpc
       query:
@@ -202,7 +212,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: vpc-dns
       query:
@@ -217,7 +227,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: swc
       query:
@@ -238,7 +248,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: duo
       query:
@@ -268,7 +278,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: k8s-cluster
       query:
@@ -283,7 +293,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: sock-shop-test
       query:
@@ -298,7 +308,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: carts
       query:
@@ -316,7 +326,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: carts-db
       query:
@@ -334,7 +344,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: carts-svc
       query:
@@ -352,7 +362,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: carts-db-svc
       query:
@@ -370,7 +380,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: catalogue
       query:
@@ -388,7 +398,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: catalogue-db
       query:
@@ -406,7 +416,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: catalogue-db-svc
       query:
@@ -424,7 +434,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: catalogue-svc
       query:
@@ -442,7 +452,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: core-dns-svc
       query:
@@ -460,7 +470,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: front-end
       query:
@@ -478,7 +488,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: front-end-svc
       query:
@@ -496,7 +506,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: kube-nodes
       query:
@@ -514,7 +524,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: orders
       query:
@@ -532,7 +542,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: orders-db
       query:
@@ -550,7 +560,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: orders-db-svc
       query:
@@ -568,7 +578,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: orders-svc
       query:
@@ -586,7 +596,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: payment
       query:
@@ -604,7 +614,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: payment-svc
       query:
@@ -622,7 +632,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: queue-master
       query:
@@ -640,7 +650,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: queue-master-svc
       query:
@@ -658,7 +668,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: rabbitmq
       query:
@@ -676,7 +686,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: rabbitmq-svc
       query:
@@ -694,7 +704,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: shipping
       query:
@@ -712,7 +722,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: shipping-svc
       query:
@@ -730,7 +740,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: user
       query:
@@ -748,7 +758,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: user-db
       query:
@@ -766,7 +776,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: user-svc
       query:
@@ -784,7 +794,7 @@ ${K8S_API_IP_ADDRESSES}
         server_endpoint: "{{ tetration_url }}"
         api_key: "{{ api_key }}"
         api_secret: "{{ api_secret }}"
-      app_scope_id: "{{ app_scope_id }}"
+      app_scope_id: "{{ scope_details.object.id }}"
       state: present
       name: user-db-svc
       query:

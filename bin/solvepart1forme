@@ -188,8 +188,9 @@ echo " "
 echo "###########################################################################"
 echo "## Step7: Access the Sock Shop application on EKS"
 echo "###########################################################################"
-echo "export SOCK_SHOP_ELB=`kubectl get service front-end -n sock-shop -o json | jq -r '.status.loadBalancer.ingress[0].hostname'`" >> ~/.bashrc_lab 
+echo "export SOCK_SHOP_ELB=`kubectl get service front-end -n sock-shop -o json | jq -r '.status.loadBalancer.ingress[0].hostname'`" >> ~/.bashrc_lab
 echo "---------------------------------------------------------------------"
+source ~/.bashrc
 echo $SOCK_SHOP_ELB
 echo "---------------------------------------------------------------------"
 echo " "
