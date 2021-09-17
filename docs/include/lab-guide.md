@@ -2225,7 +2225,31 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
 
     You'll use the _AccessKeyId_ and _SecretAccessKey_ values when you configure Secure Workload for AWS external orchestration integration.
 
-6. Retrieve the CA certificate for the Kuberentes API using the AWS CLI eks describe-cluster command to use when entering the Kubernetes configuration into Tetration in future steps. There's nothing to do with the output for now other than confirm you have it ready.
+6. Create a Kubernetes service account with read only permissions.
+
+    ###### Command
+
+    ```
+    kubectl apply -f ${DOLLAR_SIGN}LAB/tetration/tetration-k8s-read-only-rbac.yaml
+    ```
+
+    ###### Output
+
+    ```
+    serviceaccount/tetration-read-only created
+    clusterrole.rbac.authorization.k8s.io/tetration-read-only-role created
+    clusterrolebinding.rbac.authorization.k8s.io/tetration-read-only-binding created
+    ```
+
+7. Map the AWS IAM role (create in step 1) to the read-only Kubernetes Service Account (tetration-read-only - created in step 7)
+
+    ###### Command
+
+    ```
+    eksctl create iamidentitymapping --cluster app-first-sec --arn arn:aws:iam::${AWS_ACCT_ID}:role/EKSRole --username tetration-read-only
+    ```
+
+8. Retrieve the CA certificate for the Kuberentes API using the AWS CLI eks describe-cluster command to use when entering the Kubernetes configuration into Tetration in future steps. There's nothing to do with the output for now other than confirm you have it ready.
 
     ###### Command
 
@@ -2251,7 +2275,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     -----END CERTIFICATE-----
     ```
 
-7. Retrieve the Kubernetes API hostname using the AWS CLI _eks describe-cluster_ command to use when entering the Kubernetes configuration into Secure Workload in future steps. Switch to Hosts List tab from vertical menu on the left-hand side and add API server endpoint address and port (TCP Port 443) details for the EKS cluster in the provided space.
+9. Retrieve the Kubernetes API hostname using the AWS CLI _eks describe-cluster_ command to use when entering the Kubernetes configuration into Secure Workload in future steps. Switch to Hosts List tab from vertical menu on the left-hand side and add API server endpoint address and port (TCP Port 443) details for the EKS cluster in the provided space.
 
     ###### Command
 
@@ -2263,30 +2287,6 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
 
     ```
     40D7AAC6763809EAD50E.gr1.${AWS_REGION}.eks.amazonaws.com
-    ```
-
-8. Create a Kubernetes service account with read only permissions.
-
-    ###### Command
-
-    ```
-    kubectl apply -f ${DOLLAR_SIGN}LAB/tetration/tetration-k8s-read-only-rbac.yaml
-    ```
-
-    ###### Output
-
-    ```
-    serviceaccount/tetration-read-only created
-    clusterrole.rbac.authorization.k8s.io/tetration-read-only-role created
-    clusterrolebinding.rbac.authorization.k8s.io/tetration-read-only-binding created
-    ```
-
-9. Map the AWS IAM role (create in step 1) to the read-only Kubernetes Service Account (tetration-read-only - created in step 7)
-
-    ###### Command
-
-    ```
-    eksctl create iamidentitymapping --cluster app-first-sec --arn arn:aws:iam::${AWS_ACCT_ID}:role/EKSRole --username tetration-read-only
     ```
 
 10. Return to the Secure Workload administrative interface.
@@ -2314,9 +2314,10 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     | --------------------- | ----------------------------------------------------------------------|
     | Type                  | Kubernetes                                                            |
     | K8s Manager Type      | EKS                                                                   |                 
-    | Name                  | app-first-sec-k8s                                                         |
+    | Name                  | app-first-sec-k8s                                                     |
     | Description           | app-first-sec                                                         |
     | AWS Cluster Name      | app-first-sec                                                         |
+    | AWS Assume Role ARN   | arn:aws:iam::${AWS_ACCT_ID}:role/EKSRole                              |
     | AWS Access Key Id     | [_AccessKeyId_ from _aws iam create-access-key_ in previous step]     |
     | AWS Secret Access Key | [_SecretAccessKey_ from _aws iam create-access-key_ in previous step] |
     | AWS Region            | ${AWS_REGION}                                                         |
