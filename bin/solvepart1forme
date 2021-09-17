@@ -193,4 +193,9 @@ echo "---------------------------------------------------------------------"
 source ~/.bashrc
 echo $SOCK_SHOP_ELB
 echo "---------------------------------------------------------------------"
+COOKIE_JAR=.cookies-`python -c "import time; print(int(time.time()*1000))"`.txt
+curl -v -c ${COOKIE_JAR} -d '{"username":"'${POD_NAME}'","password":"'${POD_NAME}'","email":"'${POD_NAME}'@email.address","firstName":"Lab","lastName":"User"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/register
+curl -v -b ${COOKIE_JAR} -c ${COOKIE_JAR} -d '{"number":"170","street":"W Tasman Dr","city":"San Jose","postcode":"95134","country":"United States"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/addresses
+curl -v -b ${COOKIE_JAR} -c ${COOKIE_JAR} -d '{"longNum":"1234123412341234","expires":"01/01","ccv":"123"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/cards
+rm ${COOKIE_JAR}
 echo " "
