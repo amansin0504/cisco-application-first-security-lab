@@ -2113,41 +2113,78 @@ It's important to understand how authentication of IAM users to EKS managed Kube
 
 Create AWS IAM policy and user for Secure Workload with restrictive permissions using the AWS CLI.
 
-1. Create AWS IAM policy with access to resources and actions that Secure Workload needs.
+1. Create an IAM role for AWS IAM Authenticator for Kubernetes.
 
     ###### Command
 
     ```
-    aws iam create-policy --policy-name secure-workload-read-only --policy-document file://${DOLLAR_SIGN}LAB/tetration/tetration-k8s-read-only.json
+    aws iam create-role --role-name EKSRole --assume-role-policy-document file://${DOLLAR_SIGN}LAB/tetration/eks-role.json
     ```
 
     ###### Output
 
     ```
     {
-       "Policy": {
-           "PolicyName": "tetration-read-only",
-           "PolicyId": "RFUWK63KANPA5WOZ4JBES",
-           "Arn": "arn:aws:iam::${AWS_ACCT_ID}:policy/tetration-read-only",
-           "Path": "/",
-           "DefaultVersionId": "v1",
-           "AttachmentCount": 0,
-           "PermissionsBoundaryUsageCount": 0,
-           "IsAttachable": true,
-           "CreateDate": "2019-10-18T12:35:08Z",
-           "UpdateDate": "2019-10-18T12:35:08Z"
-       }
+        "Role": {
+            "Path": "/",
+            "RoleName": "EKSRole",
+            "RoleId": "AROA5FHL5UPMOJWTMQUGW",
+            "Arn": "arn:aws:iam::90433389016:role/EKSRole",
+            "CreateDate": "2021-09-17T15:10:40+00:00",
+            "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "AWS": "arn:aws:iam::90433389016:root"
+                        },
+                        "Action": "sts:AssumeRole",
+                        "Condition": {}
+                    }
+                ]
+            }
+        }
     }
     ```
 
-    If you review the policy applied to the _Secure Workload-read-only_ IAM user in _${DOLLAR_SIGN}LAB/Secure Workload/tetration-read-only-policy.json_, you'll notice that it explicitly specifies read-only _Actions_.
+2. Create an AWS IAM user group.
 
-2. Create AWS IAM user for Secure Workload to use.
+    ###### Command
+
+    ```
+    aws iam create-group --group-name EKSAdminGroup
+    ```
+
+    ###### Output
+
+    ```
+    {
+        "Group": {
+            "Path": "/",
+            "GroupName": "EKSAdminGroup",
+            "GroupId": "AGPA5FHL5UPMPO5CY2UNB",
+            "Arn": "arn:aws:iam::90433389016:group/EKSAdminGroup",
+            "CreateDate": "2021-09-17T15:11:28+00:00"
+        }
+    }
+    ```
+
+3. Add a Policy on the IAM group which will allow users from this group to assume EKSAdminRole Role. There will be no output from the command unless there's an error.
+
+    ###### Command
+
+    ```
+    aws iam put-group-policy --group-name EKSAdminGroup --policy-name EKSPolicy --policy-document file://${DOLLAR_SIGN}LAB/tetration/eks-policy.json
+    ```
+
+4. Create AWS IAM user for Secure Workload to use. Add the user to the IAM group created in step 2.
 
     ###### Command
 
     ```
     aws iam create-user --user-name secure-workload-read-only
+    aws iam add-user-to-group --group-name EKSAdminGroup --user-name secure-workload-read-only  
     ```
 
     ###### Output
@@ -2164,15 +2201,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     }
     ```
 
-3. Attach the IAM policy to the IAM user to grant the user permissions to access resources. There will be no output from the command unless there's an error.
-
-    ###### Command
-
-    ```
-    aws iam attach-user-policy --policy-arn arn:aws:iam::${AWS_ACCT_ID}:policy/secure-workload-read-only --user-name secure-workload-read-only
-    ```
-
-4. Generate an access key for the _Secure Workload-read-only_ user.
+5. Generate an access key for the _Secure Workload-read-only_ user.
 
     ###### Command
 
@@ -2195,20 +2224,6 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     ```
 
     You'll use the _AccessKeyId_ and _SecretAccessKey_ values when you configure Secure Workload for AWS external orchestration integration.
-
-5. Retrieve the Kubernetes API hostname using the AWS CLI _eks describe-cluster_ command to use when entering the Kubernetes configuration into Secure Workload in future steps. Switch to Hosts List tab from vertical menu on the left-hand side and add API server endpoint address and port (TCP Port 443) details for the EKS cluster in the provided space.
-
-    ###### Command
-
-    ```
-    aws eks describe-cluster --name app-first-sec | jq -r '.cluster.endpoint' | sed 's/https:\/\///'
-    ```
-
-    ###### Output
-
-    ```
-    40D7AAC6763809EAD50E.gr1.${AWS_REGION}.eks.amazonaws.com
-    ```
 
 6. Retrieve the CA certificate for the Kuberentes API using the AWS CLI eks describe-cluster command to use when entering the Kubernetes configuration into Tetration in future steps. There's nothing to do with the output for now other than confirm you have it ready.
 
@@ -2236,44 +2251,45 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     -----END CERTIFICATE-----
     ```
 
-7. If AssumeRole is not used, the user must be added to the “mapUsers” section of the aws-auth.yaml with appropriate group. Edit configmap
+7. Retrieve the Kubernetes API hostname using the AWS CLI _eks describe-cluster_ command to use when entering the Kubernetes configuration into Secure Workload in future steps. Switch to Hosts List tab from vertical menu on the left-hand side and add API server endpoint address and port (TCP Port 443) details for the EKS cluster in the provided space.
 
     ###### Command
 
     ```
-    kubectl edit configmap -n kube-system aws-auth
+    aws eks describe-cluster --name app-first-sec | jq -r '.cluster.endpoint' | sed 's/https:\/\///'
     ```
 
     ###### Output
 
     ```
-    # Please edit the object below. Lines beginning with a '#' will be ignored,
-    # and an empty file will abort the edit. If an error occurs while saving this file will be
-    # reopened with the relevant failures.
-    #
-    apiVersion: v1
-    data:
-    mapRoles: |
-        - groups:
-        - system:bootstrappers
-        - system:nodes
-          rolearn: arn:aws:iam::904585389016:role/eksctl-app-first-sec-nodegroup-ap-NodeInstanceRole-FKVHO1VAOE06
-          username: system:node:{{EC2PrivateDNSName}}
-    mapUsers: |
-        - userarn: arn:aws:iam::904585389016:user/secure-workload-read-only
-          username: secure-workload-read-only
-          groups:
-            - system:masters
-    kind: ConfigMap
-    metadata:
-    creationTimestamp: "2021-08-24T16:11:35Z"
-    name: aws-auth
-    namespace: kube-system
-    resourceVersion: "101078"
-    uid: 9084f5e4-2b9e-4dae-9acb-9f49a46fa97d
+    40D7AAC6763809EAD50E.gr1.${AWS_REGION}.eks.amazonaws.com
     ```
 
-8. Return to the Secure Workload administrative interface.
+8. Create a Kubernetes service account with read only permissions.
+
+    ###### Command
+
+    ```
+    kubectl apply -f ${DOLLAR_SIGN}LAB/tetration/tetration-k8s-read-only-rbac.yaml
+    ```
+
+    ###### Output
+
+    ```
+    serviceaccount/tetration-read-only created
+    clusterrole.rbac.authorization.k8s.io/tetration-read-only-role created
+    clusterrolebinding.rbac.authorization.k8s.io/tetration-read-only-binding created
+    ```
+
+9. Map the AWS IAM role (create in step 1) to the read-only Kubernetes Service Account (tetration-read-only - created in step 7)
+
+    ###### Command
+
+    ```
+    eksctl create iamidentitymapping --cluster app-first-sec --arn arn:aws:iam::${AWS_ACCT_ID}:role/EKSRole --username tetration-read-only
+    ```
+
+10. Return to the Secure Workload administrative interface.
 
     > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co/)
 
@@ -2284,15 +2300,15 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     | Email                 | ${DEVNET_EMAIL_ADDRESS}                      |
     | Password              | ${POD_PASSWORD} (or password you set)        |
 
-9. Navigate to the _External Orchestrators_ page under _VISIBILITY_ in the left menu pane.
+11. Navigate to the _External Orchestrators_ page under _VISIBILITY_ in the left menu pane.
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018083122803.png" alt="image-20191018083122803" style="zoom:50%;" />
 
-10. Click the _Create New Configuration_ button.
+12. Click the _Create New Configuration_ button.
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018083250277.png" alt="image-20191018083250277" style="zoom:50%;" />
 
-11. Set the values in the _Create External Orchestrator Configuration_ dialogue modal with the following values. Select _Type_ as Kubernetes and _K8s Manager Type_ as EKS. The _AWS Access Key Id_ and _AWS Secret Access Key_ correspond to the _AccessKeyId_ and _SecretAccessKey_ values in the output of the _aws iam create-access-key_ command in an earlier step. Also, uncheck the _Secure Connector Tunnel_ option at the bottom.
+13. Set the values in the _Create External Orchestrator Configuration_ dialogue modal with the following values. Select _Type_ as Kubernetes and _K8s Manager Type_ as EKS. The _AWS Access Key Id_ and _AWS Secret Access Key_ correspond to the _AccessKeyId_ and _SecretAccessKey_ values in the output of the _aws iam create-access-key_ command in an earlier step. Also, uncheck the _Secure Connector Tunnel_ option at the bottom.
 
     | Field                 | Value                                                                 |
     | --------------------- | ----------------------------------------------------------------------|
@@ -2307,18 +2323,18 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     | CA Certificate        | [Output from _aws eks describe-cluster_ in previous step]             |
 
 
-12. Click on _Hosts List_ in the dialogue modal menu on the left.
+14. Click on _Hosts List_ in the dialogue modal menu on the left.
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018093654679.png" alt="image-20191018093654679" style="zoom:50%;" />
 
-13. Click the _+_ button next to the _Hosts List_ label to provide the EKS Kubernetes API hostname and port number using the output from the _aws eks describe-cluster_ output from the earlier step. Set the values hor _host name_ and _port number_ with the following values.
+15. Click the _+_ button next to the _Hosts List_ label to provide the EKS Kubernetes API hostname and port number using the output from the _aws eks describe-cluster_ output from the earlier step. Set the values hor _host name_ and _port number_ with the following values.
 
     | Field       | Value                                                       |
     | ----------- | ----------------------------------------------------------- |
     | host name   | [Output from _aws eks describe-cluster_ from previous step] |
     | port number | 443                                                         |
 
-14. Click the _Create_ button. Once Tetration has successfully connected to the Kubernetes cluster, it will show a _Connection Status_ of _Success_.
+16. Click the _Create_ button. Once Tetration has successfully connected to the Kubernetes cluster, it will show a _Connection Status_ of _Success_.
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191022192939535.png" alt="image-20191022192939535" />
 
