@@ -162,16 +162,22 @@ ${K8S_API_IP_ADDRESSES}
         filters:
           - field: ip
             type: subnet
-            value: "10.50.110.1/32"
+            value: "10.20.20.1/32"
           - field: ip
             type: subnet
-            value: "10.50.120.1/32"
+            value: "10.20.21.1/32"
           - field: ip
             type: subnet
-            value: "10.50.130.1/32"
+            value: "10.20.22.1/32"
           - field: ip
             type: subnet
-            value: "10.50.140.1/32"
+            value: "10.20.10.1/32"
+          - field: ip
+            type: subnet
+            value: "10.20.11.1/32"
+          - field: ip
+            type: subnet
+            value: "10.20.12.1/32"
         type: or
   - name: Sock Shop Tetration add aws-subnets
     tetration_inventory_filter:
@@ -204,7 +210,7 @@ ${K8S_API_IP_ADDRESSES}
         filters:
           - field: ip
             type: subnet
-            value: "10.50.0.0/16"
+            value: "10.20.0.0/16"
         type: and
   - name: Sock Shop Tetration add vpc-dns
     tetration_inventory_filter:
@@ -219,7 +225,7 @@ ${K8S_API_IP_ADDRESSES}
         filters:
           - field: ip
             type: subnet
-            value: "10.50.0.2/32"
+            value: "10.20.0.2/32"
         type: and
   - name: Sock Shop Tetration add swc
     tetration_inventory_filter:
