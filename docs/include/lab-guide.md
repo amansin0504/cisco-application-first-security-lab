@@ -573,7 +573,6 @@ Deployments define how a replicaset of pods are to be deployed. Services define 
     > You can view the node that a pod has been scheduled to by using _kubectl get pods -o wide_.
 
 
-
 ##### Expose the front-end service externally
 
 1. View the services that provide access to the pods. These service will have their own IP address and port that provides a reverse proxy for the pods. This virtualization is fundamental to providing resiliency when a pod fails, upgrades or a deployment is scaled up or down.
@@ -687,6 +686,11 @@ Deployments define how a replicaset of pods are to be deployed. Services define 
     >
     > It can take some time for all pods to fully start and begin accepting traffic. If only a portion of the page loads, give it another couple of minutes.
 
+6. Execute the command _addshopuser_ in a Cloud9 terminal to create a Sock Shop user. Verify the credentials by loging into to the Sock Shop.
+
+    | username          | password          |
+    | ----------------- | ----------------- |
+    | _${POD_NAME}_     | _${POD_NAME}_     |
 
 
 ##### Understand the benefits of Kubernetes
@@ -1021,6 +1025,8 @@ It's essential to be able to access these logs and often view the output in real
 > kubectl exec -it my-pod --container main-app -- /bin/bash
 > ```
 
+
+
 ### Setup development environment
 
 ------
@@ -1272,6 +1278,8 @@ An AWS Elastic Container Registry (ECR) is already set up as part of initial lab
     > **NOTE**
     >
     > The new Front End container image is essentially same image as the one we are already running in the EKS cluster. We will make changes to the source code in the later sections of this lab and use CI/CD pipeline automation to deploy the new image.
+
+
 
 ## Option 1: Implement security - Cisco Secure Access by Duo
 
@@ -1694,6 +1702,8 @@ You can rest easy knowing access to your lucrative Sock Shop has MFA enabled for
 
 Duo is providing self-managed MFA for a custom web application using the Duo Web SDK. Additional configuration in Duo could further protect those resources by setting device restrictions using Duo Beyond.
 
+
+
 ## Option 2: Implement Security - Cisco Secure Cloud Analytics
 
 <img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/arch2-swc.png" alt="arch2.png" />
@@ -2045,6 +2055,8 @@ Now you can sleep more soundly knowing that Secure Cloud Analytics Cloud is prov
 
 Secure Cloud Analytics Cloud is now consuming all sources of telemetry native to AWS, including Amazon Virtual Private Cloud (VPC) flow logs, and Kubernetes pod traffic to monitor all activity in the cloud without the need for software agents. Secure Cloud Analytics Cloud was deployed in these environments in a matter of minutes with no disruption to service availability. Secure Cloud Analytics Cloud uses this data to model the behavior of each cloud resource, a method called entity modeling. It is then able to detect and alert on sudden changes in behavior, malicious activity, and signs of compromise.
 
+
+
 ## Option 3: Implement security - Cisco Secure Cloud Workload
 
 <img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/arch2-tet.png" alt="arch2.png" />
@@ -2070,8 +2082,8 @@ Secure Workload provides these core benefits:
 
 ### Steps
 
-* [Secure Workload orchestration with EKS](#secure-workload-orchestration-with-kubernetes)
-* [Integrate Secure Workload with EKS cluster](#integrate-secure-workload-with-eks-cluster)
+* [Secure Workload orchestration with Kubernetes](#secure-workload-orchestration-with-kubernetes)
+* [Integrate EKS cluster with Secure Workload](#integrate-eks-cluster-with-secure-workload)
 * [Enforce application segmentation based on Kubernetes annotations](#enforce-application-segmentation-based-on-kubernetes-annotations)
     * [Simulate a breach and lateral movement](#simulate-a-breach-and-lateral-movement)
     * [Create a flow search](#create-a-flow-search)
@@ -2107,7 +2119,7 @@ Since this is the first time you'll be accessing Secure Workload, you'll need to
     > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co)
 
 
-#### Secure Workload orchestration with EKS
+#### Secure Workload orchestration with Kubernetes
 
 It's important to understand how authentication of IAM users to EKS managed Kubernetes differs from self-managed deployments. AWS uses IAM to provide authentication to your Kubernetes cluster (through the _aws eks get-token_ command, available in version 1.16.232 or greater of the AWS CLI, or the AWS IAM Authenticator for Kubernetes), but it still relies on native Kubernetes Role Based Access Control (RBAC) for authorization. This means that IAM is only used for authentication of valid IAM entities. All permissions for interacting with your Amazon EKS cluster’s Kubernetes API is managed through the native Kubernetes RBAC system.
 
@@ -2234,7 +2246,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     >
     > The _Connection Status_ field will show a value of _Failure_ for the _app-first-sec-k8s_ row before it has attempted to connect to Kubernetes. Give it a minute to validate the configuration you just entered. Once the _Connection Status_ field value is set to _Success_ proceed to the next step.
 
-#### Integrate Secure Workload with EKS cluster
+#### Integrate EKS cluster with Secure Workload 
 
 1. Visit the Tetration Software Agents Installer administrative page in your browser. Log in with the credentials that you set in the previous step.
 
@@ -2777,15 +2789,7 @@ Negative impacts of enforced security policy is a large concern for application 
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
 
-2. Create your lab user for the Sock Shop application using a helper script.
-
-    ###### Command
-
-    ```
-    addshopuser
-    ```
-
-3. Retrieve the EC2 Load Balancer DNS A record that has been allocated to the _front-end_ service using kubectl.
+2. Retrieve the EC2 Load Balancer DNS A record that has been allocated to the _front-end_ service using kubectl.
 
     ###### Command
 
@@ -2800,9 +2804,9 @@ Negative impacts of enforced security policy is a large concern for application 
     front-end   LoadBalancer   172.20.229.246   acdeb.${AWS_REGION}.elb.amazonaws.com   ...
     ```
 
-4. Visit the DNS A record in the _EXTERNAL-IP_ field in a web browser.
+3. Visit the DNS A record in the _EXTERNAL-IP_ field in a web browser.
 
-5. Login to the Sock Shop as the user _${POD_NAME}_. Click the _Login_ button in the top right. Login with the following values.
+4. Login to the Sock Shop as the user _${POD_NAME}_. Click the _Login_ button in the top right. Login with the following values.
 
     > **NOTE**
     >
@@ -2816,11 +2820,11 @@ Negative impacts of enforced security policy is a large concern for application 
 		>
 		> If your login is unsuccessful, you might have missed the step where you created this user. Execute the command _addshopuser_ in a Cloud9 terminal and try to login to the Sock Shop again.
 
-6. Find a pair of socks from the catalogue that are equal to or below ${DOLLAR_SIGN}40 and click on _Add to cart_. Socks that cost more than ${DOLLAR_SIGN}40 can't be purchased due to an simulated limit on credit card purchases within the app.
+5. Find a pair of socks from the catalogue that are equal to or below ${DOLLAR_SIGN}40 and click on _Add to cart_. Socks that cost more than ${DOLLAR_SIGN}40 can't be purchased due to an simulated limit on credit card purchases within the app.
 
-7. Click on the _N item(s) in cart_ button to view your cart in the Sock Shop application.
+6. Click on the _N item(s) in cart_ button to view your cart in the Sock Shop application.
 
-8. Click _Proceed to checkout_. This will complete the order and a new row will be added to the _My orders_ page.
+7. Click _Proceed to checkout_. This will complete the order and a new row will be added to the _My orders_ page.
 
     ![image-20191021025811246](https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191021025811246.png)
 

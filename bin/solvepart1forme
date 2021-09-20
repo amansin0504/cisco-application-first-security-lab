@@ -49,7 +49,7 @@ echo "Sock Shop demo application is deployed to the EKS Cluster."
 echo "---------------------------------------------------------"
 echo " "
 
-# Mark your EKS cluster private and Allow SG communitcation from outside (TBD)
+# (TBD) Mark your EKS cluster private and Allow SG communitcation from outside 
 # read answer
 # if yes move forward else go back
 
