@@ -2247,7 +2247,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018083250277.png" alt="image-20191018083250277" style="zoom:50%;" />
 
-8. Set the values in the _Create External Orchestrator Configuration_ dialogue modal with the following values. Select _Type_ as Kubernetes and _K8s Manager Type_ as EKS. The _AWS Access Key Id_ and _AWS Secret Access Key_ correspond to the _AccessKeyId_ and _SecretAccessKey_ values in the output of the _aws iam create-access-key_ command in an earlier step. 
+8. Set the values in the _Create External Orchestrator Configuration_ dialogue modal with the following values. Select _Type_ as Kubernetes and _K8s Manager Type_ as EKS. The _AWS Access Key Id_ and _AWS Secret Access Key_ correspond to the _AccessKeyId_ and _SecretAccessKey_ values in the output of the _aws iam create-access-key_ command in an earlier step. Also, uncheck the _Secure Connector Tunnel_ option at the bottom.
 
     | Field                 | Value                                                                 |
     | --------------------- | ----------------------------------------------------------------------|
@@ -2257,8 +2257,6 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     | Description           | app-first-sec                                                         |
     | Auth Token            | [Output from kubectl get secret in previous step]                     |
     | CA Certificate        | [Output from _aws eks describe-cluster_ in previous step]             |
-
-Also, uncheck the _Secure Connector Tunnel_ option at the bottom.
 
 9. Click on _Hosts List_ in the dialogue modal menu on the left.
 
