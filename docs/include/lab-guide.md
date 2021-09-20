@@ -1072,7 +1072,7 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
 
     > [http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens](http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens)
 
-    !<img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-gitlabtoken.png" alt="image-20191017202329590" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-gitlabtoken.png" alt="image-20191017202329590" style="zoom:50%;" />
 
     ###### Command
 
@@ -1080,30 +1080,60 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
     export GITLAB_TOKEN=<personal-access-token>
     ```
 
-3. Switch back to Cloud9 host terminal. Clone and set up a local git repository pointing to your private GitLab instance.
-
+3. Switch back to Cloud9 host terminal. Clone the repository for front end sock shop microservice. Con local git repository pointing to your private GitLab instance.
 
     ###### Command
 
     ```
     git clone https://github.com/amansin0504/front-end.git Sock-Shop-Front-End && cd Sock-Shop-Front-End
+    ```
+
+    ###### Output
+
+    ```
+    Cloning into 'Sock-Shop-Front-End'...
+    remote: Enumerating objects: 984, done.
+    remote: Counting objects: 100% (984/984), done.
+    remote: Compressing objects: 100% (409/409), done.
+    remote: Total 984 (delta 529), reused 974 (delta 519), pack-reused 0
+    Receiving objects: 100% (984/984), 47.89 MiB | 15.47 MiB/s, done.
+    Resolving deltas: 100% (529/529), done.
+    ```
+
+4. Configure the credentials to authenticate to the private GitLab instance.
+
+    ###### Command
+
+    ```
     git config --global user.name "Administrator" && git config --global user.email "admin@cloudnativeapp.com"
+    ```
+
+5. Remove the old origin and point the local repository to the new remote private gitlab project.
+
+    ###### Command
+
+    ```
     git remote rm origin && git remote add origin http://Administrator:$GITLAB_TOKEN@$AWS_GITLAB_FQDN/root/sock-shop-front-end.git
+    ```
+6. Push the local changes to the private GitLab project.
+
+    ###### Command
+
+    ```
     git push -u origin --all
     ```
 
     ###### Output
 
     ```
-    app-sec-pod16:~/environment/Sock-Shop-Front-End (main) $ git push -u origin --all
-    Enumerating objects: 968, done.
-    Counting objects: 100% (968/968), done.
-    Compressing objects: 100% (394/394), done.
-    Writing objects: 100% (968/968), 47.89 MiB | 33.94 MiB/s, done.
-    Total 968 (delta 518), reused 968 (delta 518)
-    remote: Resolving deltas: 100% (518/518), done.
-    To http://ec2-34-212-184-29.us-west-2.compute.amazonaws.com/root/sock-shop-front-end.git
-     * [new branch]      main -> main
+    Enumerating objects: 984, done.
+    Counting objects: 100% (984/984), done.
+    Compressing objects: 100% (399/399), done.
+    Writing objects: 100% (984/984), 47.89 MiB | 36.49 MiB/s, done.
+    Total 984 (delta 529), reused 984 (delta 529)
+    remote: Resolving deltas: 100% (529/529), done.
+    To http://ec2-34-209-184-71.us-west-2.compute.amazonaws.com/root/sock-shop-front-end.git
+    * [new branch]      main -> main
     Branch 'main' set up to track remote branch 'main' from 'origin'.
     ```
 
@@ -1132,7 +1162,7 @@ An AWS Elastic Container Registry (ECR) is already set up as part of initial lab
 
     > **TIP**
     > We need these variables to allow CI/CD pipeline jobs to push the container images to the private elastic container registry.
-    > For ease of use, we are displaying the AWS Secret Key (for your lab IAM user account) in this guide. However, this is not recommended in a real world environment because of security reasons. We will delete these keys as part of lab clean up exercise at the end of this lab.
+    > For ease of use, we are displaying the AWS Secret Key (for your lab IAM user account) in this guide. However, this is not recommended in a real world environment because of security reasons. We will delete these keys as part of lab clean up exercise at the end of this lab. In an real world scenario, you should create a separate IAM user with limited privileges to EKS cluster for automated deployment.
     >
 
 
@@ -1239,7 +1269,7 @@ An AWS Elastic Container Registry (ECR) is already set up as part of initial lab
     when: manual
     ```
 
-6. Return to CI/CD pipeline run. Once the testing stage completes, verify the newly pushed image to the private registry.
+6. Return to CI/CD pipeline run. Once the testing stage completes, verify that the newly built frontend image is pushed to the private ECR registry.
 
     > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)
 
@@ -1264,6 +1294,7 @@ An AWS Elastic Container Registry (ECR) is already set up as part of initial lab
 
 7. When pipeline workflow reaches _Deployment_ stage, provide the manual input by clicking on play button on deployment stage to automatically deploy your newly built Front End microservice container image to the Sock-Shop application running on the EKS cluster. Once the deployment stage is successful, verify the updated pod image on EKS cluster. The image tag (value after _front-end:_) will match the _imageTag_ value from _aws ecr list-images_ output in the previous step.
 
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-gitlabtoken.png" alt="image-20191017202329590" style="zoom:50%;" />
 
     ###### Command
 
