@@ -686,7 +686,17 @@ Deployments define how a replicaset of pods are to be deployed. Services define 
     >
     > It can take some time for all pods to fully start and begin accepting traffic. If only a portion of the page loads, give it another couple of minutes.
 
-6. Execute the command _addshopuser_ in a Cloud9 terminal to create a Sock Shop user. Verify the credentials by loging into to the Sock Shop.
+
+6. Save the DNS A record for the EC2 Load Balancer as an environment variable for use in future steps.
+
+    ###### Command
+
+    ```
+    echo "export SOCK_SHOP_ELB=`kubectl get service front-end -o json | jq -r '.status.loadBalancer.ingress[0].hostname'`" >> ~/.bashrc_lab ; source ~/.bashrc
+    ```
+
+
+7. Execute the command _addshopuser_ in a Cloud9 terminal to create a Sock Shop user. Verify the credentials by logging into to the Sock Shop.
 
     | username          | password          |
     | ----------------- | ----------------- |
@@ -697,19 +707,11 @@ Deployments define how a replicaset of pods are to be deployed. Services define 
 
 While there are numerous benefits to Kubernetes orchestration of containers, there are a couple of very clear ones that are good to witness first-hand. The following steps will show how Kubernetes maintains the declarative configuration by restoring missing pods and quickly scaling deployments to meet demand.
 
-1. Save the DNS A record for the EC2 Load Balancer as an environment variable for use in future steps.
-
-    ###### Command
-
-    ```
-    echo "export SOCK_SHOP_ELB=`kubectl get service front-end -o json | jq -r '.status.loadBalancer.ingress[0].hostname'`" >> ~/.bashrc_lab ; source ~/.bashrc
-    ```
-
-2. Open a new terminal tab in the bottom right pane in the Cloud9 IDE. This tab will be used for monitoring of the _front-end_ service.
+1. Open a new terminal tab in the bottom right pane in the Cloud9 IDE. This tab will be used for monitoring of the _front-end_ service.
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
 
-3. In the new terminal tab, start monitoring the _front-end_ service.
+2. In the new terminal tab, start monitoring the _front-end_ service.
 
     ###### Command
 
@@ -725,7 +727,7 @@ While there are numerous benefits to Kubernetes orchestration of containers, the
     ...
     ```
 
-4. Move to a different terminal tab while _httping_ is running in the background and cause a failure in the _front-end_ service by deleting the only pod servicing requests. Use the output from _kubectl get pods_ to find the pod name for the _front-end_ service in the _kubectl delete pod_ command.
+3. Move to a different terminal tab while _httping_ is running in the background and cause a failure in the _front-end_ service by deleting the only pod servicing requests. Use the output from _kubectl get pods_ to find the pod name for the _front-end_ service in the _kubectl delete pod_ command.
 
     ###### Command
 
@@ -763,7 +765,7 @@ While there are numerous benefits to Kubernetes orchestration of containers, the
       > kubectl delete pod `kubectl get pods | grep front-end | sed 's/^\([^\ ]*\).*$/\1/'`
       > ```
 
-5. Return to the terminal where _httping_ is running and press _ctrl-c_ to stop _httping_ from running. Scroll up and find where the request timed out. Note how quickly the service returned.
+4. Return to the terminal where _httping_ is running and press _ctrl-c_ to stop _httping_ from running. Scroll up and find where the request timed out. Note how quickly the service returned.
 
     ```
     ...
@@ -781,7 +783,7 @@ While there are numerous benefits to Kubernetes orchestration of containers, the
     ...
     ```
 
-6. Start monitoring the _front-end_ service again.
+5. Start monitoring the _front-end_ service again.
 
     ###### Command
 
@@ -797,7 +799,7 @@ While there are numerous benefits to Kubernetes orchestration of containers, the
     ...
     ```
 
-7. Move to a different terminal tab while _httping_ is running in the background and scale the _front-end_ deployment so that there is a larger replicaset of pods.
+6. Move to a different terminal tab while _httping_ is running in the background and scale the _front-end_ deployment so that there is a larger replicaset of pods.
 
     ###### Command
 
@@ -811,7 +813,7 @@ While there are numerous benefits to Kubernetes orchestration of containers, the
     deployment.extensions/front-end scaled
     ```
 
-8. Check the number of _front-end_ pods running.
+7. Check the number of _front-end_ pods running.
 
     ###### Command
 
@@ -829,9 +831,9 @@ While there are numerous benefits to Kubernetes orchestration of containers, the
     ...
     ```
 
-9. Return to the terminal tab where _httping_ is running and note that there was no service interruption.
+8. Return to the terminal tab where _httping_ is running and note that there was no service interruption.
 
-10. Move to a different terminal tab while _httping_ is running in the background and scale the _front-end_ deployment so that there is a smaller replicaset of pods.
+9. Move to a different terminal tab while _httping_ is running in the background and scale the _front-end_ deployment so that there is a smaller replicaset of pods.
 
     ###### Command
 
@@ -845,7 +847,7 @@ While there are numerous benefits to Kubernetes orchestration of containers, the
     deployment.extensions/front-end scaled
     ```
 
-11. Return to the terminal tab where _httping_ is running and note that there was no service interruption.
+10. Return to the terminal tab where _httping_ is running and note that there was no service interruption.
 
     > **TIP**
     >
@@ -1033,9 +1035,9 @@ It's essential to be able to access these logs and often view the output in real
 
 #### Overview
 
-In software development lifecycle, an application goes through a series of stages to be finally available to an end user to consume. These series of stages, once a developer merges the code to the main branch of source code management system, would typically include building an image, testing it and then releasing the new version of app to the repository. The final stage is when this newly released image is deployed and made available to the end users.
+In software development lifecycle, an application goes through a series of stages to be finally available to an end user to consume. These series of stages, once a developer merges the code to the main branch of source code management system, would typically include - building an image, testing it and then releasing the new version of app to the repository. The final stage is when this newly released image is deployed and made available to the end users.
 
-In this section, you will create a project for Front-End microservice of Sock Shop application on your private GitLab Instance. You will then set up your local environment on Cloud9 IDE and configure the git client to point to your private Front-End project GitLab Instance. We have already hosted a private Gitlab instance in AWS Hub VPC.
+In this section, you will create a project for Front-End microservice of Sock Shop application on your private GitLab Instance. You will then set up your local environment on Cloud9 IDE and configure the git client to point to your private Front-End project on the GitLab Instance. We have already hosted a private Gitlab instance in AWS Hub VPC for you.
 
 After the local and remote repositories are set up, you will set up a CI/CD pipeline for your _Sock-Shop-Front-End_ GitLab project and automate the testing, building and deployment of the Front End microservice to EKS cluster.
 
@@ -1070,6 +1072,7 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
 
     > [http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens](http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens)
 
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-gitlabtoken.png" alt="image-20191017202329590" style="zoom:50%;" />
 
     ###### Command
 
@@ -1083,7 +1086,6 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
     ###### Command
 
     ```
-    cd $HOME/environment
     git clone https://github.com/amansin0504/front-end.git Sock-Shop-Front-End && cd Sock-Shop-Front-End
     git config --global user.name "Administrator" && git config --global user.email "admin@cloudnativeapp.com"
     git remote rm origin && git remote add origin http://Administrator:$GITLAB_TOKEN@$AWS_GITLAB_FQDN/root/sock-shop-front-end.git

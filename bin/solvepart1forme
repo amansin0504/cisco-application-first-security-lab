@@ -184,7 +184,7 @@ else
 fi
 echo " "
 
-#Add the Sock Shop credentials and displace the access link
+#Add the Sock Shop credentials and display the access link
 echo "###########################################################################"
 echo "## Step7: Access the Sock Shop application on EKS"
 echo "###########################################################################"
