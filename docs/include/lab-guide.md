@@ -1072,7 +1072,7 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
 
     > [http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens](http://${AWS_GITLAB_FQDN}/-/profile/personal_access_tokens)
 
-    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-gitlabtoken.png" alt="image-20191017202329590" style="zoom:50%;" />
+    !<img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-gitlabtoken.png" alt="image-20191017202329590" style="zoom:50%;" />
 
     ###### Command
 
