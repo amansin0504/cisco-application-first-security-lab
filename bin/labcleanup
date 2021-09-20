@@ -26,6 +26,10 @@ source $HOME/.bashrc_lab
 echo ""
 echo "AWS CloudFormation Stack: ${AWS_CF_STACK_NAME}"
 echo "AWS S3 Bucket for Flow Logs: ${AWS_FLOW_LOG_BUCKET}"
+echo "AWS S3 Bucket for Tetration agent: ${AWS_TET_AGENT_BUCKET}"
+echo "AWS EKS cluster: app-first-sec"
+echo "AWS ECR Registry: sock-shop/front-end"
+echo "AWS IAM Role and Policy for Secure Cloud Analytics"
 echo ""
 
 read -p "Type 'delete' if you're sure you want to permanently delete these AWS resources: " -r
