@@ -119,8 +119,8 @@ echo "##########################################################################
 echo "Now we need to add some CI/CD variables to be used by CI/CD pipeline jobs."
 echo "Gitlab will use these variable to push the new container images to ECR repository and then deploy them to EKS cluster."
 echo "----------------------------------------------------------------------------------------------------------------------"
-export AWS_ACCESS_KEY=$(grep aws_access_key_id ~/.aws/credentials | awk '{ print $3 }')
-export AWS_SECRET_ACCESS=$(grep aws_secret_access_key ~/.aws/credentials | awk '{ print $3 }')
+export AWS_ACCESS_KEY=$(aws configure get aws_access_key_id)
+export AWS_SECRET_ACCESS=$(aws configure get aws_secret_access_key)
 
 res1=$(curl --write-out "%{http_code}\n" --request POST  --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "http://$AWS_GITLAB_FQDN/api/v4/projects/2/variables" --form "key=AWS_ACCESS_KEY_ID" --form "value=$AWS_ACCESS_KEY" --output /dev/null --silent)
 if [ $res1=="201" ]; then
@@ -166,14 +166,14 @@ echo "## Step 6: Set up your local repo on cloud9 instance and point it to your 
 echo "###########################################################################"
 echo "-------------------------------------------------------------------------------------------------------"
 cd /home/ec2-user/environment
-git clone https://github.com/amansin0504/front-end.git Sock-Shop-Front-End
+git clone https://github.com/amansin0504/front-end.git Sock-Shop-Front-End --quiet
 success=$?
 if [[ $success -eq 0 ]];
 then
   cd Sock-Shop-Front-End
   git config --global user.name "Administrator" && git config --global user.email "admin@cloudnativeapp.com"
   git remote rm origin && git remote add origin http://Administrator:$GITLAB_TOKEN@$AWS_GITLAB_FQDN/root/front-end.git
-  git push -u origin --all
+  git push -u origin --all --quiet
   echo " "
   echo "-------------------------------------------------------------------------------"
   echo "Sock-Shop-Front-End local and remote repo (on private GitLab Instance) created"
@@ -194,8 +194,16 @@ source ~/.bashrc
 echo $SOCK_SHOP_ELB
 echo "---------------------------------------------------------------------"
 COOKIE_JAR=.cookies-`python -c "import time; print(int(time.time()*1000))"`.txt
-curl -v -c ${COOKIE_JAR} -d '{"username":"'${POD_NAME}'","password":"'${POD_NAME}'","email":"'${POD_NAME}'@email.address","firstName":"Lab","lastName":"User"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/register
-curl -v -b ${COOKIE_JAR} -c ${COOKIE_JAR} -d '{"number":"170","street":"W Tasman Dr","city":"San Jose","postcode":"95134","country":"United States"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/addresses
-curl -v -b ${COOKIE_JAR} -c ${COOKIE_JAR} -d '{"longNum":"1234123412341234","expires":"01/01","ccv":"123"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/cards
+curl --silent --output /dev/null -c ${COOKIE_JAR} -d '{"username":"'${POD_NAME}'","password":"'${POD_NAME}'","email":"'${POD_NAME}'@email.address","firstName":"Lab","lastName":"User"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/register
+curl --silent --output /dev/null -b ${COOKIE_JAR} -c ${COOKIE_JAR} -d '{"number":"170","street":"W Tasman Dr","city":"San Jose","postcode":"95134","country":"United States"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/addresses
+curl --silent --output /dev/null -b ${COOKIE_JAR} -c ${COOKIE_JAR} -d '{"longNum":"1234123412341234","expires":"01/01","ccv":"123"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/cards
 rm ${COOKIE_JAR}
 echo " "
+
+echo "
+
+Execute the following command to complete the solution:
+
+   source ~/.bashrc
+
+"
