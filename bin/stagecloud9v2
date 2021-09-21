@@ -15,7 +15,7 @@
 # limitations under the License.
 
 #adding spinner function
-source $HOME/environment/lab/bin/spinner.sh
+source $HOME/environment/lab/bin/spinner
 
 # Install prerequisite packages
 echo "INFO: Installing prerequisite packages"

@@ -1,7 +1,7 @@
 #!/bin/bash
-# Shows a spinner while another command is running.
+# Shows a spinner while another command is running. Randomly picks one of 12 spinner styles.
 # @args command to run (with any parameters) while showing a spinner.
-# E.g. ‹spinner sleep 10›
+#       E.g. ‹spinner sleep 10›
 
 function shutdown() {
   tput cnorm # reset cursor
@@ -18,8 +18,8 @@ function spinner() {
   local LC_CTYPE=C
   local pid=$1 # Process Id of the previous running command
 
-  local spin='-\|/'
-  local charwidth=1
+  local spin='◢◣◤◥'
+  local charwidth=3
 
   local i=0
   tput civis # cursor invisible
