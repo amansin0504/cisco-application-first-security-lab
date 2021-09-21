@@ -56,7 +56,7 @@ This lab uses AWS to host the workloads and applications and takes advantage of 
 * [Option 1: Implement security - Cisco Secure Access by Duo](#option-1-implement-security---cisco-secure-access-by-duo)
 * [Option 2: Implement security - Cisco Secure Cloud Analytics](#option-2-implement-security---cisco-secure-cloud-analytics)
 * [Option 3: Implement security - Cisco Secure Cloud Workload](#option-3-implement-security---cisco-secure-cloud-workload)
-* [Wrap-Up](#wrap-up)
+* [Wrap-Up](/lab/labs/2.md)
 
 > **NOTE**
 >
