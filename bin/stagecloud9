@@ -22,7 +22,9 @@ read -p "AWS Access Key ID: " message
 aws configure set aws_access_key_id $message
 read -p "AWS Secret Access Key ID: " message
 aws configure set aws_secret_access_key $message
-aws configure set default.region $(aws configure get region)
+read -p "AWS Defaul Region(ex-us-west-1): " message
+echo "NOTE: Make sure the region is same as cloudformation template"
+aws configure set default.region $message
 
 # Install prerequisite packages quietly
 sudo yum -y install jq > /dev/null
