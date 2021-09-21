@@ -54,6 +54,7 @@ echo " "
 # if yes move forward else go back
 
 #Login to Gitlab UI and Create Personal Access Token for api/git calls
+sleep 2
 echo "###########################################################################"
 echo "## Step 3: Create Front End microservice project on the private GitLab Instance"
 echo "###########################################################################"
@@ -83,6 +84,7 @@ fi
 echo " "
 
 # Use Gitlab runner registration token to register a runner
+sleep 2
 echo "###########################################################################"
 echo "## Step 4: Register the GitLab Runner to the Front End Gitlab project."
 echo "###########################################################################"
@@ -113,6 +115,7 @@ echo "------------------------------------------------------------"
 echo " "
 
 #Add AWS environment variables for pipeline
+sleep 2
 echo "###########################################################################"
 echo "## Step 5: Add CI/CD environment variables to the Front End Gitlab project."
 echo "###########################################################################"
@@ -129,6 +132,7 @@ else
   echo "Failed to add CI/CD variable - AWS_ACCESS_KEY"
   echo "Failure Code: $res1"
 fi
+sleep 1
 
 res2=$(curl --write-out "%{http_code}\n" --request POST  --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "http://$AWS_GITLAB_FQDN/api/v4/projects/2/variables" --form "key=AWS_SECRET_ACCESS_KEY" --form "value=$AWS_SECRET_ACCESS" --output /dev/null --silent)
 if [ $res2=="201" ]; then
@@ -137,6 +141,7 @@ else
   echo "Failed to add CI/CD variable - AWS_SECRET_ACCESS"
   echo "Failure Code: $res2"
 fi
+sleep 1
 
 res3=$(curl --write-out "%{http_code}\n" --request POST  --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "http://$AWS_GITLAB_FQDN/api/v4/projects/2/variables" --form "key=AWS_DEFAULT_REGION" --form "value=$AWS_REGION" --output /dev/null --silent)
 if [ $res3=="201" ]; then
@@ -145,6 +150,7 @@ else
   echo "Failed to add CI/CD variable - AWS_REGION"
   echo "Failure Code: $res3"
 fi
+sleep 1
 
 res4=$(curl --write-out "%{http_code}\n" --request POST  --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "http://$AWS_GITLAB_FQDN/api/v4/projects/2/variables" --form "key=DOCKER_REGISTRY" --form "value=$DOCKER_REGISTRY" --output /dev/null --silent)
 if [ $res4=="201" ]; then
@@ -153,6 +159,7 @@ else
   echo "Failed to add CI/CD variable - DOCKER_REGISTRY"
   echo "Failure Code: $res4"
 fi
+sleep 1
 
 echo " "
 echo "---------------------------------------------------"
@@ -161,6 +168,7 @@ echo "---------------------------------------------------"
 echo " "
 
 #Set up the private Git Client Repo
+sleep 2
 echo "###########################################################################"
 echo "## Step 6: Set up your local repo on cloud9 instance and point it to your private Front End GitLab project"
 echo "###########################################################################"
@@ -185,6 +193,7 @@ fi
 echo " "
 
 #Add the Sock Shop credentials and display the access link
+sleep 2
 echo "###########################################################################"
 echo "## Step 7: Access the Sock Shop application on EKS"
 echo "###########################################################################"
@@ -192,13 +201,15 @@ echo "export SOCK_SHOP_ELB=`kubectl get service front-end -n sock-shop -o json |
 echo "---------------------------------------------------------------------"
 source ~/.bashrc
 echo $SOCK_SHOP_ELB
-echo "---------------------------------------------------------------------"
 COOKIE_JAR=.cookies-`python -c "import time; print(int(time.time()*1000))"`.txt
 curl --silent --output /dev/null -c ${COOKIE_JAR} -d '{"username":"'${POD_NAME}'","password":"'${POD_NAME}'","email":"'${POD_NAME}'@email.address","firstName":"Lab","lastName":"User"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/register
 curl --silent --output /dev/null -b ${COOKIE_JAR} -c ${COOKIE_JAR} -d '{"number":"170","street":"W Tasman Dr","city":"San Jose","postcode":"95134","country":"United States"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/addresses
 curl --silent --output /dev/null -b ${COOKIE_JAR} -c ${COOKIE_JAR} -d '{"longNum":"1234123412341234","expires":"01/01","ccv":"123"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/cards
 rm ${COOKIE_JAR}
-echo " "
+echo "-------------------Sock Shop Credentials-----------------------------"
+echo "Username: ${POD_NAME}"
+echo "Password: ${POD_NAME}"
+echo "---------------------------------------------------------------------"
 
 echo "
 
