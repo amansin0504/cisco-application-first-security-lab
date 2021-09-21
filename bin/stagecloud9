@@ -14,7 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Install prerequisite packages quietly
+# Install prerequisite packages
+echo "INFO: Installing prerequisite packages"
 echo "INFO: Installing jq"
 sudo yum -y install jq > /dev/null
 
@@ -56,7 +57,6 @@ if [[ $AWS_CF_STACK_CHECK -ne 0 ]]; then
 fi
 
 # install prereqs
-echo "INFO: Installing prerequisite packages"
 echo "INFO: Installing epel-release"
 sudo yum -y install epel-release > /dev/null
 
