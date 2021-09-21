@@ -15,7 +15,7 @@
 # limitations under the License.
 
 #adding spinner function
-source ./spinner.sh
+source $HOME/environment/lab/bin/spinner.sh
 
 # Install prerequisite packages
 echo "INFO: Installing prerequisite packages"
@@ -80,8 +80,16 @@ spinner $!
 export PATH=~/.local/bin:$PATH
 rm get-pip.py
 
-echo "INFO: Installing ansible tetpyclient phonenumbers"
-pip install ansible tetpyclient phonenumbers --user -q &
+echo "INFO: Installing ansible"
+pip install tetpyclient --user -q &
+spinner $!
+
+echo "INFO: Installing tetpyclient"
+pip install ansible --user -q &
+spinner $!
+
+echo "INFO: Installing phonenumbers"
+pip install phonenumbers --user -q &
 spinner $!
 
 # change dir to where we expect files to live
