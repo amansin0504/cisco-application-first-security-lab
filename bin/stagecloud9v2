@@ -15,7 +15,7 @@
 # limitations under the License.
 
 #adding spinner function
-source spinner.sh
+source ./spinner.sh
 
 # Install prerequisite packages
 echo "INFO: Installing prerequisite packages"
