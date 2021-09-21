@@ -2329,6 +2329,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     ###### Command
 
     ```
+    cd $HOME/environment 
     aws s3 cp s3://${AWS_TET_AGENT_BUCKET}/tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh
     ```
 
