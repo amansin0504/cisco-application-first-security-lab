@@ -54,7 +54,7 @@ aws ecr delete-repository --repository-name sock-shop/front-end --region ${AWS_R
 #delete swc role, policy
 echo "Lab cleanup: Delete SWC role and policy"
 aws iam detach-role-policy --role-name swc-role --policy-arn arn:aws:iam::${AWS_ACCT_ID}:policy/swc-policy
-aws iam delete-role --role-name Test-Role
+aws iam delete-role --role-name swc-role
 aws iam delete-policy --policy-arn arn:aws:iam::${AWS_ACCT_ID}:policy/swc-policy
 
 #delete ec2 key pair
