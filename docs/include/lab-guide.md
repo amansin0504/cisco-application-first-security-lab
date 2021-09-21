@@ -1892,7 +1892,7 @@ Secure Cloud Analytics Cloud consumes VPC flow logs directly from your AWS accou
 
 6. Visit the Secure Cloud Analytics Cloud management interface's AWS settings.
 
-    > [https://cisco-${POD_NAME}.obsrvbl.com/accounts/settings/aws/#/settings/aws/credentials](https://cisco-${POD_NAME}.obsrvbl.com/accounts/settings/aws/#/settings/aws/credentials)
+    > [https://cisco-${POD_NAME}.obsrvbl.com/v2/#/settings/integrations/aws/credentials](https://cisco-${POD_NAME}.obsrvbl.com/v2/#/settings/integrations/aws/credentials)
 
 7. Click on _Login via cisco-${POD_NAME}_ and login using the following values.
 
@@ -1901,21 +1901,19 @@ Secure Cloud Analytics Cloud consumes VPC flow logs directly from your AWS accou
     | Email                 | ${DEVNET_EMAIL_ADDRESS}                                      |
     | Password              | ${POD_PASSWORD} (or password you set)                        |
 
-8. Provide the role ARN and name from past steps for Secure Cloud Analytics Cloud to use for access to your AWS environment. Set the the fields with the following values.
+8. Click on _Add New Credentials_. Provide the role ARN and name from past steps for Secure Cloud Analytics Cloud to use for access to your AWS environment. Set the the fields with the following values and click _Create_.
 
     | Role ARN                                  | Name     |
     | ----------------------------------------- | -------- |
     | arn:aws:iam::${AWS_ACCT_ID}:role/swc-role | swc-role |
 
-9. Click on the _+_ button to save the details.
-
-10. Review the permissions that Secure Cloud Analytics Cloud has access to using the management interface. This page lists the most important permissions for Secure Cloud Analytics Cloud.
+9. Review the permissions that Secure Cloud Analytics Cloud has access to using the management interface. This page lists the most important permissions for Secure Cloud Analytics Cloud.
 
     > **NOTE**
     >
     > It's likely that there will be no AWS services listed when you visit this page immediately after adding your newly created role. It could take 5 to 10 minutes for Secure Cloud Analytics Cloud processes to validate access to all services.
 
-    > [https://cisco-${POD_NAME}.obsrvbl.com/accounts/settings/aws/#/settings/aws/permissions](https://cisco-${POD_NAME}.obsrvbl.com/accounts/settings/aws/#/settings/aws/permissions)
+    > [https://cisco-${POD_NAME}.obsrvbl.com/v2/#/settings/integrations/aws/permissions](https://cisco-${POD_NAME}.obsrvbl.com/v2/#/settings/integrations/aws/permissions)
 
 
 
@@ -1937,17 +1935,16 @@ It's worth taking some time to review the CloudFormation template _${DOLLAR_SIGN
     aws s3api put-bucket-policy --bucket ${AWS_FLOW_LOG_BUCKET} --policy file://${DOLLAR_SIGN}LAB/swc/swc-flowlogs-bucket-policy.json
     ```
 
-3. Provide Secure Cloud Analytics Cloud with the S3 Bucket name that contains the VPC flow logs. Visit the management interface and set the fields with the following values.
+3. Provide Secure Cloud Analytics Cloud with the S3 Bucket name that contains the VPC flow logs. Click _+ Add VPC Flow Log_ on the management interface. Set the fields with the following values and click on _Create_.
 
-    > [https://cisco-${POD_NAME}.obsrvbl.com/accounts/settings/aws/#/settings/aws/flowlogs](https://cisco-${POD_NAME}.obsrvbl.com/accounts/settings/aws/#/settings/aws/flowlogs)
+    > [https://cisco-${POD_NAME}.obsrvbl.com/accounts/v2/#/settings/integrations/aws/vpc_logs](https://cisco-${POD_NAME}.obsrvbl.com/v2/#/settings/integrations/aws/vpc_logs)
 
     | **S3 Path**                             | **Credentials**     |
     | ----------------------------------------| ------------------- |
-    | ${AWS_FLOW_LOG_BUCKET}    | swc-role            |
+    | ${AWS_FLOW_LOG_BUCKET}                  | swc-role            |
 
-4. Click the _+_ button.
 
-5. Visit the Secure Cloud Analytics Cloud management interface to confirm that the _AWS_ sensor shows up in the _Sensor List_ and has a green icon to indicate the configuration is working as expected.
+4. Visit the Secure Cloud Analytics Cloud management interface to confirm that the _AWS_ sensor shows up in the _Sensor List_ and has a green icon to indicate the configuration is working as expected.
 
     > [https://cisco-${POD_NAME}.obsrvbl.com/sensors/list/](https://cisco-${POD_NAME}.obsrvbl.com/sensors/list/)
 

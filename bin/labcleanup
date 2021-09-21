@@ -29,7 +29,9 @@ echo "AWS S3 Bucket for Flow Logs: ${AWS_FLOW_LOG_BUCKET}"
 echo "AWS S3 Bucket for Tetration agent: ${AWS_TET_AGENT_BUCKET}"
 echo "AWS EKS cluster: app-first-sec"
 echo "AWS ECR Registry: sock-shop/front-end"
-echo "AWS IAM Role and Policy for Secure Cloud Analytics"
+echo "AWS IAM Role for Secure Cloud Analytics: swc-role"
+echo "AWS IAM Policy for Secure Cloud Analytics: swc-policy"
+echo "AWS EC2 Key Pair: ${AWS_KEYPAIR_NAME}"
 echo ""
 
 read -p "Type 'delete' if you're sure you want to permanently delete these AWS resources: " -r
@@ -57,12 +59,10 @@ aws iam delete-role --role-name Test-Role
 aws iam delete-policy --policy-arn arn:aws:iam::${AWS_ACCT_ID}:policy/swc-policy
 
 #delete ec2 key pair
+#echo "Lab cleanup: Delete EC2 Key Pair"
 #aws ec2 delete-key-pair --key-name ${AWS_KEYPAIR_NAME}
 
-#echo "Lab cleanup: Delete Cloudformation Stack" - this doesn't work in some situations when CFM deletes the IAM admin user earlier and then tries to delete other resources.
-#aws cloudformation delete-stack --stack-name ${AWS_CF_STACK_NAME}
-
-echo "#####################################NOTICE#######################################################"
+echo "##################################### ATTENTION #####################################################"
 echo "Log out and log back in as your regular AWS admin user and navigate to CloudFormation AWS Console"
-echo "Select the Cloudformation Stack - ${AWS_CF_STACK_NAME} and click on Delete to clean up the lab"
-echo "#####################################NOTICE#######################################################"
+echo "Select the Cloudformation Stack name - ${AWS_CF_STACK_NAME} and click on Delete to finish lab cleanup"
+echo "#####################################NOTICE##########################################################"
