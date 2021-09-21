@@ -51,7 +51,13 @@ echo "Lab cleanup: Delete ECR Registry"
 aws ecr delete-repository --repository-name sock-shop/front-end --region ${AWS_REGION} --force
 
 #delete swc role, policy
+echo "Lab cleanup: Delete SWC role and policy"
+aws iam detach-role-policy --role-name swc-role --policy-arn arn:aws:iam::${AWS_ACCT_ID}:policy/swc-policy
+aws iam delete-role --role-name Test-Role
+aws iam delete-policy --policy-arn arn:aws:iam::${AWS_ACCT_ID}:policy/swc-policy
+
 #delete ec2 key pair
+#aws ec2 delete-key-pair --key-name ${AWS_KEYPAIR_NAME}
 
 #echo "Lab cleanup: Delete Cloudformation Stack" - this doesn't work in some situations when CFM deletes the IAM admin user earlier and then tries to delete other resources.
 #aws cloudformation delete-stack --stack-name ${AWS_CF_STACK_NAME}
