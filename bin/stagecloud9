@@ -153,7 +153,7 @@ sudo mv /tmp/aws-iam-authenticator /usr/local/bin
 echo "INFO: Installed aws-iam-authenticator: $(aws-iam-authenticator version)"
 
 # Add Gitlab host key to known_hosts
-echo "INFO: Add GitLab host keys to known hosts)"
+echo "INFO: Add GitLab host keys to known hosts"
 ssh-keyscan -H $AWS_GITLAB_IP >> ~/.ssh/known_hosts
 
 touch ~/environment/lab/.setup
