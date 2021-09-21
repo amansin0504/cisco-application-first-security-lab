@@ -1,0 +1,166 @@
+#!/bin/bash
+
+# Copyright (c) 2020 Cisco and/or its affiliates.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#Set up the permanent AWS credentials on cloud9
+echo "In order to access AWS resources from cloud9 terminal we need to set up the access keys."
+echo " When prompted for the AWS Access key ID and AWS Secret Access Key, return to the IAM console you left open in previous section."
+read -p "AWS Access Key ID: " message
+aws configure set aws_access_key_id $message
+read -p "AWS Secret Access Key ID: " message
+aws configure set aws_secret_access_key $message
+aws configure set default.region $(aws configure get region)
+
+# Install prerequisite packages quietly
+sudo yum -y install jq > /dev/null
+
+# get cloudformation stack name
+echo " "
+AWS_CF_STACK_NAME="cisco-app-first-sec"
+echo "In order to setup this lab environment, you need to"
+echo "provide the CloudFormation stack name used to setup"
+echo "the AWS infrastructure to support this lab."
+echo
+echo "Here are the last few stacks that were created:"
+echo
+aws cloudformation describe-stacks | jq -r '.Stacks |= sort_by(.CreationTime) | .Stacks[-1,-2,-3] | select(length > 0) | "  " + .StackName + " [created at " + .CreationTime + "]"'
+echo
+read -p "What is the name of your CloudFormation stack for this lab? [Press enter for default: ${AWS_CF_STACK_NAME}] " -r
+if [[ ! $REPLY =~ ^$ ]]
+then
+    AWS_CF_STACK_NAME=$REPLY
+fi
+
+# confirm cloudformation stack exists
+aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} > /dev/null
+AWS_CF_STACK_CHECK=$?
+if [[ $AWS_CF_STACK_CHECK -ne 0 ]]; then
+   echo
+	 echo "ERROR: Unable to confirm that the CloudFormation stack name you provided exists. Correct errors and run 'labsetup' again."
+	 exit 1
+fi
+
+# install prereqs
+echo "INFO: Installing prerequisite packages"
+sudo yum -y install epel-release
+sudo yum -y update
+sudo yum -y install gettext httping
+
+curl -O https://bootstrap.pypa.io/get-pip.py  #UPDATE
+python3 get-pip.py --user > /dev/null #UPDATE
+export PATH=~/.local/bin:$PATH #UPDATE
+rm get-pip.py #UPDATE
+pip install ansible tetpyclient phonenumbers
+
+# change dir to where we expect files to live
+cd ~/environment
+
+# remove cloud9 default readme
+README="$HOME/environment/README.md"
+if test -f $README; then
+  echo "INFO: removing $README"
+  rm $README
+fi
+
+# set env vars and alias
+BASHRC_LAB="$HOME/.bashrc_lab"
+BASHRC="$HOME/.bashrc"
+if ! grep -q "source $BASHRC_LAB" $BASHRC; then
+    echo "source $BASHRC_LAB" >> $BASHRC
+fi
+export AWS_ENV_NAME=`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Parameters[] | select(.ParameterKey=="EnvironmentName").ParameterValue'` #UPDATE
+echo -n "" > $BASHRC_LAB
+echo "export AWS_ACCESS_KEY=$(grep aws_access_key_id ~/.aws/credentials | awk '{ print $3 }')" >> $BASHRC_LAB  #UPDATE
+echo "export AWS_SECRET_ACCESS=$(grep aws_secret_access_key ~/.aws/credentials | awk '{ print $3 }')" >> $BASHRC_LAB  #UPDATE
+echo "export AWS_CF_STACK_NAME='${AWS_CF_STACK_NAME}'" >> $BASHRC_LAB
+echo "export AWS_KEYPAIR_NAME='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Parameters[] | select(.ParameterKey=="keyPairName").ParameterValue'`'" >> $BASHRC_LAB #UPDATE
+echo "export AWS_GITLAB_IP='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="GitLabRunnerIP").OutputValue'`'" >> $BASHRC_LAB #UPDATE
+echo "export AWS_GITLAB_FQDN='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="GitLabInstancePublicFQDN").OutputValue'`'" >> $BASHRC_LAB #UPDATE
+echo "export DOCKER_REGISTRY=`aws ecr describe-repositories --repository-names sock-shop/front-end | jq -r '.repositories[0].repositoryUri'`" >> $BASHRC_LAB #UPDATE
+echo "export VPC_PRIV_SUBNET_1_ID=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values='${AWS_ENV_NAME}' Spoke Private Subnet AZ1' | jq -r '.Subnets[0].SubnetId'`" >> $BASHRC_LAB #UPDATE
+echo "export VPC_PRIV_SUBNET_2_ID=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values='${AWS_ENV_NAME}' Spoke Private Subnet AZ2' | jq -r '.Subnets[0].SubnetId'`" >> $BASHRC_LAB #UPDATE
+echo "export VPC_PRIV_SUBNET_3_ID=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values='${AWS_ENV_NAME}' Spoke Private Subnet AZ3' | jq -r '.Subnets[0].SubnetId'`" >> $BASHRC_LAB #UPDATE
+echo "export VPC_PRIV_SUBNET_1_AZ=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values='${AWS_ENV_NAME}' Spoke Private Subnet AZ1' | jq -r '.Subnets[0].AvailabilityZone'`" >> $BASHRC_LAB #UPDATE
+echo "export VPC_PRIV_SUBNET_2_AZ=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values='${AWS_ENV_NAME}' Spoke Private Subnet AZ2' | jq -r '.Subnets[0].AvailabilityZone'`" >> $BASHRC_LAB #UPDATE
+echo "export VPC_PRIV_SUBNET_3_AZ=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values='${AWS_ENV_NAME}' Spoke Private Subnet AZ3' | jq -r '.Subnets[0].AvailabilityZone'`" >> $BASHRC_LAB #UPDATE
+echo "export VPC_PUB_SUBNET_1_ID=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values='${AWS_ENV_NAME}' Spoke Public Subnet AZ1' | jq -r '.Subnets[0].SubnetId'`" >> $BASHRC_LAB #UPDATE
+echo "export VPC_PUB_SUBNET_2_ID=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values='${AWS_ENV_NAME}' Spoke Public Subnet AZ2' | jq -r '.Subnets[0].SubnetId'`" >> $BASHRC_LAB #UPDATE
+echo "export VPC_PUB_SUBNET_3_ID=`aws ec2 describe-subnets --filters 'Name=tag:Name,Values='${AWS_ENV_NAME}' Spoke Public Subnet AZ3' | jq -r '.Subnets[0].SubnetId'`" >> $BASHRC_LAB #UPDATE
+echo "export AWS_ACCT_ID=`aws sts get-caller-identity | jq -r '.Account'`" >> $BASHRC_LAB
+echo "export AWS_TET_AGENT_BUCKET='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="TetAgentBucket").OutputValue'`'" >> $BASHRC_LAB
+echo "export AWS_FLOW_LOG_BUCKET='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="FlowLogBucket").OutputValue'`'" >> $BASHRC_LAB
+echo "export CLOUD9_IP_ADDRESS='`hostname -i`'" >> $BASHRC_LAB
+echo "export AWS_REGION='`aws configure get region`'" >> $BASHRC_LAB
+echo "export POD_NAME='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PodName").OutputValue'`'" >> $BASHRC_LAB
+echo "export POD_PASSWORD='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PodPassword").OutputValue'`'" >> $BASHRC_LAB
+echo "export DUO_SECRET='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="DuoSecret").OutputValue'`'" >> $BASHRC_LAB
+echo "export SWC_K8S_SA_SECRET='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="SwcSecret").OutputValue'`'" >> $BASHRC_LAB
+echo "export DEVNET_EMAIL_ADDRESS='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="DevNetEmail").OutputValue'`'" >> $BASHRC_LAB
+echo "export VISUAL=vim" >> $BASHRC_LAB
+echo "export EDITOR=vim" >> $BASHRC_LAB
+echo "export DOLLAR_SIGN='$'" >> $BASHRC_LAB
+echo "export LAB=$HOME/environment/lab" >> $BASHRC_LAB
+echo "export PATH=\"\$PATH:\$HOME/environment/lab/bin\"" >> $BASHRC_LAB
+echo "alias k=kubectl" >> $BASHRC_LAB
+echo "alias password=\"echo '\${POD_PASSWORD}'\"" >> $BASHRC_LAB
+source $BASHRC_LAB
+
+# create swc k8s secret file
+echo -n ${SWC_K8S_SA_SECRET} > ${HOME}/environment/lab/swc/swc-service-key.txt
+
+# update all config files using env vars #UPDATE
+find . -type f \( -iname \*.json -o -iname \*.yaml -o -iname \*.md -o -iname config -o -iname \*.txt \) | \
+  xargs -I % sh -c 'envsubst \$DUO_SECRET,\$AWS_GITLAB_IP,\$AWS_GITLAB_FQDN,\$AWS_ACCESS_KEY,\$AWS_SECRET_ACCESS,\$DOCKER_REGISTRY,\$AWS_KEYPAIR_NAME,\$AWS_FLOW_LOG_BUCKET,\$AWS_CF_STACK_NAME,\$DEVNET_EMAIL_ADDRESS,\$CLOUD9_IP_ADDRESS,\$AWS_TET_AGENT_BUCKET,\$DOLLAR_SIGN,\$POD_NAME,\$POD_PASSWORD,\$VPC_PRIV_SUBNET_1_ID,\$VPC_PRIV_SUBNET_1_AZ,\$VPC_PRIV_SUBNET_2_ID,\$VPC_PRIV_SUBNET_2_AZ,\$VPC_PRIV_SUBNET_3_ID,\$VPC_PRIV_SUBNET_3_AZ,\$VPC_PUB_SUBNET_1_ID,\$VPC_PUB_SUBNET_2_ID,\$VPC_PUB_SUBNET_3_ID,\$AWS_ACCT_ID,\$AWS_REGION,\$SWC_K8S_SA_SECRET <% > %.tmp ; mv %.tmp %'
+
+# install eksctl #UPDATE
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/local/bin
+echo "INFO: Installed eksctl"
+eksctl version
+
+#install kubectl #UPDATE
+curl --silent -o /tmp/kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.20.4/2021-04-12/bin/linux/amd64/kubectl
+chmod +x /tmp/kubectl
+sudo mv /tmp/kubectl /usr/local/bin
+echo "INFO: Installed kubectl"
+kubectl version --short --client
+
+# install aws-iam-authenticator
+curl --silent -o /tmp/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator
+chmod +x /tmp/aws-iam-authenticator
+sudo mv /tmp/aws-iam-authenticator /usr/local/bin
+echo "INFO: Installed aws-iam-authenticator"
+aws-iam-authenticator version
+
+# Add Gitlab host key to known_hosts
+ssh-keyscan -H $AWS_GITLAB_IP >> ~/.ssh/known_hosts
+
+touch ~/environment/lab/.setup
+
+# Add EC2 Key Pair to the Cloud9 host and set the permission
+echo "Paste EC2 key value (created in previous steps) and end with a blank line:"
+keyvariable=$(sed '/^$/q')
+echo "$keyvariable" > ~/.ssh/$AWS_KEYPAIR_NAME
+chmod 400 ~/.ssh/$AWS_KEYPAIR_NAME
+
+echo "
+
+To complete setup, execute the following command:
+
+   source ~/.bashrc
+
+If you're running this lab in a Cloud9 instance as intended, you'll need to open the lab guide.
+
+Use the file explorer on the left of the Cloud9 environment to navigate to 'lab/docs'. Right-click on 'lab-guide.html' and select 'Preview'."
