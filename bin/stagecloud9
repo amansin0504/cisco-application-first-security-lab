@@ -15,6 +15,7 @@
 # limitations under the License.
 
 # Install prerequisite packages quietly
+echo "INFO: Installing jq"
 sudo yum -y install jq > /dev/null
 
 #Set up the permanent AWS credentials on cloud9
