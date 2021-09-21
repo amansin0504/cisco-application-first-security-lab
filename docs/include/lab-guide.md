@@ -1542,7 +1542,9 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     ###### Command
 
     ```
-    git add .
+    git add helpers/duo.js
+    git add api/user/index.js
+    git add public/js/client.js
     ```
 
 5. Commit all changes to the front-end repository and provide a meaningful commit message. The _git commit_ command captures a snapshot of the project's currently staged changes. Committed snapshots can be thought of as “safe” versions of a project—Git will never change them unless you explicitly ask it to.
@@ -1550,7 +1552,7 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     ###### Command
 
     ```
-    git commit -m "add Duo MFA support to login"
+    git commit -m "add Duo MFA support to sock-shop login"
     ```
 
     ###### Output
@@ -1624,14 +1626,14 @@ The git push action in last section will trigger the CI/CD pipeline run. The pip
 
 4. Once the image is built, the pipeline moves to the next stage and tests the newly build image by running it. You can click _docker_test_ stage to review the logs.
 
-    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)
+    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)
 
 
 5. Last stage is _deployment_, which will require manual input from you. Once you click on play button, the pipeline will resume and deploy the Front End image with Duo MFA to the EKS cluster deployment.
 
-    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)
+    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)
 
-6. Ensure that the new front-end pod has started and is in a _Running_ status. You'll see that the _AGE_ will be different than the rest of the running pods. You can also verify the image tag using _kubectl describe deployment front-end -n sock-shop | grep Image:_ command.
+6. Ensure that the new front-end pod has started and is in a _Running_ status. You'll see that the _AGE_ will be lesser than the rest of the running pods. You can also verify the image tag using _kubectl describe deployment front-end -n sock-shop | grep Image:_ command.
 
     ###### Command
 
