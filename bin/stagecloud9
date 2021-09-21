@@ -79,7 +79,7 @@ cd ~/environment
 # remove cloud9 default readme
 README="$HOME/environment/README.md"
 if test -f $README; then
-  echo "INFO: removing $README"
+  echo "INFO: Removing $README"
   rm $README
 fi
 
