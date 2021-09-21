@@ -15,8 +15,9 @@
 # limitations under the License.
 
 #Set up the permanent AWS credentials on cloud9
-echo "In order to access AWS resources from cloud9 terminal we need to set up the access keys."
-echo " When prompted for the AWS Access key ID and AWS Secret Access Key, return to the IAM console you left open in previous section."
+echo "In order to access AWS resources from cloud9 terminal we need to set up the Access Keys."
+echo " You will be prompted for the AWS Access key ID and AWS Secret Access Key now."
+echo " Switch to the IAM console you left open in previous section (Create AWS CloudFormation Stack - Step 10)."
 read -p "AWS Access Key ID: " message
 aws configure set aws_access_key_id $message
 read -p "AWS Secret Access Key ID: " message
@@ -151,8 +152,8 @@ touch ~/environment/lab/.setup
 
 # Add EC2 Key Pair to the Cloud9 host and set the permission
 echo "Paste EC2 key value (created in previous steps) and end with a blank line:"
-keyvariable=$(sed '/^$/q')
-echo "$keyvariable" > ~/.ssh/$AWS_KEYPAIR_NAME
+keyval=$(sed '/^$/q')
+echo "$keyval" > ~/.ssh/$AWS_KEYPAIR_NAME
 chmod 400 ~/.ssh/$AWS_KEYPAIR_NAME
 
 echo "
