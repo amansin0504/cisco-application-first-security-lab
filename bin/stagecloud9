@@ -21,6 +21,7 @@ sudo yum -y install jq > /dev/null
 echo "In order to access AWS resources from cloud9 terminal we need to set up the Access Keys."
 echo " You will be prompted for the AWS Access key ID and AWS Secret Access Key now."
 echo " Switch to the IAM console you left open in previous section (Create AWS CloudFormation Stack - Step 10)."
+echo "-------------------------------"
 read -p "AWS Access Key ID: " message
 aws configure set aws_access_key_id $message
 read -p "AWS Secret Access Key ID: " message
