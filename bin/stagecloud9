@@ -71,7 +71,7 @@ export PATH=~/.local/bin:$PATH #UPDATE
 rm get-pip.py #UPDATE
 
 echo "INFO: Installing ansible tetpyclient phonenumbers"
-pip install ansible tetpyclient phonenumbers -q
+pip install ansible tetpyclient phonenumbers --user -q
 
 # change dir to where we expect files to live
 cd ~/environment
