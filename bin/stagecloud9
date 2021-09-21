@@ -136,30 +136,28 @@ find . -type f \( -iname \*.json -o -iname \*.yaml -o -iname \*.md -o -iname con
 # install eksctl #UPDATE
 curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
 sudo mv /tmp/eksctl /usr/local/bin
-echo "INFO: Installed eksctl"
-eksctl version
+echo "INFO: Installed eksctl: $(eksctl version)"
 
 #install kubectl #UPDATE
 curl --silent -o /tmp/kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.20.4/2021-04-12/bin/linux/amd64/kubectl
 chmod +x /tmp/kubectl
 sudo mv /tmp/kubectl /usr/local/bin
-echo "INFO: Installed kubectl"
-kubectl version --short --client
+echo "INFO: Installed kubectl: $(kubectl version --short --client)"
 
 # install aws-iam-authenticator
 curl --silent -o /tmp/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator
 chmod +x /tmp/aws-iam-authenticator
 sudo mv /tmp/aws-iam-authenticator /usr/local/bin
-echo "INFO: Installed aws-iam-authenticator"
-aws-iam-authenticator version
+echo "INFO: Installed aws-iam-authenticator: $(aws-iam-authenticator version)"
 
 # Add Gitlab host key to known_hosts
+echo "INFO: Add GitLab host keys to known hosts)"
 ssh-keyscan -H $AWS_GITLAB_IP >> ~/.ssh/known_hosts
 
 touch ~/environment/lab/.setup
 
 # Add EC2 Key Pair to the Cloud9 host and set the permission
-echo "Paste EC2 key value (created in previous steps) and end with a blank line:"
+echo "Paste EC2 key value (created in previous steps - [Create AWS CloudFormation Stack - Step 2]) and end with a blank line:"
 keyval=$(sed '/^$/q')
 echo "$keyval" > ~/.ssh/$AWS_KEYPAIR_NAME
 chmod 400 ~/.ssh/$AWS_KEYPAIR_NAME
