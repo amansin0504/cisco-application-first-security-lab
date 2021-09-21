@@ -16,10 +16,11 @@
 
 # Install prerequisite packages
 echo "INFO: Installing prerequisite packages"
-echo "INFO: Installing jq"
 sudo yum -y install jq > /dev/null
 
 #Set up the permanent AWS credentials on cloud9
+echo " "
+echo "-------------------------------"
 echo "In order to access AWS resources from cloud9 terminal we need to set up the Access Keys."
 echo " You will be prompted for the AWS Access key ID and AWS Secret Access Key now."
 echo " Switch to the IAM console you left open in previous section (Create AWS CloudFormation Stack - Step 10)."
@@ -29,6 +30,7 @@ aws configure set aws_access_key_id $message
 read -p "AWS Secret Access Key ID: " message
 aws configure set aws_secret_access_key $message
 aws configure set default.region $(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | jq .region -r)
+echo "-------------------------------"
 
 # get cloudformation stack name
 echo " "
