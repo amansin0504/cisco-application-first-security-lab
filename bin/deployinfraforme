@@ -218,7 +218,7 @@ result2=$(curl --silent --output /dev/null -b ${COOKIE_JAR} -c ${COOKIE_JAR} -d 
 result3=$(curl --silent --output /dev/null -b ${COOKIE_JAR} -c ${COOKIE_JAR} -d '{"longNum":"1234123412341234","expires":"01/01","ccv":"123"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/cards)
 rm ${COOKIE_JAR}
 echo "-------------------Sock Shop Credentials-----------------------------"
-if [ $result1=="200"] && [$result2=="200"] && [$result3=="200"]; then
+if [ $result1=="200" ] && [ $result2=="200" ] && [ $result3=="200" ]; then
   echo "Username: ${POD_NAME}"
   echo "Password: ${POD_NAME}"
 else
