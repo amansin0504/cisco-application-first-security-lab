@@ -81,7 +81,6 @@ else
   echo "Failed to create Sock-Shop Project"
   exit 1
 fi
-echo " "
 
 # Use Gitlab runner registration token to register a runner
 sleep 2
@@ -179,8 +178,11 @@ success=$?
 if [[ $success -eq 0 ]];
 then
   cd Sock-Shop-Front-End
+  echo "INFO: Setting the credentials"
   git config --global user.name "Administrator" && git config --global user.email "admin@cloudnativeapp.com"
+  echo "INFO: Setting the origin"
   git remote rm origin && git remote add origin http://Administrator:$GITLAB_TOKEN@$AWS_GITLAB_FQDN/root/front-end.git
+  echo "INFO: Pushing the update to remote"
   git push -u origin --all --quiet
   echo " "
   echo "-------------------------------------------------------------------------------"
@@ -198,7 +200,7 @@ echo "##########################################################################
 echo "## Step 7: Deploy the load test application"
 echo "###########################################################################"
 kubectl create namespace sock-shop-test
-envsubst $HOME/environment/lab/sock-shop/sock-shop-test.yaml | k apply -f -
+envsubst <$LAB/sock-shop/sock-shop-test.yaml | kubectl apply -f -
 echo " "
 
 #Add the Sock Shop credentials and display the access link
@@ -209,7 +211,7 @@ echo "##########################################################################
 echo "export SOCK_SHOP_ELB=`kubectl get service front-end -n sock-shop -o json | jq -r '.status.loadBalancer.ingress[0].hostname'`" >> ~/.bashrc_lab
 echo "---------------------------------------------------------------------"
 source ~/.bashrc
-echo "Sock Shop Access: http://$SOCK_SHOP_ELB"
+echo -e "Sock Shop Access: \e[32mhttp://$SOCK_SHOP_ELB\e[0m"
 COOKIE_JAR=.cookies-`python -c "import time; print(int(time.time()*1000))"`.txt
 curl --silent --output /dev/null -c ${COOKIE_JAR} -d '{"username":"'${POD_NAME}'","password":"'${POD_NAME}'","email":"'${POD_NAME}'@email.address","firstName":"Lab","lastName":"User"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/register
 curl --silent --output /dev/null -b ${COOKIE_JAR} -c ${COOKIE_JAR} -d '{"number":"170","street":"W Tasman Dr","city":"San Jose","postcode":"95134","country":"United States"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/addresses

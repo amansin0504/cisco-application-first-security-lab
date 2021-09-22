@@ -1921,9 +1921,9 @@ Secure Cloud Analytics Cloud consumes VPC flow logs directly from your AWS accou
 
 #### Consume AWS Flow Logs in Secure Cloud Analytics Cloud
 
-When the VPC for this lab was created using CloudFormation, VPC flow logs were setup for you. This is a recommended best practice so that there's a record of all traffic within a VPC before any workloads are even deployed.
+When the Hub VPC for this lab was created using CloudFormation, VPC flow logs were setup for you. This is a recommended best practice so that there's a record of all traffic within a VPC before any workloads are even deployed.
 
-It's worth taking some time to review the CloudFormation template _${DOLLAR_SIGN}LAB/aws/cf-setup-template.json_ we used if you haven't already. We needed to create a S3 Bucket, S3 Bucket Policy, and configure the VPC to send flow logs to the S3 Bucket. Those items were configured using the respective resources of _ciscoAppFirstSecFlowLogBucket_, _ciscoAppFirstSecFlowLogBucketPolicy_ and _ciscoAppFirstSecVpcFlowLog_.
+It's worth taking some time to review the CloudFormation template _${DOLLAR_SIGN}LAB/aws/cf-setup-template.yaml_ we used if you haven't already. We needed to create a S3 Bucket, and configure the VPC to send flow logs to the S3 Bucket. Those items were configured using the respective resources of _HubciscoAppFirstSecFlowLogBucket_ and _HubciscoAppFirstSecVpcFlowLog_.
 
 1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
 
