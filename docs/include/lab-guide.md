@@ -2212,13 +2212,13 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     | Email                 | ${DEVNET_EMAIL_ADDRESS}                      |
     | Password              | ${POD_PASSWORD} (or password you set)        |
 
-5. Navigate to the _Manage_ > _External Orchestrators_ > _VISIBILITY_ option in the left menu pane.
+5. Navigate to the _Manage_ > _External Orchestrators_ option in the left menu pane.
 
-    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018083122803.png" alt="image-20191018083122803" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-orchestrator.png" alt="image-orchestrator" style="zoom:50%;" />
 
 6. Click the _Create New Configuration_ button.
 
-    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018083250277.png" alt="image-20191018083250277" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-createorch.png" alt="image-createorch" style="zoom:50%;" />
 
 7. Set the values in the _Create External Orchestrator Configuration_ dialogue modal with the following values.
 
@@ -2243,7 +2243,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
 
 10. Click the _Create_ button. Once Tetration has successfully connected to the Kubernetes cluster, it will show a _Connection Status_ of _Success_.
 
-    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191022192939535.png" alt="image-20191022192939535" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-connector.png" alt="image-connector" />
 
     In the following section, you'll use this integration to define segmentation policy using Kubernetes annotations.
 
@@ -2268,7 +2268,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     | Which platform is your agent going to be installed on?  | Kubernetes                                                   |
     | Does your network require HTTP Proxy to reach internet? | No                                                           |
 
-    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-step3.png" alt="image-20200716014426" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-step3.png" alt="image-step3" style="zoom:50%;" />
 
     > **NOTE**
     >
@@ -2280,15 +2280,15 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
 
 3. Click the _Upload_ button.
 
-    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200717103827.png" alt="image-20200717103827" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-awsupload.png" alt="image-awsupload" style="zoom:50%;" />
 
 4. Click the _Add files_ button. Select the Tetration agent installer you downloaded in a previous step. It will be named similar to _tetration_installer_${POD_NAME}_enforcer_linux_tet-pov-rtp1.sh_.
 
-    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200717104019.png" alt="image-20200717104019" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-awsaddfiles.png" alt="image-awsaddfiles" style="zoom:50%;" />
 
 5. Click the _Upload_ button.
 
-    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200717104557.png" alt="image-20200717104557" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-awss3upload.png" alt="image-awss3upload" style="zoom:50%;" />
 
     > **NOTE**
     >
@@ -2449,9 +2449,9 @@ The Flows option in the top-level menu takes you to the Flow Search page. This p
 
 You want to confirm that the software agent is sending flow data to Secure Workload, so you'll use the _Flow Search_ to verify that it's seeing flows to the _front-end_ pods.
 
-1. Within the Secure Workload administrative interface navigate to _Traffic_ under _Investigate_ in the navigation menu on the left side.
+1. Within the Secure Workload administrative interface navigate to _Traffic_ under _Investigate_ option in the navigation menu on the left side.
 
-    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018122327038.png" alt="image-20191018122327038" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-flowsearch.png" alt="image-flowsearch" style="zoom:50%;" />
 
 2. Enter an _Attribute_ to search for flows that were destined to the Sock Shop _front-end_ pods.
 
@@ -2490,11 +2490,11 @@ First you'll need to create a Secure Workload API Key that the modules will use 
 
 2. Click the gears icon in the upper right-hand corner and then select *API Keys*.
 
-    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200721073604.png" alt="image-20200721073604" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-api.png" alt="image-api" style="zoom:50%;" />
 
 3. Click on the *Create API Key* button in the upper right-hand corner.
 
-    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200306142231868.png" alt="image-20200306142231868" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-createapi.png" alt="image-createapi" style="zoom:50%;" />
 
 4. Type *Ansible* in the *Description* field.
 
@@ -2597,9 +2597,9 @@ Now that we have an API Key we can configure Ansible to access Secure Workload a
 
     > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co/)
 
-6. Select _Inventory Filters_ under _VISIBILITY_ in the navigation menu in the left pane.
+6. Select _Inventory Filters_ under _Organize_ in the navigation menu in the left pane.
 
-    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018124622764.png" alt="image-20191018124622764" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-invfilter.png" alt="image-invfilter" style="zoom:50%;" />
 
 7. Confirm that there are additional filters beyond what you had already created manually.
 
@@ -2695,9 +2695,9 @@ In an earlier step, you configured policy filters. Now we'll use Ansible to appl
 
     > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co/)
 
-6. Select _Defent_ > _Segmentation_ in the navigation menu in the left pane.
+6. Select _Defend_ > _Segmentation_ in the navigation menu in the left pane.
 
-    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018125829189.png" alt="image-20191018125829189" style="zoom:50%;" />
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-segmentation.png" alt="image-segmentation" style="zoom:50%;" />
 
 7. You should be taken back to the *Sock Shop* application workspace that you created in a previous step. If that's not the case, click _Switch Application_. Then select the *Sock Shop* application workspace.
 
