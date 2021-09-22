@@ -56,7 +56,7 @@ This lab uses AWS to host the workloads and applications and takes advantage of 
 * [Option 1: Implement security - Cisco Secure Access by Duo](#option-1-implement-security---cisco-secure-access-by-duo)
 * [Option 2: Implement security - Cisco Secure Cloud Analytics](#option-2-implement-security---cisco-secure-cloud-analytics)
 * [Option 3: Implement security - Cisco Secure Cloud Workload](#option-3-implement-security---cisco-secure-cloud-workload)
-* [Wrap-Up](/lab/labs/2.md)
+* [Wrap-Up](#wrap-up)
 
 > **NOTE**
 >
@@ -2840,3 +2840,16 @@ Negative impacts of enforced security policy is a large concern for application 
 As a small business owner, you can rest soundly knowing that Secure Workload is now protecting your booming sock business without impacting your customers experience.
 
 You've seen that Secure Workload is a ready-to-use platform with advanced management capabilities to enable quick deployment with few configuration requirements. Using machine-learning capabilities, the platform drastically reduces the amount of human input required to understand communication patterns. And with its holistic workload capabilities, the platform allows you to build a more secure infrastructure for applications and significantly reduces the risk of exposure.
+
+
+## Wrap-up
+
+<img class="no-decoration" src="https://app-first-sec.s3.amazonaws.com/lab-guide.assets/arch2.png" alt="arch2.png" />
+
+Congrats for making it to the end. At this point, you can say you prepared AWS to run a cloud-native application, stood up a Kubernetes cluster, deployed a microservices containerized application, configured Tetration and Stealthwatch Cloud integration with AWS and Kubernetes, and instrumented an applicaiton with Duo MFA. Not to mention you now have a steady stream of income from your Sock Shop.
+
+
+
+> **WARNING**
+>
+> Do not forget to clean up the AWS resources. Navigate back to the Devnet web page for lab clean up instructions. [Lab CleanUp](https://github.com/CiscoDevNet/cisco-application-first-security-lab/labs/2.md).
