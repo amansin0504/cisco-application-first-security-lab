@@ -14,9 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#adding spinner function
+source $HOME/environment/lab/bin/spinner
+
 # Install prerequisite packages
 echo "INFO: Installing prerequisite packages"
-sudo yum -y install jq > /dev/null
+sudo yum -y install jq > /dev/null &
+spinner $!
 
 #Set up the permanent AWS credentials on cloud9
 echo " "
@@ -60,20 +64,33 @@ fi
 
 # install prereqs
 echo "INFO: Installing epel-release"
-sudo yum -y install epel-release > /dev/null
+sudo yum -y install epel-release > /dev/null &
+spinner $!
 
 echo "INFO: Installing gettext httping"
-sudo yum -y update > /dev/null
-sudo yum -y install gettext httping > /dev/null
+sudo yum -y update > /dev/null &
+spinner $!
+sudo yum -y install gettext httping > /dev/null &
+spinner $!
 
 echo "INFO: Installing pip"
-curl --silent -O https://bootstrap.pypa.io/get-pip.py  #UPDATE
-python3 get-pip.py --user > /dev/null #UPDATE
-export PATH=~/.local/bin:$PATH #UPDATE
-rm get-pip.py #UPDATE
+curl --silent -O https://bootstrap.pypa.io/get-pip.py
+python3 get-pip.py --user > /dev/null &
+spinner $!
+export PATH=~/.local/bin:$PATH
+rm get-pip.py
 
-echo "INFO: Installing ansible tetpyclient phonenumbers"
-pip install ansible tetpyclient phonenumbers --user -q
+echo "INFO: Installing ansible"
+pip install tetpyclient --user -q &
+spinner $!
+
+echo "INFO: Installing tetpyclient"
+pip install ansible --user -q &
+spinner $!
+
+echo "INFO: Installing phonenumbers"
+pip install phonenumbers --user -q &
+spinner $!
 
 # change dir to where we expect files to live
 cd ~/environment

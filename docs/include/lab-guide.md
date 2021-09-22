@@ -60,7 +60,7 @@ This lab uses AWS to host the workloads and applications and takes advantage of 
 
 > **NOTE**
 >
-> If you want to skip the section - [Prepare infrastructure and application](#prepare-infrastructure-and-application), and directly jump to implementing security, run the command _solvepart1forme_ to fast forward setting up infrastructure and Sock Shop application. Once the script completes, you can proceed with any of the three _implement security_ sections - [Option 1: Implement security - Cisco Secure Access by Duo](#option-1-implement-security---cisco-secure-access-by-duo), [Option 2: Implement security - Cisco Secure Cloud Analytics](#option-2-implement-security---cisco-secure-cloud-analytics) or [Option 3: Implement security - Cisco Secure Cloud Workload](#option-3-implement-security---cisco-secure-cloud-workload).
+> If you want to skip the section - [Prepare infrastructure and application](#prepare-infrastructure-and-application), and directly jump to implementing security, run the command _deployinfraforme_ to fast forward setting up infrastructure and Sock Shop application. Once the script completes, you can proceed with any of the three _implement security_ sections - [Option 1: Implement security - Cisco Secure Access by Duo](#option-1-implement-security---cisco-secure-access-by-duo), [Option 2: Implement security - Cisco Secure Cloud Analytics](#option-2-implement-security---cisco-secure-cloud-analytics) or [Option 3: Implement security - Cisco Secure Cloud Workload](#option-3-implement-security---cisco-secure-cloud-workload).
 
 ## Prepare infrastructure and application
 

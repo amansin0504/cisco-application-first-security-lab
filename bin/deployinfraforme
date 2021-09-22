@@ -192,10 +192,19 @@ else
 fi
 echo " "
 
+#Create load test application
+sleep 2
+echo "###########################################################################"
+echo "## Step 7: Deploy the load test application"
+echo "###########################################################################"
+kubectl create namespace sock-shop-test
+envsubst $HOME/environment/lab/sock-shop/sock-shop-test.yaml | k apply -f -
+echo " "
+
 #Add the Sock Shop credentials and display the access link
 sleep 2
 echo "###########################################################################"
-echo "## Step 7: Access the Sock Shop application on EKS"
+echo "## Step 8: Access the Sock Shop application on EKS"
 echo "###########################################################################"
 echo "export SOCK_SHOP_ELB=`kubectl get service front-end -n sock-shop -o json | jq -r '.status.loadBalancer.ingress[0].hostname'`" >> ~/.bashrc_lab
 echo "---------------------------------------------------------------------"
