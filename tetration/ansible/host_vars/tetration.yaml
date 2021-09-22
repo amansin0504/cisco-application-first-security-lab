@@ -10,7 +10,7 @@ api_secret: "${TET_API_SECRET}"
 validate_certs: true
 
 # specific details for the tetration app env
-scope_name: "INTGSSOPOV:${POD_NAME}"
+scope_name: "${POD_NAME}"
 app_scope_name: "${POD_NAME}"
 external_orchestrator_name_k8s: "app-first-sec"
 k8s_namespace: "sock-shop"

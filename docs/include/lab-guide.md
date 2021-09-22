@@ -2187,33 +2187,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9dltED7Ey30Z0IQqIPmzqFAfEJ9hSCpeaH3JmudUnpKPEbqIa4R8rnAx4wNK1oVyONfKkv-5rPSrQRJ8GCXTxeD-mKjjJZHcLriV6hfrmostHN3pioDpavBTsQ73KZOShfndvq6OeQW-HmFO1halMc8H5AEqqBhlLjChoY66YGdwWw_AjdXt2Viuj7cClj-FSzAiTo-iGo8EvEe-s1CwbQKb_BA3am_Hj00Y7GQylzEi2rp9CofaU6-CrWZxGwmHAqljFgf9QWT4q829PM1aENyz6Q
     ```
 
-3. Retrieve the CA certificate for the Kuberentes API using the AWS CLI eks describe-cluster command to use when entering the Kubernetes configuration into Tetration in future steps. There's nothing to do with the output for now other than confirm you have it ready.
-
-    ###### Command
-
-    ```
-    aws eks describe-cluster --name app-first-sec | jq -r '.cluster.certificateAuthority.data' | base64 -d
-    ```
-
-    ###### Output
-
-    ```
-    -----BEGIN CERTIFICATE-----
-    MIICyDCCAbCgAwIBAgIBADANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDEwprdWJl
-    cm5ldGVzMB4XDTE5MTAxNDE1MTkxMloXDTI5MTAxMTE1MTkxMlowFTETMBEGA1UE
-    AxMKa3ViZXJuZXR35HJ+Ct47YrqYAucyg3JxT8TsNJGwZo6FWdMPN3tZ
-    7lWiZLROK4/X6fBv+glbdeDVXb/2cdc1UGKOqg+lKhm5+h2K2gtgUJKCEfHmJrgj
-    3Skp6m377bluY8IIibazuXdMMR1dNuRtwGWfMnu7dZeXKeOgIeKxDdVnHEFzwFan
-    Xfcm+jiPzVVjeO9PawX9bqXV7d9UuuPRRPKUkZW83qapQwaE2RGXeC7oSGiBbD1L
-    rdHkK5WjAdqvXuY5gUcCAwEAAaMjMCEwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB
-    /wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBABljEWtXrnINUNXgQWYkz6SjoHoO
-    CMA2/Zzunz/Vf64jlczCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALcI
-    pJx4sKDHM2OamvU/KC3y3aUFx5vy4DTabg4aliPRP07ar4UcMJ0T1OqYVK64OpZk
-    rlLkeh+YeHsPopbOzGQ6IMpLT1EUCDjzJtVhCoZH2PAEPf9UNIIupkmGD2p7pIZYQg=
-    -----END CERTIFICATE-----
-    ```
-
-4. Retrieve the Kubernetes API hostname using the AWS CLI _eks describe-cluster_ command to use when entering the Kubernetes configuration into Secure Workload in future steps. Switch to Hosts List tab from vertical menu on the left-hand side and add API server endpoint address and port (TCP Port 443) details for the EKS cluster in the provided space.
+3. Retrieve the Kubernetes API hostname using the AWS CLI _eks describe-cluster_ command to use when entering the Kubernetes configuration into Secure Workload in future steps. Switch to Hosts List tab from vertical menu on the left-hand side and add API server endpoint address and port (TCP Port 443) details for the EKS cluster in the provided space.
 
     ###### Command
 
@@ -2227,7 +2201,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     40D7AAC6763809EAD50E.gr1.${AWS_REGION}.eks.amazonaws.com
     ```
 
-5. Return to the Secure Workload administrative interface.
+4. Return to the Secure Workload administrative interface.
 
     > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co/)
 
@@ -2238,15 +2212,15 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     | Email                 | ${DEVNET_EMAIL_ADDRESS}                      |
     | Password              | ${POD_PASSWORD} (or password you set)        |
 
-6. Navigate to the _External Orchestrators_ page under _VISIBILITY_ in the left menu pane.
+5. Navigate to the _Manage_ > _External Orchestrators_ > _VISIBILITY_ option in the left menu pane.
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018083122803.png" alt="image-20191018083122803" style="zoom:50%;" />
 
-7. Click the _Create New Configuration_ button.
+6. Click the _Create New Configuration_ button.
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018083250277.png" alt="image-20191018083250277" style="zoom:50%;" />
 
-8. Set the values in the _Create External Orchestrator Configuration_ dialogue modal with the following values. Select _Type_ as Kubernetes and _K8s Manager Type_ as EKS. The _AWS Access Key Id_ and _AWS Secret Access Key_ correspond to the _AccessKeyId_ and _SecretAccessKey_ values in the output of the _aws iam create-access-key_ command in an earlier step. Also, uncheck the _Secure Connector Tunnel_ option at the bottom.
+7. Set the values in the _Create External Orchestrator Configuration_ dialogue modal with the following values.
 
     | Field                 | Value                                                                 |
     | --------------------- | ----------------------------------------------------------------------|
@@ -2255,20 +2229,19 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     | Name                  | app-first-sec                                                         |
     | Description           | app-first-sec                                                         |
     | Auth Token            | [Output from kubectl get secret in previous step]                     |
-    | CA Certificate        | [Output from _aws eks describe-cluster_ in previous step]             |
 
-9. Click on _Hosts List_ in the dialogue modal menu on the left.
+8. Click on _Hosts List_ in the dialogue modal menu on the left.
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018093654679.png" alt="image-20191018093654679" style="zoom:50%;" />
 
-10. Click the _+_ button next to the _Hosts List_ label to provide the EKS Kubernetes API hostname and port number using the output from the _aws eks describe-cluster_ output from the earlier step. Set the values hor _host name_ and _port number_ with the following values.
+9. Click the _+_ button next to the _Hosts List_ label to provide the EKS Kubernetes API hostname and port number using the output from the _aws eks describe-cluster_ output from the earlier step. Set the values hor _host name_ and _port number_ with the following values.
 
     | Field       | Value                                                       |
     | ----------- | ----------------------------------------------------------- |
     | host name   | [Output from _aws eks describe-cluster_ from previous step] |
     | port number | 443                                                         |
 
-11. Click the _Create_ button. Once Tetration has successfully connected to the Kubernetes cluster, it will show a _Connection Status_ of _Success_.
+10. Click the _Create_ button. Once Tetration has successfully connected to the Kubernetes cluster, it will show a _Connection Status_ of _Success_.
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191022192939535.png" alt="image-20191022192939535" />
 
@@ -2288,7 +2261,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200716014019.png" alt="image-20200716014019" style="zoom:50%;" />
 
-3. Ensure the following fields match the platform values and click the _Download Installer_ button. This will download an agent installation script specific to your Tetration tenant. The file name should look like _tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh_.
+3. Ensure the following fields match the platform values and click the _Download Installer_ button. This will download an agent installation script specific to your Tetration tenant. The file name should look like _tetration_installer_${POD_NAME}_enforcer_kubernetes_tet-pov-rtp1.sh_.
 
     | Field                                                   | Value                                                        |
     | --------------------------------------------------------| ------------------------------------------------------------ |
@@ -2328,14 +2301,13 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     ###### Command
 
     ```
-    cd $HOME/environment 
-    aws s3 cp s3://${AWS_TET_AGENT_BUCKET}/tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh
+    aws s3 cp s3://${AWS_TET_AGENT_BUCKET}/tetration_installer_${POD_NAME}_enforcer_kubernetes_tet-pov-rtp1.sh tetration_installer_${POD_NAME}_enforcer_kubernetes_tet-pov-rtp1.sh
     ```
 
     ###### Output
 
     ```
-    download: s3://cisco-app-first-sec-hubciscoappfirstlabfiles-ek1ixry827uz/tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh to ./tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh
+    download: s3://cisco-app-first-sec-hubciscoappfirstseclabfilesbu-1xolk3re6mdk8/tetration_installer_app-first-sec-31_enforcer_kubernetes_tet-pov-rtp1.sh to ./tetration_installer_app-first-sec-31_enforcer_kubernetes_tet-pov-rtp1.sh
     ```
 
 5. Run the download bash script to install tetration daemonset objects on the EKS cluster
@@ -2343,7 +2315,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     ###### Command
 
     ```
-    bash tetration_installer_${POD_NAME}_enforcer_kubernetes_rtp1.sh
+    bash tetration_installer_${POD_NAME}_enforcer_kubernetes_tet-pov-rtp1.sh
     ```
 
     ###### Output
@@ -2352,24 +2324,20 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     -------------------------------------------------------------
     Starting Tetration Analytics Installer for Kubernetes install
     -------------------------------------------------------------
-    tar: installer.sh: implausibly old time stamp 1970-01-01 00:00:00
-    tar: chart.tgz: implausibly old time stamp 1970-01-01 00:00:00
-    tar: uninstall_cleanup_ds.yaml: implausibly old time stamp 1970-01-01 00:00:00
-    tar: helm: implausibly old time stamp 1970-01-01 00:00:00
-    tar: kubectl: implausibly old time stamp 1970-01-01 00:00:00
     Location of Kubernetes credentials file is /home/ec2-user/.kube/config
     The following Helm Chart will be installed
     apiVersion: v2
-    appVersion: 3.5.1-23-enforcer
+    appVersion: 3.6.0-17-enforcer
     description: Tetration Enforcer Agent
     name: tetration-agent
     type: application
-    version: 3.5.1-23-enforcer
+    version: 3.6.0-17-enforcer
     Release "tetration-agent" does not exist. Installing it now.
-    <output skipped>
+    ...
+    ...
     ```
 
-6. Verify the installation
+6. Verify the installation.
 
     ###### Command
 
@@ -2405,7 +2373,7 @@ You'll use Ansible playbooks to configure and enforce the policy, which will pro
     ###### Command
 
     ```
-    kubectl get pods -n sock-shop
+    kubectl get pods --namespace sock-shop
     ```
 
     ###### Output
@@ -2421,7 +2389,7 @@ You'll use Ansible playbooks to configure and enforce the policy, which will pro
     ###### Command
 
     ```
-    kubectl exec -it <front-end pod name from previous command> -n sock-shop -- /bin/sh
+    kubectl exec -it <front-end pod name from previous command> --namespace sock-shop -- /bin/sh
     ```
 
     ###### Output
@@ -2481,13 +2449,13 @@ The Flows option in the top-level menu takes you to the Flow Search page. This p
 
 You want to confirm that the software agent is sending flow data to Secure Workload, so you'll use the _Flow Search_ to verify that it's seeing flows to the _front-end_ pods.
 
-1. Within the Secure Workload administrative interface navigate to _Flow Search_ under _VISIBILITY_ in the navigation menu on the left side.
+1. Within the Secure Workload administrative interface navigate to _Traffic_ under _Investigate_ in the navigation menu on the left side.
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018122327038.png" alt="image-20191018122327038" style="zoom:50%;" />
 
-2. Specify a _Filter_ to search for flows that were destined to the Sock Shop _front-end_ pods.
+2. Enter an _Attribute_ to search for flows that were destined to the Sock Shop _front-end_ pods.
 
-    Type _name_ in the _Filters_ field. Select _* Provider Orchestrator name_ from the drop-down options provided.
+    Type _name_ in the _Enter Attributes_ field. Select _* Provider Orchestrator name_ from the drop-down options provided.
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018122810702.png" alt="image-20191018122810702" style="zoom:50%;" />
 
@@ -2678,15 +2646,20 @@ In an earlier step, you configured policy filters. Now we'll use Ansible to appl
 
     ```
     ---
-    # URL for the Secure Workload Dashboard
-    Secure Workload_url: "https://tet-pov-rtp1.cpoc.co"
-    # API Details - Create new token from Secure Workload Dashboard!
-    api_key: "12341234123412341234"
-    api_secret: "12341234123412341234"
+    # URL for the Tetration Dashboard
+    tetration_url: "https://tet-pov-rtp1.cpoc.co"
+
+    # API Details - Create new token from Tetration Dashboard!
+    api_key: "671fdea7f8c89987e36222"
+    api_secret: "f93b66ca3ec5619949de78"
+
     # Set to true for production setups that use trusted certificates!
     validate_certs: true
-    app_scope_name: "app-first-sec-02"
-    external_orchestrator_name_k8s: "app-first-sec-k8s"
+
+    # specific details for the tetration app env
+    scope_name: "app-first-sec-31"
+    app_scope_name: "app-first-sec-31"
+    external_orchestrator_name_k8s: "app-first-sec"
     k8s_namespace: "sock-shop"
     ```
 
@@ -2722,7 +2695,7 @@ In an earlier step, you configured policy filters. Now we'll use Ansible to appl
 
     > [https://tet-pov-rtp1.cpoc.co](https://tet-pov-rtp1.cpoc.co/)
 
-6. Select _SEGMENTATION_ in the navigation menu in the left pane.
+6. Select _Defent_ > _Segmentation_ in the navigation menu in the left pane.
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018125829189.png" alt="image-20191018125829189" style="zoom:50%;" />
 
@@ -2761,7 +2734,7 @@ These are the same steps that you did earlier, but this time the attempt to simu
     ###### Command
 
     ```
-    kubectl exec -it <front-end pod name from previous command> -- /bin/sh
+    kubectl exec -it <front-end pod name from previous command> --namespace sock-shop -- /bin/sh
     ```
 
     ###### Output

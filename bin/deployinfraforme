@@ -213,13 +213,17 @@ echo "---------------------------------------------------------------------"
 source ~/.bashrc
 echo -e "Sock Shop Access: \e[32mhttp://$SOCK_SHOP_ELB\e[0m"
 COOKIE_JAR=.cookies-`python -c "import time; print(int(time.time()*1000))"`.txt
-curl --silent --output /dev/null -c ${COOKIE_JAR} -d '{"username":"'${POD_NAME}'","password":"'${POD_NAME}'","email":"'${POD_NAME}'@email.address","firstName":"Lab","lastName":"User"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/register
-curl --silent --output /dev/null -b ${COOKIE_JAR} -c ${COOKIE_JAR} -d '{"number":"170","street":"W Tasman Dr","city":"San Jose","postcode":"95134","country":"United States"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/addresses
-curl --silent --output /dev/null -b ${COOKIE_JAR} -c ${COOKIE_JAR} -d '{"longNum":"1234123412341234","expires":"01/01","ccv":"123"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/cards
+result1=$(curl --silent --output /dev/null -c ${COOKIE_JAR} -d '{"username":"'${POD_NAME}'","password":"'${POD_NAME}'","email":"'${POD_NAME}'@email.address","firstName":"Lab","lastName":"User"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/register)
+result2=$(curl --silent --output /dev/null -b ${COOKIE_JAR} -c ${COOKIE_JAR} -d '{"number":"170","street":"W Tasman Dr","city":"San Jose","postcode":"95134","country":"United States"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/addresses)
+result3=$(curl --silent --output /dev/null -b ${COOKIE_JAR} -c ${COOKIE_JAR} -d '{"longNum":"1234123412341234","expires":"01/01","ccv":"123"}' -H "Content-Type: application/json" ${SOCK_SHOP_ELB}/cards)
 rm ${COOKIE_JAR}
 echo "-------------------Sock Shop Credentials-----------------------------"
-echo "Username: ${POD_NAME}"
-echo "Password: ${POD_NAME}"
+if [ $result1=="200"] && [$result2=="200"] && [$result3=="200"]; then
+  echo "Username: ${POD_NAME}"
+  echo "Password: ${POD_NAME}"
+else
+  echo "Unable to add user now, try running the CLI in few mins - addshopuser"
+fi
 echo "---------------------------------------------------------------------"
 
 echo "
