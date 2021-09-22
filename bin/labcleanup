@@ -64,4 +64,4 @@ aws iam delete-policy --policy-arn arn:aws:iam::${AWS_ACCT_ID}:policy/swc-policy
 echo "##################################### ATTENTION #####################################################"
 echo "Log out and log back in as your regular AWS admin user and navigate to CloudFormation AWS Console"
 echo "Select the Cloudformation Stack name - ${AWS_CF_STACK_NAME} and click on Delete to finish lab cleanup"
-echo "#####################################NOTICE##########################################################"
+echo "#####################################################################################################"
