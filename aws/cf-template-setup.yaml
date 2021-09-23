@@ -6,30 +6,64 @@ Mappings:
   RegionMap:
     us-east-1:
       "HVM": "ami-03d5c68bab01f3496"
-    us-west-1:
-      "HVM": "ami-03d5c68bab01f3496"
     us-east-2:
-      "HVM": "ami-03d5c68bab01f3496"
+      "HVM": "ami-00399ec92321828f5"
+    us-west-1:
+      "HVM": "ami-0d382e80be7ffdae5"
     us-west-2:
       "HVM": "ami-03d5c68bab01f3496"
+    ca-central-1:
+      "HVM": "ami-0801628222e2e96d6"
+    eu-central-1:
+      "HVM": "ami-05f7491af5eef733a"
+    eu-west-1:
+      "HVM": "ami-0a8e758f5e873d1c1"
+    eu-west-2:
+      "HVM": "ami-0194c3e07668a7e36"
+    eu-west-3:
+      "HVM": "ami-0f7cd40eac2214b37"
+    eu-south-1:
+      "HVM": "ami-018f430e4f5375e69"
+    eu-north-1:
+      "HVM": "ami-0ff338189efb7ed37"
+    ap-east-1:
+      "HVM": "ami-0b215afe809665ae5"
+    ap-south-1:
+      "HVM": "ami-0c1a7f89451184c8b"
+    ap-northeast-1:
+      "HVM": "ami-0df99b3a8349462c6"
+    ap-northeast-2:
+      "HVM": "ami-04876f29fd3a5e8ba"
+    ap-northeast-3:
+      "HVM": "ami-0001d1dd884af8872"
+    ap-southeast-1:
+      "HVM": "ami-0d058fe428540cd89"
+    ap-southeast-2:
+      "HVM": "ami-0567f647e75c7bc05"
+    af-south-1:
+      "HVM": "ami-08a4b40f2fe1e4b35"
+    me-south-1:
+      "HVM": "ami-0eddb8cfbd6a5f657"
+    sa-east-1:
+      "HVM": "ami-054a31f1b3bf90920"
 
 Parameters:
   PodName:
     Description: "Name of Pod. *Must* use value provided in DevNet Sandbox email."
     Type: String
-    Default: AppFirstSecUser
+    Default: app-first-sec-16
   PodPassword:
     Description: "Password for Pod. User defined or use value provided in DevNet Sandbox email."
     Type: String
-    Default: 3d5c68bab01f3496$
+    Default: vNB#3}WkzG)7O3
   DuoSecret:
     Description: "Secret used to configure Duo. *Must* use value provided in DevNet Sandbox email."
     Type: String
-    Default: 3d5c68bab01f3496$
+    Default: 49X4){5gIQD|Zp
   SwcSecret:
     Description: "Secret used for Stealthwatch Cloud Kubernetes agents. *Must* use value provided in DevNet Sandbox email."
     Type: String
-    Default: 3d5c68bab01f3496$
+    Default: UEbaCVLH3DnrYzYQ4bCPkVuKbx0DKTmjBkBGKNiJ2tKpZ0qjpl
   DevNetEmail:
     Description: "Email used with your DevNet account. *Must* use value provided in DevNet Sandbox email."
     Type: String
@@ -41,7 +75,6 @@ Parameters:
   keyPairName:
     Description: "Key pair name (Create a new key pair prior to deploying this template)"
     Type: AWS::EC2::KeyPair::KeyName
-    Default: devnet
 
 Resources:
 #################################################
