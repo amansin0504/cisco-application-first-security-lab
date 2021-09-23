@@ -12,7 +12,7 @@
    - See the License for the specific language governing permissions and
    - limitations under the License. -->
 
-<img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/cisco-logo-transparent-20191112121340271.png" alt="Image result for cisco logo" style="zoom:10%;" />
+<img class="no-decoration" src="../assets/cisco-logo-transparent-20191112121340271.png" alt="Image result for cisco logo" style="zoom:10%;" />
 
 <!--
 
