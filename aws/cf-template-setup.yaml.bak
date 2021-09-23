@@ -68,6 +68,10 @@ Parameters:
     Description: "Email used with your DevNet account. *Must* use value provided in DevNet Sandbox email."
     Type: String
     Default: amansin3@cisco.com
+  EnvironmentName:
+    Description: "An environment name that is prefixed to resource names"
+    Type: String
+    Default: Cisco-App-First-Sec
   keyPairName:
     Description: "Key pair name (Create a new key pair prior to deploying this template)"
     Type: AWS::EC2::KeyPair::KeyName
@@ -84,14 +88,14 @@ Resources:
       EnableDnsHostnames: true
       Tags:
         - Key: Name
-          Value: !Join [ "-", [ !Ref PodName, Hub-VPC] ]
+          Value: !Join [ "-", [ !Ref EnvironmentName, Hub-VPC] ]
 
   HubInternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
         - Key: Name
-          Value: !Ref PodName
+          Value: !Ref EnvironmentName
   HubInternetGatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
@@ -107,7 +111,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub ${PodName} Hub Public Subnet
+          Value: !Sub ${EnvironmentName} Hub Public Subnet
   HubPrivateSubnet:
     Type: AWS::EC2::Subnet
     Properties:
@@ -117,7 +121,7 @@ Resources:
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: !Sub ${PodName} Hub Private Subnet
+          Value: !Sub ${EnvironmentName} Hub Private Subnet
 
   HubNatGatewayEIP:
     Type: AWS::EC2::EIP
@@ -132,7 +136,7 @@ Resources:
       SubnetId: !Ref HubPublicSubnet
       Tags:
         - Key: Name
-          Value: !Sub ${PodName} Hub NAT Gateway
+          Value: !Sub ${EnvironmentName} Hub NAT Gateway
 
   HubPublicRouteTable:
     Type: AWS::EC2::RouteTable
@@ -140,7 +144,7 @@ Resources:
       VpcId: !Ref HubVPC
       Tags:
         - Key: Name
-          Value: !Sub ${PodName} Hub Public Routes
+          Value: !Sub ${EnvironmentName} Hub Public Routes
   HubDefaultPublicRoute:
     Type: AWS::EC2::Route
     DependsOn: HubInternetGatewayAttachment
@@ -160,7 +164,7 @@ Resources:
       VpcId: !Ref HubVPC
       Tags:
         - Key: Name
-          Value: !Sub ${PodName} Hub Private Routes
+          Value: !Sub ${EnvironmentName} Hub Private Routes
   HubDefaultPrivateRoute:
     Type: AWS::EC2::Route
     Properties:
@@ -239,14 +243,14 @@ Resources:
       EnableDnsHostnames: true
       Tags:
         - Key: Name
-          Value: !Join [ "-", [ !Ref PodName, Spoke-VPC] ]
+          Value: !Join [ "-", [ !Ref EnvironmentName, Spoke-VPC] ]
 
   SpokeInternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
         - Key: Name
-          Value: !Ref PodName
+          Value: !Ref EnvironmentName
   SpokeInternetGatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
@@ -262,7 +266,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub ${PodName} Spoke Public Subnet AZ1
+          Value: !Sub ${EnvironmentName} Spoke Public Subnet AZ1
         - Key: kubernetes.io/cluster/app-first-sec
           Value: shared
         - Key: kubernetes.io/role/elb
@@ -276,7 +280,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub ${PodName} Spoke Public Subnet AZ2
+          Value: !Sub ${EnvironmentName} Spoke Public Subnet AZ2
         - Key: kubernetes.io/cluster/app-first-sec
           Value: shared
         - Key: kubernetes.io/role/elb
@@ -290,7 +294,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub ${PodName} Spoke Public Subnet AZ3
+          Value: !Sub ${EnvironmentName} Spoke Public Subnet AZ3
         - Key: kubernetes.io/cluster/app-first-sec
           Value: shared
         - Key: kubernetes.io/role/elb
@@ -304,7 +308,7 @@ Resources:
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: !Sub ${PodName} Spoke Private Subnet AZ1
+          Value: !Sub ${EnvironmentName} Spoke Private Subnet AZ1
         - Key: kubernetes.io/cluster/app-first-sec
           Value: shared
         - Key: kubernetes.io/role/internal-elb
@@ -318,7 +322,7 @@ Resources:
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: !Sub ${PodName} Spoke Private Subnet AZ2
+          Value: !Sub ${EnvironmentName} Spoke Private Subnet AZ2
         - Key: kubernetes.io/cluster/app-first-sec
           Value: shared
         - Key: kubernetes.io/role/internal-elb
@@ -332,7 +336,7 @@ Resources:
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: !Sub ${PodName} Spoke Private Subnet AZ3
+          Value: !Sub ${EnvironmentName} Spoke Private Subnet AZ3
         - Key: kubernetes.io/cluster/app-first-sec
           Value: shared
         - Key: kubernetes.io/role/internal-elb
@@ -361,7 +365,7 @@ Resources:
       SubnetId: !Ref SpokePublicSubnet1
       Tags:
         - Key: Name
-          Value: !Sub ${PodName} Spoke NAT Gateway (AZ1)
+          Value: !Sub ${EnvironmentName} Spoke NAT Gateway (AZ1)
   SpokeNatGateway2:
     Type: AWS::EC2::NatGateway
     DependsOn: SpokeInternetGatewayAttachment
@@ -370,7 +374,7 @@ Resources:
       SubnetId: !Ref SpokePublicSubnet2
       Tags:
         - Key: Name
-          Value: !Sub ${PodName} Spoke NAT Gateway (AZ2)
+          Value: !Sub ${EnvironmentName} Spoke NAT Gateway (AZ2)
   SpokeNatGateway3:
     Type: AWS::EC2::NatGateway
     DependsOn: SpokeInternetGatewayAttachment
@@ -379,7 +383,7 @@ Resources:
       SubnetId: !Ref SpokePublicSubnet3
       Tags:
         - Key: Name
-          Value: !Sub ${PodName} Spoke NAT Gateway (AZ3)
+          Value: !Sub ${EnvironmentName} Spoke NAT Gateway (AZ3)
 
   SpokePublicRouteTable:
     Type: AWS::EC2::RouteTable
@@ -387,7 +391,7 @@ Resources:
       VpcId: !Ref SpokeVPC
       Tags:
         - Key: Name
-          Value: !Sub ${PodName} Spoke Public Routes
+          Value: !Sub ${EnvironmentName} Spoke Public Routes
   SpokeDefaultPublicRoute:
     Type: AWS::EC2::Route
     DependsOn: SpokeInternetGatewayAttachment
@@ -417,7 +421,7 @@ Resources:
       VpcId: !Ref SpokeVPC
       Tags:
         - Key: Name
-          Value: !Sub ${PodName} Spoke Private Routes (AZ1)
+          Value: !Sub ${EnvironmentName} Spoke Private Routes (AZ1)
   SpokeDefaultPrivateRoute1:
     Type: AWS::EC2::Route
     Properties:
@@ -436,7 +440,7 @@ Resources:
       VpcId: !Ref SpokeVPC
       Tags:
         - Key: Name
-          Value: !Sub ${PodName} Spoke Private Routes (AZ2)
+          Value: !Sub ${EnvironmentName} Spoke Private Routes (AZ2)
   SpokeDefaultPrivateRoute2:
     Type: AWS::EC2::Route
     Properties:
@@ -455,7 +459,7 @@ Resources:
       VpcId: !Ref SpokeVPC
       Tags:
         - Key: Name
-          Value: !Sub ${PodName} Spoke Private Routes (AZ3)
+          Value: !Sub ${EnvironmentName} Spoke Private Routes (AZ3)
   SpokeDefaultPrivateRoute3:
     Type: AWS::EC2::Route
     Properties:
