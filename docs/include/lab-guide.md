@@ -24,7 +24,7 @@ WARNING: This file is intended to be used within Cloud9 in preview mode for the 
 
 You're about to start on a doozy of lab that covers a lot of ground in a short time. Buckle in and get ready to secure a cloud-native application and public cloud infrastructure using Cisco Products: Tetration, Secure Cloud Analytics Cloud, and Duo. You'll stage the infrastructure, modify and deploy the application, instrument the security products into the environment. In the process, you'll get your hands dirty with products and technologies including git, Kubernetes, GitHub, Docker, AWS and others.
 
-<img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/arch2.png" alt="arch2.png" />
+<img class="no-decoration" src="../assets/arch2.png" alt="arch2.png" />
 
 > **TIP**
 >
