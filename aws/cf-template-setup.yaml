@@ -5,7 +5,7 @@ Description:  This template deploys a peered Hub and Spoke VPC, with public and 
 Mappings:
   RegionMap:
     us-east-1:
-      "HVM": "ami-03d5c68bab01f3496"
+      "HVM": "ami-09e67e426f25ce0d7"
     us-east-2:
       "HVM": "ami-00399ec92321828f5"
     us-west-1:
