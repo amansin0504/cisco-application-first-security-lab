@@ -2480,7 +2480,7 @@ You want to confirm that the software agent is sending flow data to Secure Workl
 
 ##### Create an API Key to use with Ansible
 
-Given the application dependencies and kubernetes environment are well understood, this is an ideal situation to leverage the power of infrastructure automation. In our case, you'll use open source [Secure Workload modules](https://github.com/CiscoDevNet/Secure Workload-ansible-playbooks) for Ansible along with Ansible playbooks that have already been created for your environment.
+Given the application dependencies and kubernetes environment are well understood, this is an ideal situation to leverage the power of infrastructure automation. In our case, you'll use open source [Secure Workload modules](https://github.com/CiscoDevNet/tetration-ansible-playbooks) for Ansible along with Ansible playbooks that have already been created for your environment.
 
 First you'll need to create a Secure Workload API Key that the modules will use to access the APIs and define the filters.
 
