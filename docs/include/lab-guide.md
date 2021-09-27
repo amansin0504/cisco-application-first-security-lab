@@ -1292,6 +1292,10 @@ An AWS Elastic Container Registry (ECR) is already set up as part of initial lab
     }
     ```
 
+    > **NOTICE**
+	>
+	> In case the pipeline run fails, click on _Run pipeline_ to rerun it. Some backend GitLab services may take longer time to initialize at times, resulting in pipeline failure. However, once all the services are initialized, the subsequent pipeline runs should work without any error.
+
 7. When pipeline workflow reaches _Deployment_ stage, provide the manual input by clicking on play button on deployment stage to automatically deploy your newly built Front End microservice container image to the Sock-Shop application running on the EKS cluster. Once the deployment stage is successful, verify the updated pod image on EKS cluster. The image tag (value after _front-end:_) will match the _imageTag_ value from _aws ecr list-images_ output in the previous step.
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-pipeline.png" alt="image-20191017202329590" style="zoom:50%;" />
