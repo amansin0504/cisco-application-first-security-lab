@@ -1442,7 +1442,7 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     | Field                 | Value                                        |
     | --------------------- | -------------------------------------------- |
     | Email                 | ${POD_NAME}@cisco.com                        |
-    | Password              | ${POD_PASSWORD}                              |
+    | Password              | _${POD_PASSWORD}_                            |
 
 3. Select your application name _${POD_NAME}-sock-shop_ from the list to view it's configuration.
 
