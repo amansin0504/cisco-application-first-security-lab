@@ -50,8 +50,6 @@ echo "---------------------------------------------------------"
 echo " "
 
 # (TBD) Mark your EKS cluster private and Allow SG communitcation from outside 
-# read answer
-# if yes move forward else go back
 
 #Login to Gitlab UI and Create Personal Access Token for api/git calls
 sleep 2
@@ -89,7 +87,7 @@ echo "## Step 4: Register the GitLab Runner to the Front End Gitlab project."
 echo "###########################################################################"
 echo -e "Go to link \e[32mhttp://$AWS_GITLAB_FQDN/root/Front-End/-/settings/ci_cd\e[0m"
 echo "Expand the Runners section and copy the registration token."
-echo "We will now register a Runner to your private GitLab instance to run the CI/CD pipeline jobs."
+echo "We will register a Runner to your private GitLab instance to run the CI/CD pipeline jobs."
 echo "--------------------------------------------------------------------------------------------------"
 echo "Enter the Gitlab Runner Registration token:"
 read RUNNER_TOKEN
@@ -160,10 +158,6 @@ else
 fi
 sleep 1
 
-echo " "
-echo "---------------------------------------------------"
-echo "Added the environment variables for CI/CD Pipeline."
-echo "---------------------------------------------------"
 echo " "
 
 #Set up the private Git Client Repo

@@ -25,14 +25,14 @@ spinner $!
 #Set up the permanent AWS credentials on cloud9
 echo " "
 echo "-------------------------------"
-echo "In order to access AWS resources from cloud9 terminal we need to set up the Access Keys."
+echo "In order to access AWS resources from cloud9 terminal we need to set up the AWS Access Keys."
 echo "You will be prompted for the AWS Access key ID and AWS Secret Access Key now."
 echo "Switch to the IAM console you left open in previous section to copy the values (Create AWS CloudFormation Stack - Step 10)."
 echo "-------------------------------"
-read -p "AWS Access Key ID: " message
-aws configure set aws_access_key_id $message
-read -p "AWS Secret Access Key ID: " message
-aws configure set aws_secret_access_key $message
+read -p "AWS Access Key ID: " awskeyval
+aws configure set aws_access_key_id $awskeyval
+read -p "AWS Secret Access Key ID: " awskeyval
+aws configure set aws_secret_access_key $awskeyval
 aws configure set default.region $(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | jq .region -r)
 echo "-------------------------------"
 
@@ -98,7 +98,7 @@ cd ~/environment
 # remove cloud9 default readme
 README="$HOME/environment/README.md"
 if test -f $README; then
-  echo "INFO: Removing $README"
+  echo "INFO: Removing the default cloud9 $README"
   rm $README
 fi
 
