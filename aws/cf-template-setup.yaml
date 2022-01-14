@@ -55,15 +55,15 @@ Parameters:
   PodPassword:
     Description: "Password for Pod. User defined or use value provided in DevNet Sandbox email."
     Type: String
-    Default: 7U$wfqD]2^&R8R
+    Default: samplepassword
   DuoSecret:
     Description: "Secret used to configure Duo. *Must* use value provided in DevNet Sandbox email."
     Type: String
-    Default:  54537YJd!u^O6f
+    Default:  samplesecret
   SwcSecret:
     Description: "Secret used for Stealthwatch Cloud Kubernetes agents. *Must* use value provided in DevNet Sandbox email."
     Type: String
-    Default: 8baDtSGIvKamFjuj6rEqf6owOWsyfC0vBAlLcBQF17bTHhtBWD
+    Default: samplesecret
   DevNetEmail:
     Description: "Email used with your DevNet account. *Must* use value provided in DevNet Sandbox email."
     Type: String
