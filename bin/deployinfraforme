@@ -188,6 +188,7 @@ else
 fi
 echo " "
 
+
 #Add the Sock Shop credentials and display the access link
 sleep 2
 echo "###########################################################################"
@@ -211,8 +212,6 @@ else
 fi
 echo "---------------------------------------------------------------------"
 
-echo "
-
 #Create load test application
 sleep 2
 echo "###########################################################################"
@@ -222,6 +221,8 @@ kubectl create namespace sock-shop-test
 envsubst <$LAB/sock-shop/sock-shop-test.yaml | kubectl apply -f -
 echo " "
 
+
+echo "
 
 Execute the following command to complete the solution:
 
