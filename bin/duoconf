@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+print("Deprecated")
+exit()
+
 import os, json, requests, phonenumbers
 
 print("In order to complete the Duo portion of this lab, we need to set your phone number for secondary authenticaiton.\n")

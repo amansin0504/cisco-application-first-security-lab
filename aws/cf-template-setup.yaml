@@ -56,10 +56,18 @@ Parameters:
     Description: "Password for Pod. User defined or use value provided in DevNet Sandbox email."
     Type: String
     Default: samplepassword
-  DuoSecret:
-    Description: "Secret used to configure Duo. *Must* use value provided in DevNet Sandbox email."
+  DuoIkey:
+    Description: "Duo Web SDK application's integration key. *Must* use value provided in DevNet Sandbox email."
     Type: String
-    Default:  samplesecret
+    Default: sampleikey
+  DuoSkey:
+    Description: "Duo Web SDK application's secret key. *Must* use value provided in DevNet Sandbox email."
+    Type: String
+    Default: sampleskey
+  DuoHost:
+    Description: "Duo Web SDK API hostname. *Must* use value provided in DevNet Sandbox email."
+    Type: String
+    Default: apihost
   SwcSecret:
     Description: "Secret used for Stealthwatch Cloud Kubernetes agents. *Must* use value provided in DevNet Sandbox email."
     Type: String
@@ -619,12 +627,24 @@ Outputs:
   PodPassword:
     Description: Cisco App-First Sec password for pod
     Value: !Ref PodPassword
-  DuoSecret:
-    Description: Cisco App-First Sec secret to configure Duo
-    Value: !Ref DuoSecret
+  DuoIkey:
+    Description: Duo Web SDK application's integration key
+    Value: !Ref DuoIkey
+  DuoSkey:
+    Description: Duo Web SDK application's secret key
+    Value: !Ref DuoSkey
+  DuoHost:
+    Description: Duo Web SDK API hostname
+    Value: !Ref DuoHost
   SwcSecret:
     Description: Cisco App-First Sec SWC secret for Kubernetes agents
     Value: !Ref SwcSecret
+  AwsAccountId:
+    Description: AWS account ID of the account in which this stack is being created
+    Value: !Ref: AWS::AccountId
+  IamUserName:
+    Description:
+    Value: !Ref: PodName
 
   HubVPC:
     Description: Hub VPC

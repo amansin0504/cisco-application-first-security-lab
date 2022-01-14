@@ -1349,36 +1349,6 @@ You'll instrument Duo MFA into the Sock Shop so that users of the application mu
   * [CI/CD pipeline automation](#ci/cd-pipeline-automation)
   * [Validate authentication with Duo MFA](#validate-authentication-with-duo-mfa)
 
-
-#### Set Duo Admin Credentials
-
-We're using a pre-defined email of _${POD_NAME}@cisco.com_ to give access to the Duo Admin portal.
-
-1. Return to the Cloud9 environment and select a terminal tab in the bottom right pane
-
-2. Use the _duoconf_ script to configure the Duo Admin portal with your phone number for multi-factor authentication (MFA) in addition to transparenly setting your admin password to _${POD_PASSWORD}_. The phone number you provide will receive SMS messages, so normal messaging costs might apply.
-
-    > **NOTE**
-    >
-    > The script will validate the phone number format and if it's deemed invalid, you'll be prompted to provide it again. [E.164 format](https://www.google.com/search?q=e.164%20format) for this number is required.
-
-    ###### Command
-
-    ```
-    duoconf
-    ```
-
-    ###### Output
-
-    ```
-    Enter your phone number in E.164 format (example: +1 408 555 5555):
-    ```
-
-3. Confirm you can log into the Duo Admin management interface
-
-    > [https://admin.duosecurity.com/](https://admin.duosecurity.com/)
-
-
 #### Instrument the Sock Shop with Duo
 
 Duo Web SDK makes it easy to add strong two-factor authentication to your web application, complete with inline self-service enrollment and Duo Prompt.
@@ -1463,18 +1433,6 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     ###### Output
 
     ```
-    Integration key:
-    123abc123abc123abc123abc123abc
-
-    Secret key:
-    123abc123abc123abc123abc123abc
-
-    API hostname:
-    api-123abc.duosecurity.com
-
-    Application key (auto-generated):
-    123abc123abc123abc123abc123abc
-
     Kubernetes secret object YAML:
     apiVersion: v1
     kind: Secret
