@@ -641,10 +641,10 @@ Outputs:
     Value: !Ref SwcSecret
   AwsAccountId:
     Description: AWS account ID of the account in which this stack is being created
-    Value: !Ref: AWS::AccountId
-  IamUserName:
-    Description:
-    Value: !Ref: PodName
+    Value: !Ref AWS::AccountId
+  IamUserName: 
+    Description: Cisco App-First Sec name of user
+    Value: !Ref PodName
 
   HubVPC:
     Description: Hub VPC
