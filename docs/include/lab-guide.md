@@ -22,7 +22,7 @@ WARNING: This file is intended to be used within Cloud9 in preview mode for the 
 
 # Cisco Application-First Security Lab
 
-You're about to start on a doozy of lab that covers a lot of ground in a short time. Buckle in and get ready to secure a cloud-native application and public cloud infrastructure using Cisco Products: Tetration, Secure Cloud Analytics Cloud, and Duo. You'll stage the infrastructure, modify and deploy the application, instrument the security products into the environment. In the process, you'll get your hands dirty with products and technologies including git, Kubernetes, GitHub, Docker, AWS and others.
+You're about to start on a doozy of lab that covers a lot of ground in a short time. Buckle in and get ready to secure a cloud-native application and public cloud infrastructure using Cisco Products: Cisco Secure Workload, Secure Cloud Analytics Cloud, and Duo. You'll stage the infrastructure, modify and deploy the application, instrument the security products into the environment. In the process, you'll get your hands dirty with products and technologies including git, Kubernetes, GitHub, Docker, AWS and others.
 
 <img class="no-decoration" src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/arch2.png" alt="arch2.png" />
 
@@ -34,7 +34,7 @@ You're about to start on a doozy of lab that covers a lot of ground in a short t
 
 ## Overview of Cisco Application-First Security
 
-[Cisco's Application-First Security](https://www.cisco.com/c/en/us/solutions/security/application-first-security/index.html) solution enables you to gain visibility into application behavior and increase the effectiveness of security controls by combining capabilities of best-in-class products including Tetration, Secure Cloud Analytics Cloud, Duo Beyond and AppDynamics. Key features include:
+[Cisco's Application-First Security](https://www.cisco.com/c/en/us/solutions/security/application-first-security/index.html) solution enables you to gain visibility into application behavior and increase the effectiveness of security controls by combining capabilities of best-in-class products including Secure Workload, Secure Cloud Analytics Cloud, Duo Beyond and AppDynamics. Key features include:
 
 * _Closer to the application_: Security closer to your application gives you insight and context of your applications so you can easily make intelligent decisions to protect them.
 * _Continuous as application changes_: Application-First Security follows your applications as it changes and moves to ensure continuous protections in your digital business.
@@ -84,7 +84,7 @@ This section of the lab will have you prepare the public cloud infrastructure an
 There are five management interfaces that you will need to access to complete this lab. You'll be provided with links throughout the lab that will direct you to the following interfaces:
 
 * [AWS Management Console - https://${AWS_REGION}.console.aws.amazon.com/](https://${AWS_REGION}.console.aws.amazon.com/)
-* [Tetration - https://tet-pov-rtp1.cpoc.co/](https://tet-pov-rtp1.cpoc.co/)
+* [Secure Workload - https://tet-pov-rtp1.cpoc.co/](https://tet-pov-rtp1.cpoc.co/)
 * [Secure Cloud Analytics Cloud - https://cisco-${POD_NAME}.obsrvbl.com](https://cisco-${POD_NAME}.obsrvbl.com)
 * [Duo - https://admin.duosecurity.com/](https://admin.duosecurity.com/)
 * [GitLab - http://${AWS_GITLAB_FQDN}/](http://${AWS_GITLAB_FQDN}/)
@@ -99,7 +99,7 @@ The details below will be used for credentials unless you decide to use differen
 | Product                                                               | Username / Email            | Password                      |
 | ----------------------------------------------------------------------| --------------------------- | ----------------------------- |
 | [AWS](https://${AWS_REGION}.console.aws.amazon.com/)                  | ${POD_NAME}                 | ${POD_PASSWORD}               |
-| [Tetration](https://tet-pov-rtp1.cpoc.co/)                            | ${DEVNET_EMAIL_ADDRESS}     | ${POD_PASSWORD} (recommended) |
+| [Secure Workload](https://tet-pov-rtp1.cpoc.co/)                            | ${DEVNET_EMAIL_ADDRESS}     | ${POD_PASSWORD} (recommended) |
 | [Secure Cloud Analytics Cloud](https://cisco-${POD_NAME}.obsrvbl.com) | ${DEVNET_EMAIL_ADDRESS}     | ${POD_PASSWORD} (recommended) |
 | [Duo](https://admin.duosecurity.com/)                                 | ${POD_NAME}@cisco.com       | ${POD_PASSWORD}               |
 
@@ -1403,26 +1403,11 @@ Kubernetes _secret_ objects let you store and manage sensitive information, such
 
 You'll store four secrets in Kubernetes that will be available to the front-end service as environment variables. These secrets corrispond to the Duo Web SDK Application configured in the administrative portal.
 
-1. View the Duo Web SDK Applications from the administrative portal in a web browser.
-
-    > [https://admin.duosecurity.com/applications](https://admin.duosecurity.com/applications)
-
-2. Login using the following values.
-
-    | Field                 | Value                                        |
-    | --------------------- | -------------------------------------------- |
-    | Email                 | ${POD_NAME}@cisco.com                        |
-    | Password              | _${POD_PASSWORD}_                            |
-
-3. Select your application name _${POD_NAME}-sock-shop_ from the list to view it's configuration.
-
-    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191022122800995.png" alt="image-20191022122800995" style="zoom:50%;" />
-
-4. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
+1. Return to the Cloud9 IDE and access a terminal tab in the bottom right pane.
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191017202329590.png" alt="image-20191017202329590" style="zoom:50%;" />
 
-5. Use the _duosecrets_ helper script to create a Kubernetes secret object with the values from the Duo Web SDK Application you opened in a previous step. You'll need to move back and forth between the Duo administrative portal and the Cloud9 IDE terminal as you copy and paste values.
+2. Use the _duosecrets_ helper script to create a Kubernetes secret object with the values from the Duo Web SDK Application you opened in a previous step. You'll need to move back and forth between the Duo administrative portal and the Cloud9 IDE terminal as you copy and paste values.
 
     ###### Command
 
@@ -1450,7 +1435,7 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     secret/duo configured
     ```
 
-6. Confirm the secret exists in Kubernetes where the front-end pods will be able to reach them.
+3. Confirm the secret exists in Kubernetes where the front-end pods will be able to reach them.
 
     ###### Command
 
@@ -1566,15 +1551,13 @@ The git push action in last section will trigger the CI/CD pipeline run. The pip
     >
     > You'll also see _EXPOSE 8079_, which surprisingly does *not* expose that port to external connections. It functions as a type of documentation between the person who builds the image and the person who runs the container, about which ports are intended to be published.
 
-3. Go back to CI/CD pipeline on GitLab console. The pipeline should be running at this point. Click on _docker build_ stage and review the logs. The GitLab pipeline will use the Dockerfile instructions to build a new container image and then push it to ECR repository in an automated manner.
+3. Go back to CI/CD pipeline on GitLab console. The pipeline should be running at this point. Click on the running pipeline and _docker build_ stage and review the logs. The GitLab pipeline will use the Dockerfile instructions to build a new container image and then push it to ECR repository in an automated manner.
 
-    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)
+    > [http://${AWS_GITLAB_FQDN}/root/Front-End/-/pipelines](http://${AWS_GITLAB_FQDN}/root/Front-End/-/pipelines)
 
     ###### Output
 
     ```
-    Status: Downloaded newer image for node:10-alpine
-    ---> aa67ba258e18
     ...
     Successfully built c943e92677c7
     Successfully tagged 904585389016.dkr.ecr.us-west-2.amazonaws.com/sock-shop/front-end:2826b06c6d28b03e629c75d61e7a7024e807d38e
@@ -1586,14 +1569,9 @@ The git push action in last section will trigger the CI/CD pipeline run. The pip
     >
     > If you were to rebuild this container image, the Docker daemon would reuse layers from the first build to reuse for build this image, which speeds up the build process and saves on resources.
 
-4. Once the image is built, the pipeline moves to the next stage and tests the newly build image by running it. You can click _docker_test_ stage to review the logs.
+5. Last stage of the pipeline is _deployment_, which will require manual input from you. Once you click on play button, the pipeline will resume and deploy the Front End image with Duo MFA to the EKS cluster deployment.
 
-    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)
-
-
-5. Last stage is _deployment_, which will require manual input from you. Once you click on play button, the pipeline will resume and deploy the Front End image with Duo MFA to the EKS cluster deployment.
-
-    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)
+    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)](http://${AWS_GITLAB_FQDN}/root/Front-End/-/pipelines)
 
 6. Ensure that the new front-end pod has started and is in a _Running_ status. You'll see that the _AGE_ will be lesser than the rest of the running pods. You can also verify the image tag using _kubectl describe deployment front-end -n sock-shop | grep Image:_ command.
 
@@ -2136,7 +2114,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     clusterrolebinding.rbac.authorization.k8s.io/tetration-read-only-binding created
     ```
 
-2. Get the the token for the tetration-read-only sevice account to use when entering the Kubernetes configuration into Tetration in future steps. There's nothing to do with the output for now other than confirm you have it ready.
+2. Get the the token for the tetration-read-only sevice account to use when entering the Kubernetes configuration into Secure Workload in future steps. There's nothing to do with the output for now other than confirm you have it ready.
 
     ###### Command
 
@@ -2203,7 +2181,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     | host name   | [Output from _aws eks describe-cluster_ from previous step] |
     | port number | 443                                                         |
 
-10. Click the _Create_ button. Once Tetration has successfully connected to the Kubernetes cluster, it will show a _Connection Status_ of _Success_.
+10. Click the _Create_ button. Once Secure Workload has successfully connected to the Kubernetes cluster, it will show a _Connection Status_ of _Success_.
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-connector.png" alt="image-connector" />
 
@@ -2215,7 +2193,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
 
 #### Integrate EKS cluster with Secure Workload 
 
-1. Visit the Tetration Software Agents Installer administrative page in your browser. Log in with the credentials that you set in the previous step.
+1. Visit the Secure Workload Software Agents Installer administrative page in your browser. Log in with the credentials that you set in the previous step.
 
     > https://tet-pov-rtp1.cpoc.co/#/software-agents/installer
 
@@ -2223,7 +2201,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200716014019.png" alt="image-20200716014019" style="zoom:50%;" />
 
-3. Ensure the following fields match the platform values and click the _Download Installer_ button. This will download an agent installation script specific to your Tetration tenant. The file name should look like _tetration_installer_${POD_NAME}_enforcer_kubernetes_tet-pov-rtp1.sh_.
+3. Ensure the following fields match the platform values and click the _Download Installer_ button. This will download an agent installation script specific to your Secure Workload tenant. The file name should look like _tetration_installer_${POD_NAME}_enforcer_kubernetes_tet-pov-rtp1.sh_.
 
     | Field                                                   | Value                                                        |
     | --------------------------------------------------------| ------------------------------------------------------------ |
@@ -2236,7 +2214,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     >
     > If your web browser throws an error stating that downloading the installer shell script could do harm to your computer, you can safely ignore it and keep the file.
 
-2. When you ran the CloudFormation template it created an S3 bucket with a policy that allows Cloud9 host to access objects in the bucket. You'll put the Tetration agent in that bucket so download it on Cloud9 host and install the tetration agent daemonset to EKS cluster. Access the S3 management console where you'll upload the Tetration agent installer.
+2. When you ran the CloudFormation template it created an S3 bucket with a policy that allows Cloud9 host to access objects in the bucket. You'll put the Secure Workload agent in that bucket so download it on Cloud9 host and install the Secure Workload agent daemonset to EKS cluster. Access the S3 management console where you'll upload the Secure Workload agent installer.
 
     > https://s3.console.aws.amazon.com/s3/buckets/${AWS_TET_AGENT_BUCKET}/?region=${AWS_REGION}
 
@@ -2244,7 +2222,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-awsupload.png" alt="image-awsupload" style="zoom:50%;" />
 
-4. Click the _Add files_ button. Select the Tetration agent installer you downloaded in a previous step. It will be named similar to _tetration_installer_${POD_NAME}_enforcer_linux_tet-pov-rtp1.sh_.
+4. Click the _Add files_ button. Select the Secure Workload agent installer you downloaded in a previous step. It will be named similar to _tetration_installer_${POD_NAME}_enforcer_linux_tet-pov-rtp1.sh_.
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-awsaddfiles.png" alt="image-awsaddfiles" style="zoom:50%;" />
 
@@ -2272,7 +2250,7 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
     download: s3://cisco-app-first-sec-hubciscoappfirstseclabfilesbu-1xolk3re6mdk8/tetration_installer_app-first-sec-31_enforcer_kubernetes_tet-pov-rtp1.sh to ./tetration_installer_app-first-sec-31_enforcer_kubernetes_tet-pov-rtp1.sh
     ```
 
-5. Run the download bash script to install tetration daemonset objects on the EKS cluster
+5. Run the download bash script to install Secure Workload daemonset objects on the EKS cluster
 
     ###### Command
 
@@ -2284,13 +2262,13 @@ Create AWS IAM policy and user for Secure Workload with restrictive permissions 
 
     ```
     -------------------------------------------------------------
-    Starting Tetration Analytics Installer for Kubernetes install
+    Starting Secure Workload Installer for Kubernetes install
     -------------------------------------------------------------
     Location of Kubernetes credentials file is /home/ec2-user/.kube/config
     The following Helm Chart will be installed
     apiVersion: v2
     appVersion: 3.6.0-17-enforcer
-    description: Tetration Enforcer Agent
+    description: Secure Workload Enforcer Agent
     name: tetration-agent
     type: application
     version: 3.6.0-17-enforcer

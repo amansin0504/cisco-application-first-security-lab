@@ -15,15 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. */
 
- (function() {
+(function() {
     'use strict';
 
     var async = require("async"), express = require("express"), request = require("request"), endpoints = require("../endpoints"), helpers = require("../../helpers"), app = express(), cookie_name = "logged_in"
 
     //DUO
     var http = require('http'), url = require('url'), qs = require('querystring'), duo_web = require('../../helpers/duo.js')
-    var duo_post_action = '/2fa', duo_ikey = process.env.DUO_IKEY, duo_skey = process.env.DUO_SKEY, duo_akey = process.env.DUO_AKEY, duo_api_hostname = process.env.DUO_API_HOSTNAME
-console.log(duo_ikey, duo_skey, duo_akey, duo_api_hostname)
+    var duo_post_action = '/2fa', duo_ikey = process.env.DUO_IKEY, duo_skey = process.env.DUO_SKEY, duo_api_hostname = process.env.DUO_API_HOSTNAME
+console.log(duo_ikey, duo_skey, duo_api_hostname)
     var duo_iframe = (duo_api_hostname, duo_sig_request, duo_post_action) => {
       return `<!DOCTYPE html>
       <html>
@@ -315,8 +315,8 @@ console.log(duo_ikey, duo_skey, duo_akey, duo_api_hostname)
     //DUO
     app.get(duo_post_action, function(req, res, next) {
         console.log("Received 2fa request");
-        console.log(duo_ikey, duo_skey, duo_akey, req.session.username)
-        let duo_sig_request = duo_web.sign_request(duo_ikey, duo_skey, duo_akey, req.session.username)
+        console.log(duo_ikey, duo_skey, req.session.username)
+        let duo_sig_request = duo_web.sign_request(duo_ikey, duo_skey, req.session.username)
         let duo_frame = duo_iframe(duo_api_hostname, duo_sig_request, duo_post_action)
         res.writeHead(200, {'Content-Type': 'text/html'})
         res.end(duo_frame)
@@ -337,7 +337,7 @@ console.log(duo_ikey, duo_skey, duo_akey, duo_api_hostname)
         let form_data = qs.parse(request_body)
         let duo_sig_response = form_data.sig_response
         // verifies that the signed response is legitimate
-        let authenticated_username = duo_web.verify_response(duo_ikey, duo_skey, duo_akey, duo_sig_response)
+        let authenticated_username = duo_web.verify_response(duo_ikey, duo_skey, duo_sig_response)
         if (authenticated_username) {
           console.log('Authenticated')
           res.cookie(cookie_name, req.session.id, {
