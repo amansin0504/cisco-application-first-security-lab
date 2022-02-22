@@ -1039,7 +1039,7 @@ In software development lifecycle, an application goes through a series of stage
 
 In this section, you will create a project for Front-End microservice of Sock Shop application on your private GitLab Instance. You will then set up your local environment on Cloud9 IDE and configure the git client to point to your private Front-End project on the GitLab Instance. We have already hosted a private Gitlab instance in AWS Hub VPC for you.
 
-After the local and remote repositories are set up, you will set up a CI/CD pipeline for your _Sock-Shop-Front-End_ GitLab project and automate the testing, building and deployment of the Front End microservice to EKS cluster.
+After the local and remote repositories are set up, you will set up a CI/CD pipeline for your _Front-End_ GitLab project and automate the testing, building and deployment of the Front End microservice to EKS cluster.
 
 
 #### Steps
@@ -1049,7 +1049,7 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
 
 ##### Setup Private GitLab environment
 
-1. Login to the Private GitLab console and navigate to _New project > Create blank project_ or use the link below. Enter the project name _Sock-Shop-Front-End_, uncheck the _Initialize repository with a README_ box and, create a new blank GitLab project. We will initialize the project in the next steps.
+1. Login to the Private GitLab console and navigate to _New project > Create blank project_ or use the link below. Enter the project name _Front-End_, uncheck the _Initialize repository with a README_ box and, create a new blank GitLab project. We will initialize the project in the next steps.
 
     > [http://${AWS_GITLAB_FQDN}/projects/new#blank_project](http://${AWS_GITLAB_FQDN}/projects/new#blank_project)
 
@@ -1085,13 +1085,13 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
     ###### Command
 
     ```
-    git clone https://github.com/amansin0504/front-end.git Sock-Shop-Front-End && cd Sock-Shop-Front-End
+    git clone https://github.com/amansin0504/front-end.git Front-End && cd Front-End
     ```
 
     ###### Output
 
     ```
-    Cloning into 'Sock-Shop-Front-End'...
+    Cloning into 'Front-End'...
     remote: Enumerating objects: 984, done.
     remote: Counting objects: 100% (984/984), done.
     remote: Compressing objects: 100% (409/409), done.
@@ -1113,7 +1113,7 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
     ###### Command
 
     ```
-    git remote rm origin && git remote add origin http://Administrator:$GITLAB_TOKEN@$AWS_GITLAB_FQDN/root/sock-shop-front-end.git
+    git remote rm origin && git remote add origin http://Administrator:$GITLAB_TOKEN@$AWS_GITLAB_FQDN/root/front-end.git
     ```
 6. Push the local changes to the private GitLab project.
 
@@ -1132,14 +1132,14 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
     Writing objects: 100% (984/984), 47.89 MiB | 36.49 MiB/s, done.
     Total 984 (delta 529), reused 984 (delta 529)
     remote: Resolving deltas: 100% (529/529), done.
-    To http://ec2-34-209-184-71.us-west-2.compute.amazonaws.com/root/sock-shop-front-end.git
+    To http://ec2-34-209-184-71.us-west-2.compute.amazonaws.com/root/front-end.git
     * [new branch]      main -> main
     Branch 'main' set up to track remote branch 'main' from 'origin'.
     ```
 
 ##### Setup CICD Pipeline
 
-In this section, you will set up a CI/CD pipeline for your newly created GitLab project _Sock-Shop-Front-End_. To use GitLab CI/CD, you need a file called .gitlab-ci.yml in the root of your repository, which contains the CI/CD configuration. In the .gitlab-ci.yml file, you can define the scripts and the commands that you want to run. The scripts are grouped into jobs, and jobs run as part of a larger pipeline. You can group multiple independent jobs into stages that run in a defined order. You should organize your jobs in a sequence that suits your application and is in accordance with the tests you wish to perform. To visualize the process, imagine the scripts you add to jobs are the same as CLI commands you run on your computer to build, test and deploy your application.
+In this section, you will set up a CI/CD pipeline for your newly created GitLab project _Front-End_. To use GitLab CI/CD, you need a file called .gitlab-ci.yml in the root of your repository, which contains the CI/CD configuration. In the .gitlab-ci.yml file, you can define the scripts and the commands that you want to run. The scripts are grouped into jobs, and jobs run as part of a larger pipeline. You can group multiple independent jobs into stages that run in a defined order. You should organize your jobs in a sequence that suits your application and is in accordance with the tests you wish to perform. To visualize the process, imagine the scripts you add to jobs are the same as CLI commands you run on your computer to build, test and deploy your application.
 
 When you add a _.gitlab-ci.yml_ file to your repository, GitLab detects it and an application called [GitLab Runner](https://docs.gitlab.com/runner/) runs the scripts or jobs defined in the pipeline configuration.
 
@@ -1147,9 +1147,9 @@ In this section of the lab, you will set up the GitLab runner application to run
 
 An AWS Elastic Container Registry (ECR) is already set up as part of initial lab set up, pipeline will use this registry to push container images that will be build as part of the CI/CD pipeline workflow. You will then deploy the pushed ECR image to update your Sock Shop application running on EKS cluster.
 
-1. Navigate to _Administrator/Sock-Shop-Front-End > Settings > CI/CD_ or use the link below. Expand the _Variables_ section add the following key-value pairs as environment variables.
+1. Navigate to _Administrator/Front-End > Settings > CI/CD_ or use the link below. Expand the _Variables_ section add the following key-value pairs as environment variables.
 
-    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd)
+    > [http://${AWS_GITLAB_FQDN}/root/front-end/-/settings/ci_cd](http://${AWS_GITLAB_FQDN}/root/front-end/-/settings/ci_cd)
 
 
   | Key                       | Value                       |
@@ -1166,9 +1166,9 @@ An AWS Elastic Container Registry (ECR) is already set up as part of initial lab
     >
 
 
-2. Navigate to _Administrator/Sock-Shop-Front-End > Settings > CI/CD_ or use the link below. Expand the _Runners_ section and copy the registration token and export it as environment variable.
+2. Navigate to _Administrator/Front-End > Settings > CI/CD_ or use the link below. Expand the _Runners_ section and copy the registration token and export it as environment variable.
 
-    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/settings/ci_cd)
+    > [http://${AWS_GITLAB_FQDN}/root/front-end/-/settings/ci_cd](http://${AWS_GITLAB_FQDN}/root/front-end/-/settings/ci_cd)
 
 
     ###### Command
@@ -1226,13 +1226,13 @@ An AWS Elastic Container Registry (ECR) is already set up as part of initial lab
     Runner registered successfully. Feel free to start it, but if it's running already the config should be automatically reloaded!
     ```
 
-4. Navigate to _Administrator/Sock-Shop-Front-End > CICD > Pipeline_ on GitLab console or use the link below. A new pipeline run should be triggered.
+4. Navigate to _Administrator/Front-End > CICD > Pipeline_ on GitLab console or use the link below. A new pipeline run should be triggered.
 
-    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)
+    > [http://${AWS_GITLAB_FQDN}/root/front-end/-/pipelines](http://${AWS_GITLAB_FQDN}/root/front-end/-/pipelines)
 
-5. While the pipeline is running, review the _.gitlab-ci.yml_ file under the GitLab _Sock-Shop-Front-End_ project to see the tasks performed at various stages of pipeline.
+5. While the pipeline is running, review the _.gitlab-ci.yml_ file under the GitLab _Front-End_ project to see the tasks performed at various stages of pipeline.
 
-    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/ci/editor)
+    > [http://${AWS_GITLAB_FQDN}/root/front-end/-/ci/editor](http://${AWS_GITLAB_FQDN}/root/front-end/-/ci/editor)
 
     Under the _script_ section of the _Building_ stage, the pipeline will build a new Front End Sock Shop container image and push it to the AWS ECR registry.
 
@@ -1271,7 +1271,7 @@ An AWS Elastic Container Registry (ECR) is already set up as part of initial lab
 
 6. Return to CI/CD pipeline run. Once the testing stage completes, verify that the newly built frontend image is pushed to the private ECR registry.
 
-    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines](http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)
+    > [http://${AWS_GITLAB_FQDN}/root/front-end/-/pipelines](http://${AWS_GITLAB_FQDN}/root/front-end/-/pipelines)
 
     ###### Command
 
@@ -1465,7 +1465,7 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     ###### Command
 
     ```
-    cd $HOME/environment/Sock-Shop-Front-End
+    cd $HOME/environment/Front-End
     ```
 
 3. Copy the three source files in _${DOLLAR_SIGN}LAB/src/duo/_ that are already instrumented with a Duo MFA login process into the cloned front-end repository.
@@ -1543,7 +1543,7 @@ Docker can automatically build images by reading the instructions from a Dockerf
 The git push action in last section will trigger the CI/CD pipeline run. The pipeline will build a new Front-End container image using the dockerfile present in the repo and then, push the newly built image to the private registry in ECR.
 
 
-1. Review _$HOME/environment/Sock-Shop-Front-End/Dockerfile_, which contains the instructions to build the front-end container image.
+1. Review _$HOME/environment/Front-End/Dockerfile_, which contains the instructions to build the front-end container image.
 
     The line _ENV PORT 8079_ defines an environment variable that the service will read when starting to define what TCP port to listen on. When running that container image in a future step, you will need to specify what port on the host to map to the container's internal port.
 
@@ -1571,7 +1571,7 @@ The git push action in last section will trigger the CI/CD pipeline run. The pip
 
 5. Last stage of the pipeline is _deployment_, which will require manual input from you. Once you click on play button, the pipeline will resume and deploy the Front End image with Duo MFA to the EKS cluster deployment.
 
-    > [http://${AWS_GITLAB_FQDN}/root/sock-shop-front-end/-/pipelines)](http://${AWS_GITLAB_FQDN}/root/Front-End/-/pipelines)
+    > [http://${AWS_GITLAB_FQDN}/root/front-end/-/pipelines)](http://${AWS_GITLAB_FQDN}/root/Front-End/-/pipelines)
 
 6. Ensure that the new front-end pod has started and is in a _Running_ status. You'll see that the _AGE_ will be lesser than the rest of the running pods. You can also verify the image tag using _kubectl describe deployment front-end -n sock-shop | grep Image:_ command.
 

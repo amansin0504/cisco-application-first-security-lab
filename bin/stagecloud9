@@ -133,10 +133,9 @@ echo "export CLOUD9_IP_ADDRESS='`hostname -i`'" >> $BASHRC_LAB
 echo "export AWS_REGION='`aws configure get region`'" >> $BASHRC_LAB
 echo "export POD_NAME='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PodName").OutputValue'`'" >> $BASHRC_LAB
 echo "export POD_PASSWORD='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PodPassword").OutputValue'`'" >> $BASHRC_LAB
-echo "export DUO_IKEY='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="DuoIkey").OutputValue' | base64`'" >> $BASHRC_LAB #UPDATE
-echo "export DUO_SKEY='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="DuoSkey").OutputValue' | base64`'" >> $BASHRC_LAB #UPDATE
-echo "export DUO_API_HOSTNAME='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="DuoHost").OutputValue' | base64`'" >> $BASHRC_LAB #UPDATE
-echo "export DUO_SECRET='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="DuoSecret").OutputValue'`'" >> $BASHRC_LAB
+echo "export DUO_IKEY_INPUT='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="DuoIkey").OutputValue' | base64`'" >> $BASHRC_LAB #UPDATE
+echo "export DUO_SKEY_INPUT='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="DuoSkey").OutputValue' | base64`'" >> $BASHRC_LAB #UPDATE
+echo "export DUO_API_HOSTNAME_INPUT='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="DuoHost").OutputValue' | base64`'" >> $BASHRC_LAB #UPDATE
 echo "export SWC_K8S_SA_SECRET='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="SwcSecret").OutputValue'`'" >> $BASHRC_LAB
 echo "export DEVNET_EMAIL_ADDRESS='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="DevNetEmail").OutputValue'`'" >> $BASHRC_LAB
 echo "export VISUAL=vim" >> $BASHRC_LAB
