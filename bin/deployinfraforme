@@ -220,7 +220,7 @@ echo "##########################################################################
 kubectl create namespace sock-shop-test
 envsubst <$LAB/sock-shop/sock-shop-test.yaml | kubectl apply -f -
 echo " "
-
+kubectl config set-context --current --namespace=sock-shop
 
 echo "
 

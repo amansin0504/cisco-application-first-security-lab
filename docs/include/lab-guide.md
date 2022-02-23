@@ -1465,7 +1465,7 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     ###### Command
 
     ```
-    cd $HOME/environment/Front-End
+    cd $HOME/environment/Sock-Shop-Front-End 
     ```
 
 3. Copy the three source files in _${DOLLAR_SIGN}LAB/src/duo/_ that are already instrumented with a Duo MFA login process into the cloned front-end repository.

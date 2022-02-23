@@ -109,6 +109,7 @@ if ! grep -q "source $BASHRC_LAB" $BASHRC; then
     echo "source $BASHRC_LAB" >> $BASHRC
 fi
 export AWS_ENV_NAME=`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PodName").OutputValue'` #UPDATE
+DUO_AKEY_INPUT=`~/environment/lab/bin/duoakey`  #UPDATE
 echo -n "" > $BASHRC_LAB
 echo "export AWS_ACCESS_KEY=$(grep aws_access_key_id ~/.aws/credentials | awk '{ print $3 }')" >> $BASHRC_LAB  #UPDATE
 echo "export AWS_SECRET_ACCESS=$(grep aws_secret_access_key ~/.aws/credentials | awk '{ print $3 }')" >> $BASHRC_LAB  #UPDATE
@@ -133,9 +134,10 @@ echo "export CLOUD9_IP_ADDRESS='`hostname -i`'" >> $BASHRC_LAB
 echo "export AWS_REGION='`aws configure get region`'" >> $BASHRC_LAB
 echo "export POD_NAME='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PodName").OutputValue'`'" >> $BASHRC_LAB
 echo "export POD_PASSWORD='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PodPassword").OutputValue'`'" >> $BASHRC_LAB
-echo "export DUO_IKEY_INPUT='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="DuoIkey").OutputValue' | base64`'" >> $BASHRC_LAB #UPDATE
-echo "export DUO_SKEY_INPUT='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="DuoSkey").OutputValue' | base64`'" >> $BASHRC_LAB #UPDATE
-echo "export DUO_API_HOSTNAME_INPUT='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="DuoHost").OutputValue' | base64`'" >> $BASHRC_LAB #UPDATE
+echo "export DUO_IKEY='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="DuoIkey").OutputValue' | base64`'" >> $BASHRC_LAB #UPDATE
+echo "export DUO_SKEY='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="DuoSkey").OutputValue' | base64`'" >> $BASHRC_LAB #UPDATE
+echo "export DUO_API_HOSTNAME='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="DuoHost").OutputValue' | base64`'" >> $BASHRC_LAB #UPDATE
+echo "export DUO_AKEY=`echo -n $DUO_AKEY_INPUT | base64`" >> $BASHRC_LAB
 echo "export SWC_K8S_SA_SECRET='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="SwcSecret").OutputValue'`'" >> $BASHRC_LAB
 echo "export DEVNET_EMAIL_ADDRESS='`aws cloudformation describe-stacks --stack-name ${AWS_CF_STACK_NAME} | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="DevNetEmail").OutputValue'`'" >> $BASHRC_LAB
 echo "export VISUAL=vim" >> $BASHRC_LAB
@@ -152,7 +154,7 @@ echo -n ${SWC_K8S_SA_SECRET} > ${HOME}/environment/lab/swc/swc-service-key.txt
 
 # update all config files using env vars #UPDATE
 find . -type f \( -iname \*.json -o -iname \*.yaml -o -iname \*.md -o -iname config -o -iname \*.txt \) | \
-  xargs -I % sh -c 'envsubst \$DUO_IKEY,\$DUO_SKEY,\$DUO_API_HOSTNAME,\$AWS_GITLAB_IP,\$AWS_GITLAB_FQDN,\$AWS_ACCESS_KEY,\$AWS_SECRET_ACCESS,\$DOCKER_REGISTRY,\$AWS_KEYPAIR_NAME,\$AWS_FLOW_LOG_BUCKET,\$AWS_CF_STACK_NAME,\$DEVNET_EMAIL_ADDRESS,\$CLOUD9_IP_ADDRESS,\$AWS_TET_AGENT_BUCKET,\$DOLLAR_SIGN,\$POD_NAME,\$POD_PASSWORD,\$VPC_PRIV_SUBNET_1_ID,\$VPC_PRIV_SUBNET_1_AZ,\$VPC_PRIV_SUBNET_2_ID,\$VPC_PRIV_SUBNET_2_AZ,\$VPC_PRIV_SUBNET_3_ID,\$VPC_PRIV_SUBNET_3_AZ,\$VPC_PUB_SUBNET_1_ID,\$VPC_PUB_SUBNET_2_ID,\$VPC_PUB_SUBNET_3_ID,\$AWS_ACCT_ID,\$AWS_REGION,\$SWC_K8S_SA_SECRET <% > %.tmp ; mv %.tmp %'
+  xargs -I % sh -c 'envsubst \$DUO_AKEY,\$DUO_IKEY,\$DUO_SKEY,\$DUO_API_HOSTNAME,\$AWS_GITLAB_IP,\$AWS_GITLAB_FQDN,\$AWS_ACCESS_KEY,\$AWS_SECRET_ACCESS,\$DOCKER_REGISTRY,\$AWS_KEYPAIR_NAME,\$AWS_FLOW_LOG_BUCKET,\$AWS_CF_STACK_NAME,\$DEVNET_EMAIL_ADDRESS,\$CLOUD9_IP_ADDRESS,\$AWS_TET_AGENT_BUCKET,\$DOLLAR_SIGN,\$POD_NAME,\$POD_PASSWORD,\$VPC_PRIV_SUBNET_1_ID,\$VPC_PRIV_SUBNET_1_AZ,\$VPC_PRIV_SUBNET_2_ID,\$VPC_PRIV_SUBNET_2_AZ,\$VPC_PRIV_SUBNET_3_ID,\$VPC_PRIV_SUBNET_3_AZ,\$VPC_PUB_SUBNET_1_ID,\$VPC_PUB_SUBNET_2_ID,\$VPC_PUB_SUBNET_3_ID,\$AWS_ACCT_ID,\$AWS_REGION,\$SWC_K8S_SA_SECRET <% > %.tmp ; mv %.tmp %'
 
 # install eksctl #UPDATE
 curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
