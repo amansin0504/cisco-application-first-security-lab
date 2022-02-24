@@ -1341,7 +1341,6 @@ You'll instrument Duo MFA into the Sock Shop so that users of the application mu
 
 ### Steps
 
-* [Set Duo Admin Credentials](#set-duo-admin-credentials)
 * [Instrument the Sock Shop with Duo](#instrument-the-sock-shop-with-duo)
   * [Validate authentication without MFA](#validate-authentication-without-mfa)
   * [Make Duo secrets available to Sock Shop](#make-duo-secrets-available-to-sock-shop)
@@ -1571,7 +1570,7 @@ The git push action in last section will trigger the CI/CD pipeline run. The pip
 
 5. Last stage of the pipeline is _deployment_, which will require manual input from you. Once you click on play button, the pipeline will resume and deploy the Front End image with Duo MFA to the EKS cluster deployment.
 
-    > [http://${AWS_GITLAB_FQDN}/root/front-end/-/pipelines)](http://${AWS_GITLAB_FQDN}/root/Front-End/-/pipelines)
+    > [http://${AWS_GITLAB_FQDN}/root/front-end/-/pipelines](http://${AWS_GITLAB_FQDN}/root/Front-End/-/pipelines)
 
 6. Ensure that the new front-end pod has started and is in a _Running_ status. You'll see that the _AGE_ will be lesser than the rest of the running pods. You can also verify the image tag using _kubectl describe deployment front-end -n sock-shop | grep Image:_ command.
 
