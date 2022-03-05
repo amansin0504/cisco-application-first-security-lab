@@ -1491,6 +1491,7 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     git add helpers/duo.js
     git add api/user/index.js
     git add public/js/client.js
+    git add sock-shop-duo.yaml
     ```
 
 5. Update the yaml manifest for front-end deployment object, to point to the lab container registry. Review the yaml.
