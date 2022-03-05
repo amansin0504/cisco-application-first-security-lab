@@ -48,7 +48,7 @@ echo "Lab Cleanup: Delete EKS Cluster"
 kubectl delete ns sock-shop
 kubectl delete ns sock-shop-test
 kubectl delete ns tetration 
-eksctl delete cluster --name app-first-sec
+eksctl delete cluster --name app-first-sec --disable-nodegroup-eviction
 
 echo "Lab cleanup: Delete ECR Registry"
 aws ecr delete-repository --repository-name sock-shop/front-end --region ${AWS_REGION} --force
