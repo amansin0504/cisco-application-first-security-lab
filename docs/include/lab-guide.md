@@ -1581,6 +1581,8 @@ The git push action in last section will trigger the CI/CD pipeline run. The pip
 
     > [http://${AWS_GITLAB_FQDN}/root/front-end/-/pipelines](http://${AWS_GITLAB_FQDN}/root/Front-End/-/pipelines)
 
+    <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-duodeploy.png" alt="image-duodeploy" style="zoom:50%;" />
+
 6. Ensure that the new front-end pod has started and is in a _Running_ status. You'll see that the _AGE_ will be lesser than the rest of the running pods. You can also verify the image tag using _kubectl describe deployment front-end -n sock-shop | grep Image:_ command.
 
     ###### Command
