@@ -504,7 +504,7 @@ Resources:
     Type: AWS::EC2::Instance
     DependsOn: [BastionSecurityGroup]
     Properties:
-      InstanceType: t2.medium
+      InstanceType: t3.xlarge
       ImageId:
         Fn::FindInMap:
           - "RegionMap"

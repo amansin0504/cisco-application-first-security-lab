@@ -1493,7 +1493,7 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     git add public/js/client.js
     ```
 
-5. Udpated the yaml manifest for front-end deployment object to point to the new container registry.
+5. Update the yaml manifest for front-end deployment object, to point to the lab container registry. Review the yaml.
 
     ###### Command
 
