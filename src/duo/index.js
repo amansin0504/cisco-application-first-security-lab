@@ -22,7 +22,8 @@
 
     //DUO
     var http = require('http'), url = require('url'), qs = require('querystring'), duo_web = require('../../helpers/duo.js')
-    var duo_post_action = '/2fa', duo_ikey = process.env.DUO_IKEY, duo_skey = process.env.DUO_SKEY, duo_akey = process.env.DUO_AKEY, duo_api_hostname = process.env.DUO_API_HOSTNAME
+    var duo_post_action = '/2fa', duo_ikey = process.env.DUO_IKEY.trim(), duo_skey = process.env.DUO_SKEY.trim(), duo_akey = process.env.DUO_AKEY.trim(), duo_api_hostname = process.env.DUO_API_HOSTNAME.trim()
+    //var duo_post_action = '/2fa', duo_ikey = process.env.DUO_IKEY, duo_skey = process.env.DUO_SKEY, duo_akey = process.env.DUO_AKEY, duo_api_hostname = process.env.DUO_API_HOSTNAME
 console.log(duo_ikey, duo_skey, duo_akey, duo_api_hostname)
     var duo_iframe = (duo_api_hostname, duo_sig_request, duo_post_action) => {
       return `<!DOCTYPE html>

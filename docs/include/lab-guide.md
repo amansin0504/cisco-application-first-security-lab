@@ -1493,7 +1493,15 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     git add public/js/client.js
     ```
 
-5. Commit all changes to the front-end repository and provide a meaningful commit message. The _git commit_ command captures a snapshot of the project's currently staged changes. Committed snapshots can be thought of as “safe” versions of a project—Git will never change them unless you explicitly ask it to.
+5. Udpated the yaml manifest for front-end deployment object to point to the new container registry.
+
+    ###### Command
+
+    ```
+    envsubst < sock-shop-duo.yaml | tee sock-shop-duo.yaml
+    ```
+
+6. Commit all changes to the front-end repository and provide a meaningful commit message. The _git commit_ command captures a snapshot of the project's currently staged changes. Committed snapshots can be thought of as “safe” versions of a project—Git will never change them unless you explicitly ask it to.
 
     ###### Command
 
@@ -1513,7 +1521,7 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     create mode 100644 public/js/client.js
     ```
 
-6. Push the local changes to these three files to the remote repository on your private GitLab Project using the command.
+7. Push the local changes to these three files to the remote repository on your private GitLab Project using the command.
 
     ###### Command
 
