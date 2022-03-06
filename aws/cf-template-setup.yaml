@@ -533,9 +533,9 @@ Resources:
           sudo apt-get -y update
           sudo apt-get -y install docker-ce docker-ce-cli containerd.io
           #Install Gitlab CE
+          export EXTERNAL_URL=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
           sudo apt-get install -y curl openssh-server ca-certificates tzdata perl
           sudo curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | sudo bash
-          EXTERNAL_URL=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
           sudo apt-get install -y gitlab-ce
           #Install Gitlab Runner
           curl -LJO "https://gitlab-runner-downloads.s3.amazonaws.com/latest/deb/gitlab-runner_amd64.deb"
