@@ -1483,7 +1483,15 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     >
     > If you're more comfortable in another language, Duo provides SDKs for lots of languages and provide [documentation](https://duo.com/docs/duoweb) on how to use them. You can access the SDKs from [Duo's GitHub](https://github.com/duosecurity).
 
-4. Add all the changes into the front-end repository staging area. The _git add_ command tells Git that you want to include updates to a particular file in the next commit.
+4. Update the yaml manifest for front-end deployment object, to point to the lab container registry. Review the yaml.
+
+    ###### Command
+
+    ```
+    envsubst < sock-shop-duo.yaml | tee sock-shop-duo.yaml
+    ```
+
+5. Add all the changes into the front-end repository staging area. The _git add_ command tells Git that you want to include updates to a particular file in the next commit.
 
     ###### Command
 
@@ -1492,14 +1500,6 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     git add api/user/index.js
     git add public/js/client.js
     git add sock-shop-duo.yaml
-    ```
-
-5. Update the yaml manifest for front-end deployment object, to point to the lab container registry. Review the yaml.
-
-    ###### Command
-
-    ```
-    envsubst < sock-shop-duo.yaml | tee sock-shop-duo.yaml
     ```
 
 6. Commit all changes to the front-end repository and provide a meaningful commit message. The _git commit_ command captures a snapshot of the project's currently staged changes. Committed snapshots can be thought of as “safe” versions of a project—Git will never change them unless you explicitly ask it to.
