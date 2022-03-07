@@ -533,7 +533,10 @@ Resources:
           sudo apt-get -y update
           sudo apt-get -y install docker-ce docker-ce-cli containerd.io
           #Install Gitlab CE
-          export EXTERNAL_URL=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
+          sudo echo "export EXTERNAL_URL=$(curl http://169.254.169.254/latest/meta-data/public-hostname)" >> myprofile
+          chmod +x myprofile
+          sudo cp myprofile /etc/profile.d/
+          source /etc/profile.d/myprofile
           sudo apt-get install -y curl openssh-server ca-certificates tzdata perl
           sudo curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | sudo bash
           sudo apt-get install -y gitlab-ce
