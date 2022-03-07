@@ -1085,13 +1085,13 @@ After the local and remote repositories are set up, you will set up a CI/CD pipe
     ###### Command
 
     ```
-    git clone https://github.com/amansin0504/front-end.git Front-End && cd Front-End
+    git clone https://github.com/amansin0504/front-end.git Sock-Shop-Front-End && cd Sock-Shop-Front-End
     ```
 
     ###### Output
 
     ```
-    Cloning into 'Front-End'...
+    Cloning into 'Sock-Shop-Front-End'...
     remote: Enumerating objects: 984, done.
     remote: Counting objects: 100% (984/984), done.
     remote: Compressing objects: 100% (409/409), done.
