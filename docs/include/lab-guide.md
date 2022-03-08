@@ -2555,10 +2555,6 @@ Now that we have an API Key we can configure Ansible to access Secure Workload a
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200306161527737.png" alt="image-20200306161527737" style="zoom:50%;" />
 
-> **NOTE**
->
-> You might notice that the inventory filter you created for the front-end pods has changed. The playbook added the Kubernetes namespace to the query details to make the filters more precise and created an additional filter for the front-end service.
-
 
 ##### Define application segmentation using Ansible
 
@@ -2653,7 +2649,7 @@ In an earlier step, you configured policy filters. Now we'll use Ansible to appl
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20191018130105438.png" alt="image-20191018130105438" style="zoom:50%;" />
 
-8. Confirm that there are additional policies beyond what you had already created manually.
+8. Confirm that policies are created in the *Sock Shop* application workspace.
 
     <img src="https://raw.githubusercontent.com/amansin0504/cisco-application-first-security-lab/main/docs/assets/image-20200306182347896.png" alt="image-20200306182347896" style="zoom:50%;" />
 
