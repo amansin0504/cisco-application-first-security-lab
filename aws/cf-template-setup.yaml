@@ -51,19 +51,19 @@ Parameters:
   PodName:
     Description: "Name of Pod. *Must* use value provided in DevNet Sandbox email."
     Type: String
-    Default: app-first-sec-40
+    Default: app-first-sec-xx
   PodPassword:
     Description: "Password for Pod. User defined or use value provided in DevNet Sandbox email."
     Type: String
-    Default: samplepassword
+    Default: password
   DuoIkey:
     Description: "Duo Web SDK application's integration key. *Must* use value provided in DevNet Sandbox email."
     Type: String
-    Default: sampleikey
+    Default: ikey
   DuoSkey:
     Description: "Duo Web SDK application's secret key. *Must* use value provided in DevNet Sandbox email."
     Type: String
-    Default: sampleskey
+    Default: skey
   DuoHost:
     Description: "Duo Web SDK API hostname. *Must* use value provided in DevNet Sandbox email."
     Type: String
@@ -71,11 +71,11 @@ Parameters:
   SwcSecret:
     Description: "Secret used for Stealthwatch Cloud Kubernetes agents. *Must* use value provided in DevNet Sandbox email."
     Type: String
-    Default: samplesecret
+    Default: swcsecret
   DevNetEmail:
     Description: "Email used with your DevNet account. *Must* use value provided in DevNet Sandbox email."
     Type: String
-    Default: amansin3@cisco.com
+    Default: user@example.com
   keyPairName:
     Description: "Key pair name (Create a new key pair prior to deploying this template)"
     Type: AWS::EC2::KeyPair::KeyName

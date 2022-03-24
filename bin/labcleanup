@@ -61,7 +61,13 @@ aws iam delete-policy --policy-arn arn:aws:iam::${AWS_ACCT_ID}:policy/swc-policy
 
 #delete ec2 key pair
 echo "Lab cleanup: Delete EC2 Key Pair"
-#aws ec2 delete-key-pair --key-name ${AWS_KEYPAIR_NAME}
+read -p "Type 'delete' if you're sure you want to permanently delete EC2 Key Pair you create for this lab: " -r
+if [[ ! $REPLY =~ ^delete$ ]]
+then
+    echo "Exiting without deleting EC2 Key Pair"
+    exit 0
+fi
+aws ec2 delete-key-pair --key-name ${AWS_KEYPAIR_NAME}
 
 echo "##################################### ATTENTION #####################################################"
 echo "Log out and log back in as your regular AWS admin user and navigate to CloudFormation AWS Console"

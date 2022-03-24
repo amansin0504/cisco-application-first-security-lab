@@ -60,7 +60,8 @@ This lab uses AWS to host the workloads and applications and takes advantage of 
 
 > **NOTE**
 >
-> If you want to skip the section - [Prepare infrastructure and application](#prepare-infrastructure-and-application), and directly jump to implementing security, run the command _deployinfraforme_ to fast forward setting up infrastructure and Sock Shop application. Once the script completes, you can proceed with any of the three _implement security_ sections - [Option 1: Implement security - Cisco Secure Access by Duo](#option-1-implement-security---cisco-secure-access-by-duo), [Option 2: Implement security - Cisco Secure Cloud Analytics](#option-2-implement-security---cisco-secure-cloud-analytics) or [Option 3: Implement security - Cisco Secure Cloud Workload](#option-3-implement-security---cisco-secure-cloud-workload).
+> It is recommended to run through all of the steps in this guide. However, if you have already gone through the section - [Prepare infrastructure and application](#prepare-infrastructure-and-application), and would like to directly jump to implementing security, run the command _deployinfraforme_ to fast forward setting up infrastructure and Sock Shop application. This script will prepare all of the AWS infrastructure including an EKS cluster and Sock Shop application, and approximately takes 25 minutes to complete . 
+> Once the script completes, you can proceed with any of the three _implement security_ sections - [Option 1: Implement security - Cisco Secure Access by Duo](#option-1-implement-security---cisco-secure-access-by-duo), [Option 2: Implement security - Cisco Secure Cloud Analytics](#option-2-implement-security---cisco-secure-cloud-analytics) or [Option 3: Implement security - Cisco Secure Cloud Workload](#option-3-implement-security---cisco-secure-cloud-workload).
 
 ## Prepare infrastructure and application
 
@@ -99,7 +100,7 @@ The details below will be used for credentials unless you decide to use differen
 | Product                                                               | Username / Email            | Password                      |
 | ----------------------------------------------------------------------| --------------------------- | ----------------------------- |
 | [AWS](https://${AWS_REGION}.console.aws.amazon.com/)                  | ${POD_NAME}                 | ${POD_PASSWORD}               |
-| [Secure Workload](https://tet-pov-rtp1.cpoc.co/)                            | ${DEVNET_EMAIL_ADDRESS}     | ${POD_PASSWORD} (recommended) |
+| [Secure Workload](https://tet-pov-rtp1.cpoc.co/)                      | ${DEVNET_EMAIL_ADDRESS}     | ${POD_PASSWORD} (recommended) |
 | [Secure Cloud Analytics Cloud](https://cisco-${POD_NAME}.obsrvbl.com) | ${DEVNET_EMAIL_ADDRESS}     | ${POD_PASSWORD} (recommended) |
 | [Duo](https://admin.duosecurity.com/)                                 | ${POD_NAME}@cisco.com       | ${POD_PASSWORD}               |
 
@@ -1513,7 +1514,7 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     ###### Output
 
     ```
-    [master edbbb1b] add Duo MFA support to login
+    [main edbbb1b] add Duo MFA support to login
 		Committer: EC2 Default User <ec2-user@ip-10-50-10-88.ec2.internal>
 		...
     3 files changed, 0 insertions(+), 0 deletions(-)
@@ -1533,13 +1534,13 @@ You'll store four secrets in Kubernetes that will be available to the front-end 
     ###### Output
 
     ```
-    [master edbbb1b] add Duo MFA support to login
-    Committer: EC2 Default User <ec2-user@ip-10-50-10-88.ec2.internal>
-    ...
-    3 files changed, 0 insertions(+), 0 deletions(-)
-    create mode 100644 helpers/duo.js
-    create mode 100644 api/user/index.js
-    create mode 100644 public/js/client.js
+    Enumerating objects: 20, done.
+    Counting objects: 100% (20/20), done.
+    Compressing objects: 100% (10/10), done.
+    Writing objects: 100% (11/11), 6.06 KiB | 1.21 MiB/s, done.
+    Total 11 (delta 7), reused 0 (delta 0)
+    To http://ec2-3-17-75-197.us-east-2.compute.amazonaws.com/root/front-end.git
+    8becb78..c339d69  main -> main
     ```
 
 ##### CI/CD pipeline automation
@@ -2798,4 +2799,4 @@ Congrats for making it to the end. At this point, you can say you prepared AWS t
 
 > **WARNING**
 >
-> Do not forget to clean up the AWS resources. Navigate back to the Devnet web page for lab clean up instructions. [Lab CleanUp](https://github.com/CiscoDevNet/cisco-application-first-security-lab/labs/2.md).
+> Do not forget to clean up the AWS resources. 6. Navigate back to the Devnet web page for lab clean up instructions. [Lab CleanUp](https://github.com/CiscoDevNet/cisco-application-first-security-lab/labs/2.md).
