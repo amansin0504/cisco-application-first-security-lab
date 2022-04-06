@@ -205,7 +205,7 @@ Resources:
     DependsOn: [ciscoAppFirstSecUser,ciscoAppFirstSecUserGroup]
     Properties:
       AutomaticStopTimeMinutes: 30
-      InstanceType: t2.micro
+      InstanceType: t3.medium
       Name: appfirst-cloud9-ide
       OwnerArn: !GetAtt ciscoAppFirstSecUser.Arn
       SubnetId: !Ref HubPublicSubnet
