@@ -74,17 +74,17 @@ sudo yum -y install gettext httping > /dev/null &
 spinner $!
 
 echo "INFO: Installing pip"
-curl --silent -O https://bootstrap.pypa.io/get-pip.py
+curl --silent -O https://bootstrap.pypa.io/pip/3.6/get-pip.py
 python3 get-pip.py --user > /dev/null &
 spinner $!
 export PATH=~/.local/bin:$PATH
 rm get-pip.py
 
-echo "INFO: Installing ansible"
+echo "INFO: Installing tetpyclient"
 pip install tetpyclient --user -q &
 spinner $!
 
-echo "INFO: Installing tetpyclient"
+echo "INFO: Installing ansible"
 pip install ansible --user -q &
 spinner $!
 
